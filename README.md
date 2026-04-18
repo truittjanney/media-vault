@@ -2,9 +2,10 @@
 A full-stack media storage and vault web application for securely organizing photos and videos.
 
 ## Tech Stack
-- React (Frontend)
-- Node.js / Express (Backend)
-- PostgreSQL + Prisma (Database)
+- React.js, JavaScript, Bootstrap, CSS3, HTML5, Fetch API (Frontend)
+- Node.js, Express.js, Multer (Backend)
+- PostgreSQL, Prisma ORM (Database)
+- Jest (Testing)
 - AWS (Planned for cloud infrastructure)
 - Docker, Terraform, CI/CD (Planned)
 
@@ -25,7 +26,7 @@ A full-stack media storage and vault web application for securely organizing pho
 - Add lock to albums / remove lock from albums
 - Organize albums: name, date created, date modified
 
-## Features (Upgrades)
+## Planned Features (Upgrades)
 - Change password for account login
 - Change PIN for locked albums
 - Organize photos/videos: click-and-drag
@@ -34,7 +35,7 @@ A full-stack media storage and vault web application for securely organizing pho
 - Rename photos/videos
 - Change profile username
 
-## Features (Polish)
+## Planned Features (Polish)
 - Add tags to photos/videos
 - Change album page layout
 - Change photos/videos page layout
