@@ -5,3 +5,49 @@ generator client {
 datasource db {
   provider = "postgresql"
 }
+
+model User {
+  id Int @id @default(autoincrement())
+  name String @unique
+  email String @unique
+  passwordHash String
+  albumPinHash String
+  albumLayoutPreference String
+  mediaLayoutPreference String
+
+  albums Album[]
+  media Media[]
+}
+
+model Album {
+  id Int @id @default(autoincrement())
+  userId Int
+  name String
+  albumCoverMediaId Int?
+  isLocked Boolean
+  albumPosition Int
+
+  user User @relation(fields: [userId], references: [id])
+  albumCoverMedia Media? @relation("AlbumCoverMedia", fields: [albumCoverMediaId], references: [id])
+  media Media[] @relation("AlbumMedia")
+}
+
+model Media {
+  id Int @id @default(autoincrement())
+  userId Int
+  albumId Int
+  name String
+  type String
+  format String
+  fileSize Int
+  resolution String
+  createdTime DateTime?
+  importedTime DateTime
+  isDeleted Boolean
+  deletedTime DateTime?
+  mediaPosition Int
+
+  user User @relation(fields: [userId], references: [id])
+  album Album @relation("AlbumMedia", fields: [albumId], references: [id])
+  coverForAlbum Album[] @relation("AlbumCoverMedia")
+}
