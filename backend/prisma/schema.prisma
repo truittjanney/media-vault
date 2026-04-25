@@ -14,6 +14,8 @@ model User {
   albumPinHash String
   albumLayoutPreference String
   mediaLayoutPreference String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   albums Album[]
   media Media[]
@@ -26,6 +28,8 @@ model Album {
   albumCoverMediaId Int?
   isLocked Boolean
   albumPosition Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   user User @relation(fields: [userId], references: [id])
   albumCoverMedia Media? @relation("AlbumCoverMedia", fields: [albumCoverMediaId], references: [id])
@@ -43,6 +47,8 @@ model Media {
   resolution String
   createdTime DateTime?
   importedTime DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
   isDeleted Boolean
   deletedTime DateTime?
   mediaPosition Int
