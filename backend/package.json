@@ -6,13 +6,13 @@
     "main": "index.js",
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
-        "dev": "nodemon src/app.js"
+        "dev": "nodemon --legacy-watch --watch src --watch routes src/app.js"
     },
     "keywords": [],
     "author": "Truitt Janney",
     "license": "ISC",
     "dependencies": {
-        "@prisma/client": "^7.7.0",
+        "@prisma/client": "^6.19.3",
         "bcrypt": "^6.0.0",
         "cors": "^2.8.6",
         "dotenv": "^17.4.2",
@@ -22,6 +22,6 @@
     },
     "devDependencies": {
         "nodemon": "^3.1.14",
-        "prisma": "^7.7.0"
+        "prisma": "^6.19.3"
     }
 }

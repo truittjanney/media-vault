@@ -1,8 +1,9 @@
 import express from "express";
-import { PrismaClient } from "@prisma/client";
+import pkg from "@prisma/client";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
+const { PrismaClient } = pkg;
 const prisma = new PrismaClient();
 
 const router = express.Router();
@@ -22,17 +23,17 @@ router.post("/signup", async (req, res) => {
     return res.status(400).json({ message: "Name, email, and password are required to create an account" });
 }
 
-        const normalizedEmail = email.trim().toLowerCase();
+const normalizedEmail = email.trim().toLowerCase();
+
+if (!normalizedEmail.includes("@") || !normalizedEmail.includes(".")) {
+    return res.status(400).json({ message: "Please enter a valid email address" });
+}
 
 const existingUser = await prisma.user.findUnique({
             where: {
                 email: normalizedEmail,
             },
 });
-
-if (!normalizedEmail.includes("@") || !normalizedEmail.includes(".")) {
-    return res.status(400).json({ message: "Please enter a valid email address" });
-}
 
         if (existingUser) {
             return res.status(409).json({ message: "Email already exists" });
@@ -57,7 +58,7 @@ if (!normalizedEmail.includes("@") || !normalizedEmail.includes(".")) {
         if (error.code === "P2002" && error.meta?.target?.includes("email")) {
             return res.status(409).json({ message: "Email already exists" });
         }
-
+console.error(error);
         res.status(500).json({ message: "Error creating account" });
     }
 });
@@ -106,7 +107,8 @@ router.post("/login", async (req, res) => {
         { expiresIn: "7d" }
     );
 
-    res.status(200).json({ message: "User logged in successfully", token,
+    res.status(200).json({
+        token,
         user: {
             id: user.id,
             name: user.name,
@@ -126,11 +128,7 @@ router.post("/login", async (req, res) => {
 // #########################################
 router.get("/profile", async (req, res) => {
     try {
-    const updateUser = await prisma.user.update({
-
-    const { name, email } = req.body;
-
-    res.json({ message: "User profile opened successfully" });
+        res.json({ message: "User profile opened successfully" });
     } catch (error) {
         res.status(500).json({ message: "Error retrieving user profile" });
     }
@@ -141,11 +139,7 @@ router.get("/profile", async (req, res) => {
 // #########################################
 router.put("/profile", async (req, res) => {
     try {
-    const updateUser = await prisma.user.update({
-
-    const { name, email } = req.body;
-
-    res.json({ message: "User profile updated successfully" });
+        res.json({ message: "User profile updated successfully" });
     } catch (error) {
         res.status(500).json({ message: "Error updating user profile" });
     }
@@ -156,10 +150,7 @@ router.put("/profile", async (req, res) => {
 // #########################################
 router.delete("/profile", async (req, res) => {
     try {
-    const deleteUser = await prisma.user.delete({
-    const { password } = req.body;
-
-    res.json({ message: "User account deleted successfully" });
+        res.json({ message: "User account deleted successfully" });
     } catch (error) {
         res.status(500).json({ message: "Error deleting user account" });
     }
