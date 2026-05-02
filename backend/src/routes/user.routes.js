@@ -2,6 +2,7 @@ import express from "express";
 import pkg from "@prisma/client";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import authMiddleware from "../middleware/auth.middleware.js";
 
 const { PrismaClient } = pkg;
 const prisma = new PrismaClient();
@@ -126,7 +127,7 @@ router.post("/login", async (req, res) => {
 // #########################################
 // GET API Route - Get User Profile
 // #########################################
-router.get("/profile", async (req, res) => {
+router.get("/profile", authMiddleware, async (req, res) => {
     try {
         res.json({ message: "User profile opened successfully" });
     } catch (error) {
