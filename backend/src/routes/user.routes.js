@@ -250,10 +250,40 @@ router.put("/profile", authMiddleware, async (req, res) => {
 // #########################################
 // DELETE API Route - Delete User Account
 // #########################################
-router.delete("/profile", async (req, res) => {
+router.delete("/profile", authMiddleware, async (req, res) => {
     try {
+        const userId = req.user.userId;
+        const { password } = req.body;
+
+        if (typeof password !== "string" || !password.trim()) {
+            return res.status(400).json({ message: "Password is required to delete account." });
+        }
+
+const user = await prisma.user.findUnique({
+  where: { id: userId },
+  select: {
+    id: true,
+    passwordHash: true,
+  },
+});
+
+if (!user) {
+    return res.status(404).json({ message: "User not found" });
+}
+
+const passwordMatch = await bcrypt.compare(password, user.passwordHash);
+
+if (!passwordMatch) {
+    return res.status(401).json({ message: "Incorrect password. Cannot delete account." });
+}
+
+await prisma.user.delete({
+  where: { id: userId },
+});
+
         res.json({ message: "User account deleted successfully" });
     } catch (error) {
+        console.error(error);
         res.status(500).json({ message: "Error deleting user account" });
     }
 });
