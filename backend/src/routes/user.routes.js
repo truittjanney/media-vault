@@ -157,10 +157,92 @@ router.get("/profile", authMiddleware, async (req, res) => {
 // #########################################
 // PUT API Route - Update User Profile
 // #########################################
-router.put("/profile", async (req, res) => {
+router.put("/profile", authMiddleware, async (req, res) => {
     try {
-        res.json({ message: "User profile updated successfully" });
+        const userId = req.user.userId;
+        const { name, email, albumLayoutPreference, mediaLayoutPreference } = req.body;
+
+        const updateData = {};
+
+        // Name Update Validation
+        if (name !== undefined) {
+            if (typeof name !== "string" || !name.trim()) {
+                return res.status(400).json({ message: "Name must be a non-empty string." });
+            }
+
+            updateData.name = name.trim();
+        }
+
+        // Email Update Validation
+        if (email !== undefined) {
+            if (typeof email !== "string" || !email.trim()) {
+                return res.status(400).json({ message: "Email must be a non-empty string." });
+            }
+
+            const normalizedEmail = email.trim().toLowerCase();
+
+            if (!normalizedEmail.includes("@") || !normalizedEmail.includes(".")) {
+                return res.status(400).json({ message: "Please enter a valid email address." });
+            }
+
+            const existingUser = await prisma.user.findUnique({
+                where: { email: normalizedEmail },
+            });
+
+            if (existingUser && existingUser.id !== userId) {
+                return res.status(409).json({ message: "Email already exists" });
+            }
+
+            updateData.email = normalizedEmail;
+        }
+
+        // Layout Preference Validation
+        const validPageLayouts = ["gallery", "list"];
+
+        if (albumLayoutPreference !== undefined) {
+            if (!validPageLayouts.includes(albumLayoutPreference)) {
+                return res.status(400).json({
+                    message: "Album layout preference must be gallery or list."
+                });
+            }
+
+            updateData.albumLayoutPreference = albumLayoutPreference;
+        }
+
+        if (mediaLayoutPreference !== undefined) {
+            if (!validPageLayouts.includes(mediaLayoutPreference)) {
+                return res.status(400).json({
+                    message: "Media layout preference must be gallery or list."
+                });
+            }
+
+            updateData.mediaLayoutPreference = mediaLayoutPreference;
+        }
+
+        // Prevent empty update
+        if (Object.keys(updateData).length === 0) {
+        return res.status(400).json({ message: "No valid profile fields provided." });
+        }
+
+        const updatedUser = await prisma.user.update({
+            where: { id: userId },
+            data: updateData,
+            select: {
+                id: true,
+                name: true,
+                email: true,
+                albumLayoutPreference: true,
+                mediaLayoutPreference: true,
+                createdAt: true,
+            },
+        });
+
+        res.status(200).json({
+            message: "User profile updated successfully",
+            user: updatedUser,
+        });
     } catch (error) {
+        console.error(error);
         res.status(500).json({ message: "Error updating user profile" });
     }
 });
