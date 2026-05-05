@@ -120,6 +120,7 @@ router.post("/login", async (req, res) => {
         },
      });
 } catch (error) {
+    console.error(error);
     res.status(500).json({ message: "Error logging in" });
 }
 });
@@ -150,6 +151,7 @@ router.get("/profile", authMiddleware, async (req, res) => {
         res.status(200).json({ user });
 
         } catch (error) {
+            console.error(error);
             res.status(500).json({ message: "Error retrieving user profile" });
         }
 });

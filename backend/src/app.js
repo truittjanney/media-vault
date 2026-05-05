@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import userRoutes from "./routes/user.routes.js";
+import albumRoutes from "./routes/album.routes.js";
 
 dotenv.config();
 
@@ -18,6 +19,9 @@ app.get("/", (req, res) => {
 
 // User Routes
 app.use("/api/users", userRoutes);
+
+// Album Routes
+app.use("/api/albums", albumRoutes);
 
 const PORT = process.env.PORT || 5000;
 
