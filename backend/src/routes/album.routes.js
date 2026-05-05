@@ -34,8 +34,8 @@ const newAlbum = await prisma.album.create({
 });
 
 return res.status(201).json({ message: "Album created successfully", album: newAlbum });
-    }
-    catch (error) {
+
+    } catch (error) {
         console.error("Error creating album:", error);
         return res.status(500).json({ message: "Internal server error" });
     }
@@ -44,7 +44,22 @@ return res.status(201).json({ message: "Album created successfully", album: newA
 // ###########################################
 // GET API Route - List User's Current Albums
 // ###########################################
+router.get("/", authMiddleware, async (req, res) => {
+    try {
+        const userId = req.user.userId;
 
+    const albums = await prisma.album.findMany({
+        where: {userId},
+        orderBy: { albumPosition: "asc" },
+    });
+
+    return res.status(200).json({ albums: albums });
+
+    } catch (error) {
+        console.error("Error retrieving albums", error);
+        return res.status(500).json({ message: "Internal server error" });
+    }
+});
 
 
 // ###########################################
