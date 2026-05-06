@@ -61,12 +61,88 @@ router.get("/", authMiddleware, async (req, res) => {
     }
 });
 
-
 // ###########################################
-// PUT API Route - Rename/Update Album
+// PUT API Route - Update Album
 // ###########################################
+router.put("/:id", authMiddleware, async (req, res) => {
+    try {
+        const userId = req.user.userId;
+        const albumId = Number(req.params.id);
+        const { name, albumCoverMediaId, isLocked } = req.body;
 
+        if (!Number.isInteger(albumId) || albumId <= 0) {
+            return res.status(400).json({ message: "Invalid album id." });
+        }
 
+        const updateAlbum = {};
+
+        // Name Update Validation
+        if (name !== undefined) {
+            if (typeof name !== "string" || !name.trim()) {
+                return res.status(400).json({ message: "Album name must be a non-empty string." });
+            }
+            updateAlbum.name = name.trim();
+        }
+
+        // albumCoverMediaId Validation
+        if (albumCoverMediaId !== undefined) {
+            if (albumCoverMediaId !== null && typeof albumCoverMediaId !== "number") {
+                return res.status(400).json({ message: "albumCoverMediaId must be a number or null." });
+            }
+            updateAlbum.albumCoverMediaId = albumCoverMediaId;
+        }
+
+        // isLocked Validation
+        if (isLocked!== undefined) {
+            if (typeof isLocked !== "boolean") {
+                return res.status(400).json({ message: "isLocked must be a boolean." });
+            }
+            updateAlbum.isLocked = isLocked;
+        }
+
+        // Prevent Empty Update
+        if (Object.keys(updateAlbum).length === 0) {
+            return res.status(400).json({ message: "No valid album fields provided for update." });
+        }
+
+        const existingAlbum = await prisma.album.findFirst({
+            where: {
+                id: albumId,
+                userId,
+            },
+        });
+
+        if (!existingAlbum) {
+            return res.status(404).json({ message: "Album not found." });
+        }
+        
+        const updatedAlbum = await prisma.album.update({
+            where: { 
+                id: albumId,
+            },
+            data: updateAlbum,
+            select: {
+                id: true,
+                userId: true,
+                name: true,
+                albumCoverMediaId: true,
+                isLocked: true,
+                albumPosition: true,
+                createdAt: true,
+                updatedAt: true,
+            },
+        });
+
+        res.status(200).json({
+            message: "Album updated successfully",
+            album: updatedAlbum,
+        });
+        
+    } catch (error) {
+        console.error("Error updating album", error);
+        return res.status(500).json({ message: "Internal server error" });
+    }
+});
 
 // ###########################################
 // DELETE API Route - Delete Album

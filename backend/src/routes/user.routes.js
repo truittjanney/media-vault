@@ -221,7 +221,7 @@ router.put("/profile", authMiddleware, async (req, res) => {
             updateData.mediaLayoutPreference = mediaLayoutPreference;
         }
 
-        // Prevent empty update
+        // Prevent Empty Update
         if (Object.keys(updateData).length === 0) {
         return res.status(400).json({ message: "No valid profile fields provided." });
         }
