@@ -147,5 +147,36 @@ router.put("/:id", authMiddleware, async (req, res) => {
 // ###########################################
 // DELETE API Route - Delete Album
 // ###########################################
+router.delete("/:id", authMiddleware, async (req, res) => {
+    try{
+        const userId = req.user.userId;
+        const albumId = Number(req.params.id);
+
+        if (!Number.isInteger(albumId)) {
+            return req.status(400).json({ message: "Invalid album id." });
+        }
+
+            const existingAlbum = await prisma.album.findFirst({
+                where: {
+                    id: albumId,
+                    userId,
+                },
+            });
+
+            if (!existingAlbum) {
+                return res.status(404).json({ message: "Album not found." });
+            }
+
+            await prisma.album.delete({
+                where: { id: albumId },
+            });
+
+            return res.status(200).json({ message: "Album deleted successfully" });
+
+    } catch (error) {
+        console.error("Error deleting album", error);
+        return res.status(500).json({ message: "Internal server error" });
+    }
+});
 
 export default router;
