@@ -3,6 +3,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import userRoutes from "./routes/user.routes.js";
 import albumRoutes from "./routes/album.routes.js";
+import mediaRoutes from "./routes/media.routes.js";
 
 dotenv.config();
 
@@ -22,6 +23,9 @@ app.use("/api/users", userRoutes);
 
 // Album Routes
 app.use("/api/albums", albumRoutes);
+
+// Media Routes
+app.use("/api/media", mediaRoutes);
 
 const PORT = process.env.PORT || 5000;
 
