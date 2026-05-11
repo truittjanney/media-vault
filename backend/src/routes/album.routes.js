@@ -62,6 +62,48 @@ router.get("/", authMiddleware, async (req, res) => {
 });
 
 // ###########################################
+// GET API Route - List Media in Album
+// ###########################################
+router.get("/:id/media", authMiddleware, async (req, res) => {
+  try {
+    const userId = req.user.userId;
+    const albumId = Number(req.params.id);
+
+    if (!Number.isInteger(albumId) || albumId <= 0) {
+      return res.status(400).json({ message: "Invalid album id." });
+    }
+
+    const existingAlbum = await prisma.album.findFirst({
+      where: {
+        id: albumId,
+        userId,
+      },
+    });
+
+    if (!existingAlbum) {
+      return res.status(404).json({ message: "Album not found." });
+    }
+
+    const media = await prisma.media.findMany({
+      where: {
+        albumId,
+        userId,
+        isDeleted: false,
+    },
+      orderBy: {
+        mediaPosition: "asc"
+      },
+    });
+
+    return res.status(200).json({ media });
+
+  } catch (error) {
+    console.error("Error listing album contents.", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+// ###########################################
 // PUT API Route - Update Album
 // ###########################################
 router.put("/:id", authMiddleware, async (req, res) => {

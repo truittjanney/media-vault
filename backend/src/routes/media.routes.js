@@ -81,12 +81,6 @@ router.post("/", authMiddleware, upload.array("media", 20), async (req, res) => 
 });
 
 // ###########################################
-// GET API Route - List Media in Album
-// ###########################################
-
-
-
-// ###########################################
 // DELETE API Route - Delete One Media Item
 // ###########################################
 
