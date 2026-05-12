@@ -83,7 +83,77 @@ router.post("/", authMiddleware, upload.array("media", 20), async (req, res) => 
 // ###########################################
 // DELETE API Route - Delete One Media Item
 // ###########################################
+router.delete("/:id", authMiddleware, async (req, res) => {
+try {
+    const userId = req.user.userId;
+    const mediaId = Number(req.params.id);
 
+    if (!Number.isInteger(mediaId) || mediaId <= 0) {
+        return res.status(400).json({ message: "Invalid media id." });
+    }
+    
+    const existingMedia = await prisma.media.findFirst({
+        where: {
+            id: mediaId,
+            userId,
+            isDeleted: false,
+        },
+    });
 
+    if (!existingMedia) {
+        return res.status(404).json({ message: "Media not found." });
+    }
+
+    await prisma.media.delete({
+        where: { id: mediaId },
+    });
+
+    return res.status(200).json({ message: "Media deleted successfully" });
+
+} catch (error) {
+    console.error("Error deleting media", error);
+    return res.status(500).json({ message: "Internal server error" });
+}
+});
+
+// #################################################
+// DELETE API Route - Delete Multiple Media Items
+// #################################################
+router.delete("/", authMiddleware, async (req, res) => {
+  try {
+    const userId = req.user.userId;
+    const { mediaIds } = req.body;
+
+    if (!Array.isArray(mediaIds) || mediaIds.length === 0) {
+      return res.status(400).json({ message: "mediaIds must be a non-empty array." });
+    }
+
+    const invalidId = mediaIds.some(
+      (id) => !Number.isInteger(id) || id <= 0
+    );
+
+    if (invalidId) {
+      return res.status(400).json({ message: "All media ids must be positive integers." });
+    }
+
+    const deletedMedia = await prisma.media.deleteMany({
+      where: {
+        id: {
+          in: mediaIds,
+        },
+        userId,
+        isDeleted: false,
+      },
+    });
+
+    return res.status(200).json({
+      message: "Media deleted successfully",
+      deletedCount: deletedMedia.count,
+    });
+  } catch (error) {
+    console.error("Error deleting multiple media", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+});
 
 export default router;
