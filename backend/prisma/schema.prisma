@@ -53,6 +53,7 @@ model Media {
   isDeleted Boolean
   deletedTime DateTime?
   mediaPosition Int
+  filePath String
 
   user User @relation(fields: [userId], references: [id])
   album Album @relation("AlbumMedia", fields: [albumId], references: [id])
