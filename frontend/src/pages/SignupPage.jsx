@@ -1,22 +1,24 @@
 import { useState } from 'react';
 import { signup } from '../services/authService.js';
+import { useNavigate } from 'react-router-dom';
 
 function Signup() {
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [errorMessage, setErrorMessage] = useState('');
+    const navigate = useNavigate();
 
     async function handleSubmit(event) {
         event.preventDefault();
-
-        console.log({ data });
+        setErrorMessage('');
 
         try {
             const data = await signup(name, email, password);
-            console.log(data);
+            navigate('/login');
 
         } catch (error) {
-            console.error(error.message);
+            setErrorMessage(error.message);
         }
     }
 
@@ -24,6 +26,8 @@ function Signup() {
         <div>
             <h1>MediaVault</h1>
             <h2>Create Your Account</h2>
+
+            {errorMessage && <p>{errorMessage}</p>}
 
             <form onSubmit={handleSubmit}>
                 <p>Name: </p>
