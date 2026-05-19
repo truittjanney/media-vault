@@ -30,11 +30,11 @@ function Signup() {
             {errorMessage && <p>{errorMessage}</p>}
 
             <form onSubmit={handleSubmit}>
-                <p>Name: </p>
+                <label>Name: </label>
                 <input type="text" value={name} onChange={(e) => setName(e.target.value)} />
-                <p>Email: </p>
+                <label>Email: </label>
                 <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
-                <p>Password: </p>
+                <label>Password: </label>
                 <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
 
                 <button type="submit">Create Account</button>
