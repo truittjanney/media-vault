@@ -1,5 +1,5 @@
-import { useState } from 'react';
 import { signup } from '../services/authService.js';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 function Signup() {
