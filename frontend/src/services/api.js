@@ -1,6 +1,6 @@
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
-export async function apiRequest(endpoint, options = {}) {
+async function apiRequest(endpoint, options = {}) {
   const token = localStorage.getItem("token");
 
   const headers = {
@@ -24,3 +24,5 @@ export async function apiRequest(endpoint, options = {}) {
 
   return data;
 }
+
+export { apiRequest };
