@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams } from "react-router-dom";
 import { getAlbumMedia } from '../services/mediaService.js';
+import { MediaCard } from '../components/MediaCard.jsx';
 
 function AlbumDetailPage() {
     const [media, setMedia] = useState([]);
@@ -22,6 +23,10 @@ function AlbumDetailPage() {
         }
     }
 
+    function handleOpenMedia(mediaId) {
+        console.log("Open media:", mediaId);
+    }
+
     useEffect(() => {
         loadMedia();
     }, [id]);
@@ -33,12 +38,11 @@ function AlbumDetailPage() {
 
         <div>
             {media.map((file) => (
-<div key={file.id}>
-    <img
-    src={`http://localhost:5001${file.filePath}`}
-    alt={file.name}
-    />
-</div>
+                <MediaCard
+                    key={file.id}
+                    media={file}
+                    onOpenMedia={handleOpenMedia}
+                />
             ))}
         </div>
 
