@@ -2,7 +2,7 @@ import { signup } from '../services/authService.js';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-function Signup() {
+function SignupPage() {
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -43,4 +43,4 @@ function Signup() {
     );
 }
 
-export default Signup;
+export { SignupPage };

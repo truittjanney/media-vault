@@ -2,7 +2,7 @@ import { login } from '../services/authService.js';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-function Login() {
+function LoginPage() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
@@ -42,4 +42,4 @@ function Login() {
     );
 }
 
-export default Login;
+export { LoginPage };

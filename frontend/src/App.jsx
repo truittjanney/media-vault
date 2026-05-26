@@ -1,9 +1,9 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 
-import LoginPage from "./pages/LoginPage";
-import SignupPage from "./pages/SignupPage";
-import AlbumsPage from "./pages/AlbumsPage";
-import AlbumDetailPage from "./pages/AlbumDetailPage";
+import { LoginPage } from "./pages/LoginPage";
+import { SignupPage } from "./pages/SignupPage";
+import { AlbumsPage } from "./pages/AlbumsPage";
+import { AlbumDetailPage } from "./pages/AlbumDetailPage";
 
 function App() {
   return (
@@ -17,4 +17,4 @@ function App() {
   );
 }
 
-export default App;
+export { App };

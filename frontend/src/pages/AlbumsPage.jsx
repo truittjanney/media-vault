@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { getAlbums, createAlbum } from '../services/albumService.js';
 import { AlbumCard } from '../components/AlbumCard.jsx';
 
-function Albums() {
+function AlbumsPage() {
     const [albums, setAlbums] = useState([]);
     const [albumName, setAlbumName] = useState('');
     const [isLoading, setIsLoading] = useState(false);
@@ -91,4 +91,4 @@ function Albums() {
     );
 }
 
-export default Albums;
+export { AlbumsPage };
