@@ -65,7 +65,7 @@ router.post("/", authMiddleware, upload.array("media", 20), async (req, res) => 
             isDeleted: false,
             deletedTime: null,
             mediaPosition: mediaCount + i + 1,
-            filePath: '/${file.path}',
+            filePath: `/${file.path}`,
       },
     });
 
