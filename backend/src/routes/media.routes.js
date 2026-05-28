@@ -2,13 +2,26 @@ import express from "express";
 import pkg from "@prisma/client";
 import authMiddleware from "../middleware/auth.middleware.js";
 import multer from "multer";
+import path from "path";
 
 const { PrismaClient } = pkg;
 const prisma = new PrismaClient();
 
 const router = express.Router();
 
-const upload = multer({ dest: "uploads/" });
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, "uploads/");
+  },
+  filename: function (req, file, cb) {
+    const fileExtension = path.extname(file.originalname);
+    const uniqueName = `${Date.now()}-${Math.round(Math.random() * 1e9)}${fileExtension}`;
+
+    cb(null, uniqueName);
+  },
+});
+
+const upload = multer({ storage });
 
 // ###########################################
 // POST API Route - Upload Media to Album
@@ -65,7 +78,7 @@ router.post("/", authMiddleware, upload.array("media", 20), async (req, res) => 
             isDeleted: false,
             deletedTime: null,
             mediaPosition: mediaCount + i + 1,
-            filePath: `/${file.path}`,
+            filePath: `/uploads/${file.filename}`,
       },
     });
 
