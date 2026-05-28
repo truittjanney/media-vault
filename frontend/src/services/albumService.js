@@ -14,4 +14,10 @@ return apiRequest('/api/albums', {
 });
 }
 
-export { getAlbums, createAlbum };
+function deleteAlbum(albumId) {
+    return apiRequest(`/api/albums/${albumId}`, {
+        method: 'DELETE',
+    });
+}
+
+export { getAlbums, createAlbum, deleteAlbum };

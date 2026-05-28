@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getAlbums, createAlbum } from '../services/albumService.js';
+import { getAlbums, createAlbum, deleteAlbum } from '../services/albumService.js';
 import { AlbumCard } from '../components/AlbumCard.jsx';
 
 function AlbumsPage() {
@@ -50,6 +50,24 @@ function AlbumsPage() {
         navigate(`/albums/${albumId}`);
     }
 
+    async function handleDeleteAlbum(albumId) {
+        setErrorMessage('');
+
+        if (!window.confirm('Delete this album?')) {
+            return;
+        }
+
+        try {
+            setIsLoading(true);
+            await deleteAlbum(albumId);
+            await loadAlbums();
+        } catch (error) {
+            setErrorMessage(error.message);
+        } finally {
+            setIsLoading(false);
+        }
+    }
+
     useEffect(() => {
         loadAlbums();
     }, []);
@@ -64,6 +82,7 @@ function AlbumsPage() {
                         key={album.id}
                         album={album}
                         onOpenAlbum={handleOpenAlbum}
+                        onDeleteAlbum={handleDeleteAlbum}
                     />
                 ))}
             </div>
