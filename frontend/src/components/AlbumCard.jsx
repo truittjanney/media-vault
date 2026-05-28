@@ -1,4 +1,4 @@
-function AlbumCard({ album, onOpenAlbum, onDeleteAlbum }) {
+function AlbumCard({ album, onOpenAlbum, onRenameAlbum,onDeleteAlbum }) {
     
     return (
         <div onClick={() => onOpenAlbum(album.id)}>
@@ -8,9 +8,20 @@ function AlbumCard({ album, onOpenAlbum, onDeleteAlbum }) {
 
             <button onClick={(event) => {
                 event.stopPropagation();
+                const newName = prompt('Enter new album name:', album.name);
+                if (newName !== null) {
+                    onRenameAlbum(album.id, newName);
+                }
+            }}>
+                Rename Album
+            </button>
+
+            <button onClick={(event) => {
+                event.stopPropagation();
                 onDeleteAlbum(album.id);
             }}>
-                Delete Album</button>
+                Delete Album
+                </button>
         </div>
     );
 }

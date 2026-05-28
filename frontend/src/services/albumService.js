@@ -14,10 +14,20 @@ return apiRequest('/api/albums', {
 });
 }
 
+function updateAlbum(albumId, albumData) {
+    return apiRequest(`/api/albums/${albumId}`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(albumData),
+    });
+}
+
 function deleteAlbum(albumId) {
     return apiRequest(`/api/albums/${albumId}`, {
         method: 'DELETE',
     });
 }
 
-export { getAlbums, createAlbum, deleteAlbum };
+export { getAlbums, createAlbum, updateAlbum, deleteAlbum };

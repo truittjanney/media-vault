@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getAlbums, createAlbum, deleteAlbum } from '../services/albumService.js';
+import { getAlbums, createAlbum, updateAlbum, deleteAlbum } from '../services/albumService.js';
 import { AlbumCard } from '../components/AlbumCard.jsx';
 
 function AlbumsPage() {
@@ -50,6 +50,27 @@ function AlbumsPage() {
         navigate(`/albums/${albumId}`);
     }
 
+    async function handleRenameAlbum(albumId, newName) {
+        setErrorMessage('');
+
+        const trimmedName = newName.trim();
+
+        if (trimmedName === '') {
+            setErrorMessage('Album name cannot be empty');
+            return;
+        }
+
+        try {
+            setIsLoading(true);
+            await updateAlbum(albumId, { name: trimmedName });
+            await loadAlbums();
+        } catch (error) {
+            setErrorMessage(error.message);
+        } finally {
+            setIsLoading(false);
+        }
+    }
+
     async function handleDeleteAlbum(albumId) {
         setErrorMessage('');
 
@@ -82,6 +103,7 @@ function AlbumsPage() {
                         key={album.id}
                         album={album}
                         onOpenAlbum={handleOpenAlbum}
+                        onRenameAlbum={handleRenameAlbum}
                         onDeleteAlbum={handleDeleteAlbum}
                     />
                 ))}
