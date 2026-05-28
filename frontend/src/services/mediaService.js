@@ -11,4 +11,10 @@ function uploadMedia(formData) {
     });
 }
 
-export { getAlbumMedia, uploadMedia };
+function deleteMedia(mediaId) {
+    return apiRequest(`/api/media/${mediaId}`, {
+        method: 'DELETE',
+    });
+}
+
+export { getAlbumMedia, uploadMedia, deleteMedia };

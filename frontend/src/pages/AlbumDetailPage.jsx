@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams } from "react-router-dom";
-import { getAlbumMedia, uploadMedia } from '../services/mediaService.js';
+import { getAlbumMedia, uploadMedia, deleteMedia } from '../services/mediaService.js';
 import { MediaCard } from '../components/MediaCard.jsx';
 
 function AlbumDetailPage() {
@@ -53,6 +53,21 @@ function AlbumDetailPage() {
         }
     }
 
+    async function handleDeleteMedia(mediaId) {
+        setErrorMessage('');
+
+        try {
+            setIsLoading(true);
+            await deleteMedia(mediaId);
+            await loadMedia();
+        }
+        catch (error) {
+            setErrorMessage(error.message);
+        } finally {
+            setIsLoading(false);
+        }
+    }
+
     useEffect(() => {
         loadMedia();
     }, [id]);
@@ -79,6 +94,7 @@ function AlbumDetailPage() {
                     key={file.id}
                     media={file}
                     onOpenMedia={handleOpenMedia}
+                    onDeleteMedia={handleDeleteMedia}
                 />
             ))}
         </div>

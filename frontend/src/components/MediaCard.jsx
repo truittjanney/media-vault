@@ -1,4 +1,4 @@
-function MediaCard({ media, onOpenMedia }) {
+function MediaCard({ media, onOpenMedia, onDeleteMedia }) {
 
 return (
         <div onClick={() => onOpenMedia(media.id)}>
@@ -7,6 +7,16 @@ return (
                 alt={media.name}
                 />
                 <p>{media.name}</p>
+
+                <button
+                type="button"
+                onClick={(event) => {
+                    event.stopPropagation();
+                    onDeleteMedia(media.id);
+                }}
+                >
+                    Delete
+                </button>
         </div>
 );
 }
