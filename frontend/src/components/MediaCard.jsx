@@ -1,24 +1,34 @@
 function MediaCard({ media, onOpenMedia, onDeleteMedia }) {
+    
+  return (
+    <div onClick={() => onOpenMedia(media.id)}>
+      {media.type === "image" && (
+        <img
+          src={`http://localhost:5001${media.filePath}`}
+          alt={media.name}
+        />
+      )}
 
-return (
-        <div onClick={() => onOpenMedia(media.id)}>
-            <img
-                src={`http://localhost:5001${media.filePath}`}
-                alt={media.name}
-                />
-                <p>{media.name}</p>
+      {media.type === "video" && (
+        <video
+          src={`http://localhost:5001${media.filePath}`}
+          controls
+        />
+      )}
 
-                <button
-                type="button"
-                onClick={(event) => {
-                    event.stopPropagation();
-                    onDeleteMedia(media.id);
-                }}
-                >
-                    Delete
-                </button>
-        </div>
-);
+      <p>{media.name}</p>
+
+      <button
+        type="button"
+        onClick={(event) => {
+          event.stopPropagation();
+          onDeleteMedia(media.id);
+        }}
+      >
+        Delete
+      </button>
+    </div>
+  );
 }
 
 export { MediaCard };
