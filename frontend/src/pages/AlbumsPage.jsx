@@ -89,6 +89,11 @@ function AlbumsPage() {
         }
     }
 
+    function logoutUser() {
+        localStorage.removeItem("token");
+        navigate('/login');
+    }
+
     useEffect(() => {
         loadAlbums();
     }, []);
@@ -96,6 +101,10 @@ function AlbumsPage() {
     return (
         <div>
             <h1>Albums</h1>
+
+                <button type="button" onClick={logoutUser}>
+                    Logout
+                </button>
 
             <div>
                 {albums.map((album) => (
