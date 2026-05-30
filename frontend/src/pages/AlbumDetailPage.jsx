@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { getAlbumMedia, uploadMedia, deleteMedia } from '../services/mediaService.js';
 import { MediaCard } from '../components/MediaCard.jsx';
 
@@ -9,6 +9,7 @@ function AlbumDetailPage() {
     const [isLoading, setIsLoading] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
     const { id } = useParams();
+    const navigate = useNavigate();
 
     async function loadMedia() {
         setErrorMessage('');
@@ -68,6 +69,10 @@ function AlbumDetailPage() {
         }
     }
 
+    function handleBackToAlbums() {
+        navigate('/albums');
+    }
+
     useEffect(() => {
         loadMedia();
     }, [id]);
@@ -76,6 +81,10 @@ function AlbumDetailPage() {
         <div>
             <h1>Album Media</h1>
             <p>Album ID: {id}</p>
+
+<button type="button" onClick={handleBackToAlbums}>
+    Back
+  </button>
 
 <form onSubmit={handleUploadMedia}>
   <input
