@@ -48,12 +48,24 @@ router.get("/", authMiddleware, async (req, res) => {
     try {
         const userId = req.user.userId;
 
-    const albums = await prisma.album.findMany({
-        where: {userId},
-        orderBy: { albumPosition: "asc" },
-    });
+   const albums = await prisma.album.findMany({
+    where: { userId },
+    orderBy: { albumPosition: "asc" },
+    include: {
+    _count: {
+      select: {
+        media: true,
+      },
+    },
+  },
+});
 
-    return res.status(200).json({ albums: albums });
+const albumsWithCounts = albums.map((album) => ({
+    ...album,
+    totalCount: album._count.media,
+}));
+
+    return res.status(200).json({ albums: albumsWithCounts });
 
     } catch (error) {
         console.error("Error retrieving albums", error);

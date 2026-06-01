@@ -77,10 +77,16 @@ function AlbumDetailPage() {
         loadMedia();
     }, [id]);
 
+    const imageCount = media.filter((file) => file.type === "image").length;
+    const videoCount = media.filter((file) => file.type === "video").length;
+    const totalCount = media.length;
+    
     return (
         <div>
             <h1>Album Media</h1>
             <p>Album ID: {id}</p>
+            <p>Images: {imageCount}</p>
+            <p>Videos: {videoCount}</p>
 
 <button type="button" onClick={handleBackToAlbums}>
     Back

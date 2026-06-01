@@ -4,7 +4,7 @@ function AlbumCard({ album, onOpenAlbum, onRenameAlbum,onDeleteAlbum }) {
         <div onClick={() => onOpenAlbum(album.id)}>
             <div>Album Cover</div>
             <h3>{album.name}</h3>
-            <p># of files</p>
+            <p>Total Files: {album.totalCount || 0}</p>
 
             <button onClick={(event) => {
                 event.stopPropagation();
