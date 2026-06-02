@@ -2,10 +2,12 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from "react-router-dom";
 import { getAlbumMedia, uploadMedia, deleteMedia } from '../services/mediaService.js';
 import { MediaCard } from '../components/MediaCard.jsx';
+import { MediaViewer } from '../components/MediaViewer.jsx';
 
 function AlbumDetailPage() {
     const [media, setMedia] = useState([]);
     const [selectedFile, setSelectedFile] = useState(null);
+    const [selectedMedia, setSelectedMedia] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
     const { id } = useParams();
@@ -26,7 +28,17 @@ function AlbumDetailPage() {
     }
 
     function handleOpenMedia(mediaId) {
-        console.log("Open media:", mediaId);
+        const clickedMedia = media.find((file) => file.id === mediaId);
+
+        if (!clickedMedia) {
+            return;
+        }
+        
+        setSelectedMedia(clickedMedia);
+    }
+
+    function handleCloseMediaViewer() {
+        setSelectedMedia(null);
     }
 
     async function handleUploadMedia(event) {
@@ -112,6 +124,15 @@ function AlbumDetailPage() {
                     onDeleteMedia={handleDeleteMedia}
                 />
             ))}
+        </div>
+
+        <div>
+            {selectedMedia && (
+                <MediaViewer
+                    media={selectedMedia}
+                    onCloseMediaViewer={handleCloseMediaViewer}
+                />
+            )}
         </div>
 
         {isLoading && <p>Loading media...</p>}
