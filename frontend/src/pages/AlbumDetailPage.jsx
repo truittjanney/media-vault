@@ -128,7 +128,6 @@ function AlbumDetailPage() {
   // ####################################################
   const imageCount = media.filter((file) => file.type === "image").length;
   const videoCount = media.filter((file) => file.type === "video").length;
-  const totalCount = media.length;
 
   // ####################################################
   // USER INTERFACE
