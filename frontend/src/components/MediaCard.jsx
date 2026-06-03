@@ -1,4 +1,4 @@
-function MediaCard({ media, onOpenMedia, onDeleteMedia }) {
+function MediaCard({ media, onOpenMedia, onMoveMedia, onDeleteMedia }) {
     
   return (
     <div onClick={() => onOpenMedia(media.id)}>
@@ -18,6 +18,23 @@ function MediaCard({ media, onOpenMedia, onDeleteMedia }) {
 
       <p>{media.name}</p>
 
+      <button
+        type="button"
+        onClick={(event) => {
+          event.stopPropagation();
+
+          const targetAlbumId = Number(prompt("Enter target album ID:"));
+
+          if (!Number.isInteger(targetAlbumId) || targetAlbumId <= 0) {
+            return;
+          }
+          
+          onMoveMedia(media.id, targetAlbumId);
+        }}
+      >
+        Move
+      </button>
+      
       <button
         type="button"
         onClick={(event) => {

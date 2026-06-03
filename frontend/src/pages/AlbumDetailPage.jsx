@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from "react-router-dom";
-import { getAlbumMedia, uploadMedia, deleteMedia } from '../services/mediaService.js';
+import { getAlbumMedia, uploadMedia, moveMedia, deleteMedia } from '../services/mediaService.js';
 import { MediaCard } from '../components/MediaCard.jsx';
 import { MediaViewer } from '../components/MediaViewer.jsx';
 
@@ -66,15 +66,35 @@ function AlbumDetailPage() {
         }
     }
 
+    async function handleMoveMedia(mediaId, targetAlbumId) {
+        setErrorMessage('');
+
+        if (!Number.isInteger(targetAlbumId) || targetAlbumId <= 0) {
+            setErrorMessage('Invalid target album id.');
+            return;
+        }
+
+        try {
+            setIsLoading(true);
+            await moveMedia(mediaId, targetAlbumId);
+            setSelectedMedia(null);
+            await loadMedia();
+        } catch (error) {
+            setErrorMessage(error.message);
+        } finally {
+            setIsLoading(false);
+        }
+    }
+
     async function handleDeleteMedia(mediaId) {
         setErrorMessage('');
 
         try {
             setIsLoading(true);
             await deleteMedia(mediaId);
+            setSelectedMedia(null);
             await loadMedia();
-        }
-        catch (error) {
+        } catch (error) {
             setErrorMessage(error.message);
         } finally {
             setIsLoading(false);
@@ -121,6 +141,7 @@ function AlbumDetailPage() {
                     key={file.id}
                     media={file}
                     onOpenMedia={handleOpenMedia}
+                    onMoveMedia={handleMoveMedia}
                     onDeleteMedia={handleDeleteMedia}
                 />
             ))}
