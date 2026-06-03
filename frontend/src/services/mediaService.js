@@ -11,10 +11,20 @@ function uploadMedia(formData) {
     });
 }
 
+function moveMedia(mediaId, targetAlbumId) {
+    return apiRequest(`/api/media/${mediaId}/move`, {
+        method: "PATCH",
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ targetAlbumId }),
+    });
+}
+
 function deleteMedia(mediaId) {
     return apiRequest(`/api/media/${mediaId}`, {
         method: 'DELETE',
     });
 }
 
-export { getAlbumMedia, uploadMedia, deleteMedia };
+export { getAlbumMedia, uploadMedia, moveMedia, deleteMedia };

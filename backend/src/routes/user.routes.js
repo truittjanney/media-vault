@@ -12,6 +12,7 @@ const router = express.Router();
 // #########################################
 // POST API Route - User Signup
 // #########################################
+// Mounted at /api/users
 router.post("/signup", async (req, res) => {
     try {
         const { name, email, password } = req.body;
@@ -67,6 +68,7 @@ console.error(error);
 // #########################################
 // POST API Route - User Login
 // #########################################
+// Mounted at /api/users
 router.post("/login", async (req, res) => {
     try {
         const { email, password } = req.body;
@@ -128,6 +130,7 @@ router.post("/login", async (req, res) => {
 // #########################################
 // GET API Route - Get User Profile
 // #########################################
+// Mounted at /api/users
 router.get("/profile", authMiddleware, async (req, res) => {
     try {
         const userId = req.user.userId;
@@ -159,6 +162,7 @@ router.get("/profile", authMiddleware, async (req, res) => {
 // #########################################
 // PUT API Route - Update User Profile
 // #########################################
+// Mounted at /api/users
 router.put("/profile", authMiddleware, async (req, res) => {
     try {
         const userId = req.user.userId;
@@ -252,6 +256,7 @@ router.put("/profile", authMiddleware, async (req, res) => {
 // #########################################
 // DELETE API Route - Delete User Account
 // #########################################
+// Mounted at /api/users
 router.delete("/profile", authMiddleware, async (req, res) => {
     try {
         const userId = req.user.userId;

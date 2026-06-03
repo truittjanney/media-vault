@@ -26,6 +26,7 @@ const upload = multer({ storage });
 // ###########################################
 // POST API Route - Upload Media to Album
 // ###########################################
+// Mounted at /api/media
 router.post("/", authMiddleware, upload.array("media", 20), async (req, res) => {
   try {
     const userId = req.user.userId;
@@ -97,21 +98,15 @@ router.post("/", authMiddleware, upload.array("media", 20), async (req, res) => 
 // ###########################################
 // PATCH API Route - Move Media to Another Album
 // ###########################################
+// Mounted at /api/media
 router.patch("/:id/move", authMiddleware, async (req, res) => {
   try {
     const userId = req.user.userId;
     const mediaId = Number(req.params.id);
     const targetAlbumId = Number(req.body.targetAlbumId);
 
-    if (
-      !Number.isInteger(mediaId) ||
-      mediaId <= 0 ||
-      !Number.isInteger(targetAlbumId) ||
-      targetAlbumId <= 0
-    ) {
-      return res
-        .status(400)
-        .json({ message: "Invalid media id or target album id." });
+    if (!Number.isInteger(mediaId) || mediaId <= 0 || !Number.isInteger(targetAlbumId) || targetAlbumId <= 0) {
+      return res.status(400).json({ message: "Invalid media id or target album id." });
     }
 
     const existingMedia = await prisma.media.findFirst({
@@ -170,6 +165,7 @@ router.patch("/:id/move", authMiddleware, async (req, res) => {
 // ###########################################
 // DELETE API Route - Delete One Media Item
 // ###########################################
+// Mounted at /api/media
 router.delete("/:id", authMiddleware, async (req, res) => {
 try {
     const userId = req.user.userId;
@@ -206,6 +202,7 @@ try {
 // #################################################
 // DELETE API Route - Delete Multiple Media Items
 // #################################################
+// Mounted at /api/media
 router.delete("/", authMiddleware, async (req, res) => {
   try {
     const userId = req.user.userId;

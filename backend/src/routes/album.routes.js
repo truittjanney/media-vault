@@ -10,6 +10,7 @@ const router = express.Router();
 // ###########################################
 // POST API Route - Create Album
 // ###########################################
+// Mounted at /api/albums
 router.post("/", authMiddleware, async (req, res) => {
     try {
 const userId = req.user.userId;
@@ -44,6 +45,7 @@ return res.status(201).json({ message: "Album created successfully", album: newA
 // ###########################################
 // GET API Route - List User's Current Albums
 // ###########################################
+// Mounted at /api/albums
 router.get("/", authMiddleware, async (req, res) => {
     try {
         const userId = req.user.userId;
@@ -76,6 +78,7 @@ const albumsWithCounts = albums.map((album) => ({
 // ###########################################
 // GET API Route - List Media in Album
 // ###########################################
+// Mounted at /api/albums
 router.get("/:id/media", authMiddleware, async (req, res) => {
   try {
     const userId = req.user.userId;
@@ -118,6 +121,7 @@ router.get("/:id/media", authMiddleware, async (req, res) => {
 // ###########################################
 // PUT API Route - Update Album
 // ###########################################
+// Mounted at /api/albums
 router.put("/:id", authMiddleware, async (req, res) => {
     try {
         const userId = req.user.userId;
@@ -201,6 +205,7 @@ router.put("/:id", authMiddleware, async (req, res) => {
 // ###########################################
 // DELETE API Route - Delete Album
 // ###########################################
+// Mounted at /api/albums
 router.delete("/:id", authMiddleware, async (req, res) => {
     try{
         const userId = req.user.userId;
