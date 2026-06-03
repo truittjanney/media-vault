@@ -27,46 +27,52 @@ const upload = multer({ storage });
 // POST API Route - Upload Media to Album
 // ###########################################
 // Mounted at /api/media
-router.post("/", authMiddleware, upload.array("media", 20), async (req, res) => {
-  try {
-    const userId = req.user.userId;
-    const albumId = Number(req.body.albumId);
+router.post(
+  "/",
+  authMiddleware,
+  upload.array("media", 20),
+  async (req, res) => {
+    try {
+      const userId = req.user.userId;
+      const albumId = Number(req.body.albumId);
 
-    if (!Number.isInteger(albumId)) {
-      return res.status(400).json({ message: "Invalid album id." });
-    }
+      if (!Number.isInteger(albumId)) {
+        return res.status(400).json({ message: "Invalid album id." });
+      }
 
-    const files = req.files;
+      const files = req.files;
 
-    if (!files || files.length === 0) {
-        return res.status(400).json({ message: "At least one media file is required." });
-    }
+      if (!files || files.length === 0) {
+        return res
+          .status(400)
+          .json({ message: "At least one media file is required." });
+      }
 
-    const existingAlbum = await prisma.album.findFirst({
-      where: {
-        id: albumId,
-        userId,
-      },
-    });
+      const existingAlbum = await prisma.album.findFirst({
+        where: {
+          id: albumId,
+          userId,
+        },
+      });
 
-    if (!existingAlbum) {
-      return res.status(404).json({ message: "Album not found." });
-    }
+      if (!existingAlbum) {
+        return res.status(404).json({ message: "Album not found." });
+      }
 
-    const mediaCount = await prisma.media.count({
-      where: {
-        albumId,
-        userId,
-      },
-    });
+      const mediaCount = await prisma.media.count({
+        where: {
+          albumId,
+          userId,
+        },
+      });
 
-    const createdMedia = [];
+      const createdMedia = [];
 
-    for (let i = 0; i < files.length; i++) {
+      for (let i = 0; i < files.length; i++) {
         const file = files[i];
 
-    const media = await prisma.media.create({
-      data: {
+        const media = await prisma.media.create({
+          data: {
             userId,
             albumId,
             name: file.originalname,
@@ -80,20 +86,21 @@ router.post("/", authMiddleware, upload.array("media", 20), async (req, res) => 
             deletedTime: null,
             mediaPosition: mediaCount + i + 1,
             filePath: `/uploads/${file.filename}`,
-      },
-    });
+          },
+        });
 
-    createdMedia.push(media);
+        createdMedia.push(media);
+      }
+      return res.status(201).json({
+        message: "Media uploaded successfully",
+        media: createdMedia,
+      });
+    } catch (error) {
+      console.error("Error uploading media to album", error);
+      return res.status(500).json({ message: "Internal server error" });
     }
-    return res.status(201).json({
-      message: "Media uploaded successfully",
-      media: createdMedia,
-    });
-  } catch (error) {
-    console.error("Error uploading media to album", error);
-    return res.status(500).json({ message: "Internal server error" });
-  }
-});
+  },
+);
 
 // ###########################################
 // PATCH API Route - Move Media to Another Album
@@ -105,8 +112,15 @@ router.patch("/:id/move", authMiddleware, async (req, res) => {
     const mediaId = Number(req.params.id);
     const targetAlbumId = Number(req.body.targetAlbumId);
 
-    if (!Number.isInteger(mediaId) || mediaId <= 0 || !Number.isInteger(targetAlbumId) || targetAlbumId <= 0) {
-      return res.status(400).json({ message: "Invalid media id or target album id." });
+    if (
+      !Number.isInteger(mediaId) ||
+      mediaId <= 0 ||
+      !Number.isInteger(targetAlbumId) ||
+      targetAlbumId <= 0
+    ) {
+      return res
+        .status(400)
+        .json({ message: "Invalid media id or target album id." });
     }
 
     const existingMedia = await prisma.media.findFirst({
@@ -133,7 +147,9 @@ router.patch("/:id/move", authMiddleware, async (req, res) => {
     }
 
     if (existingMedia.albumId === targetAlbumId) {
-      return res.status(400).json({ message: "Media is already in this album." });
+      return res
+        .status(400)
+        .json({ message: "Media is already in this album." });
     }
 
     const destinationMediaCount = await prisma.media.count({
@@ -167,36 +183,35 @@ router.patch("/:id/move", authMiddleware, async (req, res) => {
 // ###########################################
 // Mounted at /api/media
 router.delete("/:id", authMiddleware, async (req, res) => {
-try {
+  try {
     const userId = req.user.userId;
     const mediaId = Number(req.params.id);
 
     if (!Number.isInteger(mediaId) || mediaId <= 0) {
-        return res.status(400).json({ message: "Invalid media id." });
+      return res.status(400).json({ message: "Invalid media id." });
     }
-    
+
     const existingMedia = await prisma.media.findFirst({
-        where: {
-            id: mediaId,
-            userId,
-            isDeleted: false,
-        },
+      where: {
+        id: mediaId,
+        userId,
+        isDeleted: false,
+      },
     });
 
     if (!existingMedia) {
-        return res.status(404).json({ message: "Media not found." });
+      return res.status(404).json({ message: "Media not found." });
     }
 
     await prisma.media.delete({
-        where: { id: mediaId },
+      where: { id: mediaId },
     });
 
     return res.status(200).json({ message: "Media deleted successfully" });
-
-} catch (error) {
+  } catch (error) {
     console.error("Error deleting media", error);
     return res.status(500).json({ message: "Internal server error" });
-}
+  }
 });
 
 // #################################################
@@ -209,15 +224,17 @@ router.delete("/", authMiddleware, async (req, res) => {
     const { mediaIds } = req.body;
 
     if (!Array.isArray(mediaIds) || mediaIds.length === 0) {
-      return res.status(400).json({ message: "mediaIds must be a non-empty array." });
+      return res
+        .status(400)
+        .json({ message: "mediaIds must be a non-empty array." });
     }
 
-    const invalidId = mediaIds.some(
-      (id) => !Number.isInteger(id) || id <= 0
-    );
+    const invalidId = mediaIds.some((id) => !Number.isInteger(id) || id <= 0);
 
     if (invalidId) {
-      return res.status(400).json({ message: "All media ids must be positive integers." });
+      return res
+        .status(400)
+        .json({ message: "All media ids must be positive integers." });
     }
 
     const deletedMedia = await prisma.media.deleteMany({
