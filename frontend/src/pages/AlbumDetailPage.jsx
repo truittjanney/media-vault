@@ -1,169 +1,190 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { getAlbumMedia, uploadMedia, moveMedia, deleteMedia } from '../services/mediaService.js';
-import { MediaCard } from '../components/MediaCard.jsx';
-import { MediaViewer } from '../components/MediaViewer.jsx';
+import {
+  getAlbumMedia,
+  uploadMedia,
+  moveMedia,
+  deleteMedia,
+} from "../services/mediaService.js";
+import { MediaCard } from "../components/MediaCard.jsx";
+import { MediaViewer } from "../components/MediaViewer.jsx";
 
 function AlbumDetailPage() {
-    const [media, setMedia] = useState([]);
-    const [selectedFile, setSelectedFile] = useState(null);
-    const [selectedMedia, setSelectedMedia] = useState(null);
-    const [isLoading, setIsLoading] = useState(false);
-    const [errorMessage, setErrorMessage] = useState('');
-    const { id } = useParams();
-    const navigate = useNavigate();
+  // ####################################################
+  // STATE
+  // ####################################################
+  const [media, setMedia] = useState([]);
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [selectedMedia, setSelectedMedia] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  const { id } = useParams();
+  const navigate = useNavigate();
 
-    async function loadMedia() {
-        setErrorMessage('');
+  // ####################################################
+  // FUNCTIONS / EVENT HANDLERS
+  // ####################################################
+  async function loadMedia() {
+    setErrorMessage("");
 
-        try {
-            setIsLoading(true);
-            const data = await getAlbumMedia(id);
-            setMedia(data.media || []);
-        } catch (error) {
-            setErrorMessage(error.message);
-        } finally {
-            setIsLoading(false);
-        }
+    try {
+      setIsLoading(true);
+      const data = await getAlbumMedia(id);
+      setMedia(data.media || []);
+    } catch (error) {
+      setErrorMessage(error.message);
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  function handleOpenMedia(mediaId) {
+    const clickedMedia = media.find((file) => file.id === mediaId);
+
+    if (!clickedMedia) {
+      return;
     }
 
-    function handleOpenMedia(mediaId) {
-        const clickedMedia = media.find((file) => file.id === mediaId);
+    setSelectedMedia(clickedMedia);
+  }
 
-        if (!clickedMedia) {
-            return;
-        }
-        
-        setSelectedMedia(clickedMedia);
+  function handleCloseMediaViewer() {
+    setSelectedMedia(null);
+  }
+
+  async function handleUploadMedia(event) {
+    event.preventDefault();
+    setErrorMessage("");
+
+    if (!selectedFile) {
+      setErrorMessage("Please select a file to upload.");
+      return;
     }
 
-    function handleCloseMediaViewer() {
-        setSelectedMedia(null);
+    const formData = new FormData();
+    formData.append("albumId", id);
+    formData.append("media", selectedFile);
+
+    try {
+      setIsLoading(true);
+      await uploadMedia(formData);
+      setSelectedFile(null);
+      await loadMedia();
+    } catch (error) {
+      setErrorMessage(error.message);
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  async function handleMoveMedia(mediaId, targetAlbumId) {
+    setErrorMessage("");
+
+    if (!Number.isInteger(targetAlbumId) || targetAlbumId <= 0) {
+      setErrorMessage("Invalid target album id.");
+      return;
     }
 
-    async function handleUploadMedia(event) {
-        event.preventDefault();
-        setErrorMessage('');
-
-        if (!selectedFile) {
-            setErrorMessage('Please select a file to upload.');
-            return;
-        }
-
-        const formData = new FormData();
-        formData.append('albumId', id);
-        formData.append('media', selectedFile);
-
-        try {
-            setIsLoading(true);
-            await uploadMedia(formData);
-            setSelectedFile(null);
-            await loadMedia();
-        } catch (error) {
-            setErrorMessage(error.message);
-        } finally {
-            setIsLoading(false);
-        }
+    try {
+      setIsLoading(true);
+      await moveMedia(mediaId, targetAlbumId);
+      setSelectedMedia(null);
+      await loadMedia();
+    } catch (error) {
+      setErrorMessage(error.message);
+    } finally {
+      setIsLoading(false);
     }
+  }
 
-    async function handleMoveMedia(mediaId, targetAlbumId) {
-        setErrorMessage('');
+  async function handleDeleteMedia(mediaId) {
+    setErrorMessage("");
 
-        if (!Number.isInteger(targetAlbumId) || targetAlbumId <= 0) {
-            setErrorMessage('Invalid target album id.');
-            return;
-        }
-
-        try {
-            setIsLoading(true);
-            await moveMedia(mediaId, targetAlbumId);
-            setSelectedMedia(null);
-            await loadMedia();
-        } catch (error) {
-            setErrorMessage(error.message);
-        } finally {
-            setIsLoading(false);
-        }
+    try {
+      setIsLoading(true);
+      await deleteMedia(mediaId);
+      setSelectedMedia(null);
+      await loadMedia();
+    } catch (error) {
+      setErrorMessage(error.message);
+    } finally {
+      setIsLoading(false);
     }
+  }
 
-    async function handleDeleteMedia(mediaId) {
-        setErrorMessage('');
+  function handleBackToAlbums() {
+    navigate("/albums");
+  }
 
-        try {
-            setIsLoading(true);
-            await deleteMedia(mediaId);
-            setSelectedMedia(null);
-            await loadMedia();
-        } catch (error) {
-            setErrorMessage(error.message);
-        } finally {
-            setIsLoading(false);
-        }
-    }
+  // ####################################################
+  // EFFECTS
+  // ####################################################
+  useEffect(() => {
+    loadMedia();
+  }, [id]);
 
-    function handleBackToAlbums() {
-        navigate('/albums');
-    }
+  // ####################################################
+  // DERIVED VALUES
+  // ####################################################
+  const imageCount = media.filter((file) => file.type === "image").length;
+  const videoCount = media.filter((file) => file.type === "video").length;
+  const totalCount = media.length;
 
-    useEffect(() => {
-        loadMedia();
-    }, [id]);
+  // ####################################################
+  // USER INTERFACE
+  // ####################################################
+  return (
+    <div>
+      <h1>Album Media</h1>
+      <p>Album ID: {id}</p>
+      <p>Images: {imageCount}</p>
+      <p>Videos: {videoCount}</p>
 
-    const imageCount = media.filter((file) => file.type === "image").length;
-    const videoCount = media.filter((file) => file.type === "video").length;
-    const totalCount = media.length;
-    
-    return (
-        <div>
-            <h1>Album Media</h1>
-            <p>Album ID: {id}</p>
-            <p>Images: {imageCount}</p>
-            <p>Videos: {videoCount}</p>
+      <button type="button" onClick={handleBackToAlbums}>
+        Back
+      </button>
 
-<button type="button" onClick={handleBackToAlbums}>
-    Back
-  </button>
+      <form onSubmit={handleUploadMedia}>
+        <input
+          type="file"
+          onChange={(event) => setSelectedFile(event.target.files[0])}
+        />
 
-<form onSubmit={handleUploadMedia}>
-  <input
-    type="file"
-    onChange={(event) => setSelectedFile(event.target.files[0])}
-  />
+        <button type="submit" disabled={isLoading}>
+          Upload
+        </button>
+      </form>
 
-  <button type="submit" disabled={isLoading}>
-    Upload
-  </button>
-</form>
+      <div>
+        {media.map((file) => (
+          <MediaCard
+            key={file.id}
+            media={file}
+            onOpenMedia={handleOpenMedia}
+            onMoveMedia={handleMoveMedia}
+            onDeleteMedia={handleDeleteMedia}
+          />
+        ))}
+      </div>
 
-        <div>
-            {media.map((file) => (
-                <MediaCard
-                    key={file.id}
-                    media={file}
-                    onOpenMedia={handleOpenMedia}
-                    onMoveMedia={handleMoveMedia}
-                    onDeleteMedia={handleDeleteMedia}
-                />
-            ))}
-        </div>
+      <div>
+        {selectedMedia && (
+          <MediaViewer
+            media={selectedMedia}
+            onCloseMediaViewer={handleCloseMediaViewer}
+          />
+        )}
+      </div>
 
-        <div>
-            {selectedMedia && (
-                <MediaViewer
-                    media={selectedMedia}
-                    onCloseMediaViewer={handleCloseMediaViewer}
-                />
-            )}
-        </div>
+      {isLoading && <p>Loading media...</p>}
 
-        {isLoading && <p>Loading media...</p>}
+      {errorMessage && <p>{errorMessage}</p>}
 
-        {errorMessage && <p>{errorMessage}</p>}
-
-        {!isLoading && !errorMessage && media.length === 0 && <p>No media content yet.</p>}
-
-        </div>
-    );
+      {!isLoading && !errorMessage && media.length === 0 && (
+        <p>No media content yet.</p>
+      )}
+    </div>
+  );
 }
 
 export { AlbumDetailPage };
