@@ -17,11 +17,9 @@ router.post("/", authMiddleware, async (req, res) => {
     const { name, albumCoverMediaId, isLocked } = req.body;
 
     if (typeof name !== "string" || !name.trim()) {
-      return res
-        .status(400)
-        .json({
-          message: "Album name is required and must be a non-empty string",
-        });
+      return res.status(400).json({
+        message: "Album name is required and must be a non-empty string",
+      });
     }
 
     const albumCount = await prisma.album.count({
@@ -60,6 +58,7 @@ router.get("/", authMiddleware, async (req, res) => {
       where: { userId },
       orderBy: { albumPosition: "asc" },
       include: {
+        albumCoverMedia: true,
         _count: {
           select: {
             media: true,

@@ -1,6 +1,10 @@
-function MediaViewer({ media, onCloseMediaViewer }) {
+function MediaViewer({ media, onSetAlbumCover, onCloseMediaViewer }) {
   return (
     <div>
+      <button type="button" onClick={() => onSetAlbumCover(media.id)}>
+        Set as Album Cover
+      </button>
+
       <button type="button" onClick={onCloseMediaViewer}>
         Back
       </button>

@@ -6,6 +6,7 @@ import {
   moveMedia,
   deleteMedia,
 } from "../services/mediaService.js";
+import { updateAlbum } from "../services/albumService.js";
 import { MediaCard } from "../components/MediaCard.jsx";
 import { MediaViewer } from "../components/MediaViewer.jsx";
 
@@ -31,6 +32,21 @@ function AlbumDetailPage() {
       setIsLoading(true);
       const data = await getAlbumMedia(id);
       setMedia(data.media || []);
+    } catch (error) {
+      setErrorMessage(error.message);
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  async function handleSetAlbumCover(mediaId) {
+    setErrorMessage("");
+
+    try {
+      setIsLoading(true);
+      await updateAlbum(id, { albumCoverMediaId: mediaId });
+      alert("Album cover updated successfully");
+      await loadMedia();
     } catch (error) {
       setErrorMessage(error.message);
     } finally {
@@ -170,6 +186,7 @@ function AlbumDetailPage() {
         {selectedMedia && (
           <MediaViewer
             media={selectedMedia}
+            onSetAlbumCover={handleSetAlbumCover}
             onCloseMediaViewer={handleCloseMediaViewer}
           />
         )}
