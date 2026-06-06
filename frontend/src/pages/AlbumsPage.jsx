@@ -21,6 +21,8 @@ function AlbumsPage() {
   // ####################################################
   // FUNCTIONS / EVENT HANDLERS
   // ####################################################
+
+  // DATA LOADING
   async function loadAlbums() {
     setErrorMessage("");
 
@@ -35,6 +37,18 @@ function AlbumsPage() {
     }
   }
 
+  // SYNC EVENT HANDLERS
+  function handleOpenAlbum(albumId) {
+    setErrorMessage("");
+    navigate(`/albums/${albumId}`);
+  }
+
+  function logoutUser() {
+    localStorage.removeItem("token");
+    navigate("/login");
+  }
+
+  // API EVENT HANDLERS
   async function handleCreateAlbumSubmit(event) {
     event.preventDefault();
     setErrorMessage("");
@@ -54,11 +68,6 @@ function AlbumsPage() {
     } finally {
       setIsLoading(false);
     }
-  }
-
-  function handleOpenAlbum(albumId) {
-    setErrorMessage("");
-    navigate(`/albums/${albumId}`);
   }
 
   async function handleRenameAlbum(albumId, newName) {
@@ -98,11 +107,6 @@ function AlbumsPage() {
     } finally {
       setIsLoading(false);
     }
-  }
-
-  function logoutUser() {
-    localStorage.removeItem("token");
-    navigate("/login");
   }
 
   // ####################################################

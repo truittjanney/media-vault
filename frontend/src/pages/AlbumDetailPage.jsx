@@ -27,6 +27,8 @@ function AlbumDetailPage() {
   // ####################################################
   // FUNCTIONS / EVENT HANDLERS
   // ####################################################
+
+  // DATA LOADING
   async function loadMedia() {
     setErrorMessage("");
 
@@ -41,6 +43,34 @@ function AlbumDetailPage() {
     }
   }
 
+  // SYNC EVENT HANDLERS
+  function handleOpenMedia(mediaId) {
+    const clickedMedia = media.find((file) => file.id === mediaId);
+
+    if (!clickedMedia) {
+      return;
+    }
+
+    setSelectedMedia(clickedMedia);
+  }
+
+  function handleCloseMediaViewer() {
+    setSelectedMedia(null);
+  }
+
+  function handleToggleSelectMedia(mediaId) {
+    if (selectedMediaIds.includes(mediaId)) {
+      setSelectedMediaIds(selectedMediaIds.filter((id) => id !== mediaId));
+    } else {
+      setSelectedMediaIds([...selectedMediaIds, mediaId]);
+    }
+  }
+
+  function handleBackToAlbums() {
+    navigate("/albums");
+  }
+
+  // API EVENT HANDLERS
   async function handleSetAlbumCover(mediaId) {
     setErrorMessage("");
 
@@ -54,20 +84,6 @@ function AlbumDetailPage() {
     } finally {
       setIsLoading(false);
     }
-  }
-
-  function handleOpenMedia(mediaId) {
-    const clickedMedia = media.find((file) => file.id === mediaId);
-
-    if (!clickedMedia) {
-      return;
-    }
-
-    setSelectedMedia(clickedMedia);
-  }
-
-  function handleCloseMediaViewer() {
-    setSelectedMedia(null);
   }
 
   async function handleUploadMedia(event) {
@@ -115,14 +131,6 @@ function AlbumDetailPage() {
     }
   }
 
-  function handleToggleSelectMedia(mediaId) {
-    if (selectedMediaIds.includes(mediaId)) {
-      setSelectedMediaIds(selectedMediaIds.filter((id) => id !== mediaId));
-    } else {
-      setSelectedMediaIds([...selectedMediaIds, mediaId]);
-    }
-  }
-
   async function handleDeleteMedia(mediaId) {
     setErrorMessage("");
 
@@ -160,10 +168,6 @@ function AlbumDetailPage() {
     } finally {
       setIsLoading(false);
     }
-  }
-
-  function handleBackToAlbums() {
-    navigate("/albums");
   }
 
   // ####################################################
