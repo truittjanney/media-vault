@@ -5,6 +5,7 @@ import {
   uploadMedia,
   moveMedia,
   deleteMedia,
+  deleteMultipleMedia,
 } from "../services/mediaService.js";
 import { updateAlbum } from "../services/albumService.js";
 import { MediaCard } from "../components/MediaCard.jsx";
@@ -17,6 +18,7 @@ function AlbumDetailPage() {
   const [media, setMedia] = useState([]);
   const [selectedFile, setSelectedFile] = useState(null);
   const [selectedMedia, setSelectedMedia] = useState(null);
+  const [selectedMediaIds, setSelectedMediaIds] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const { id } = useParams();
@@ -113,6 +115,14 @@ function AlbumDetailPage() {
     }
   }
 
+  function handleToggleSelectMedia(mediaId) {
+    if (selectedMediaIds.includes(mediaId)) {
+      setSelectedMediaIds(selectedMediaIds.filter((id) => id !== mediaId));
+    } else {
+      setSelectedMediaIds([...selectedMediaIds, mediaId]);
+    }
+  }
+
   async function handleDeleteMedia(mediaId) {
     setErrorMessage("");
 
@@ -120,6 +130,30 @@ function AlbumDetailPage() {
       setIsLoading(true);
       await deleteMedia(mediaId);
       setSelectedMedia(null);
+      await loadMedia();
+    } catch (error) {
+      setErrorMessage(error.message);
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  async function handleDeleteMultipleMedia() {
+    setErrorMessage("");
+
+    if (selectedMediaIds.length === 0) {
+      setErrorMessage("No media selected for deletion.");
+      return;
+    }
+
+    if (!window.confirm("Delete selected media?")) {
+      return;
+    }
+
+    try {
+      setIsLoading(true);
+      await deleteMultipleMedia(selectedMediaIds);
+      setSelectedMediaIds([]);
       await loadMedia();
     } catch (error) {
       setErrorMessage(error.message);
@@ -154,6 +188,13 @@ function AlbumDetailPage() {
       <p>Album ID: {id}</p>
       <p>Images: {imageCount}</p>
       <p>Videos: {videoCount}</p>
+      <button
+        type="button"
+        onClick={handleDeleteMultipleMedia}
+        disabled={selectedMediaIds.length === 0}
+      >
+        Delete Selected ({selectedMediaIds.length})
+      </button>
 
       <button type="button" onClick={handleBackToAlbums}>
         Back
@@ -175,6 +216,8 @@ function AlbumDetailPage() {
           <MediaCard
             key={file.id}
             media={file}
+            isSelected={selectedMediaIds.includes(file.id)}
+            onToggleSelect={handleToggleSelectMedia}
             onOpenMedia={handleOpenMedia}
             onMoveMedia={handleMoveMedia}
             onDeleteMedia={handleDeleteMedia}

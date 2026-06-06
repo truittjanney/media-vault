@@ -1,4 +1,11 @@
-function MediaCard({ media, onOpenMedia, onMoveMedia, onDeleteMedia }) {
+function MediaCard({
+  media,
+  isSelected,
+  onToggleSelect,
+  onOpenMedia,
+  onMoveMedia,
+  onDeleteMedia,
+}) {
   return (
     <div onClick={() => onOpenMedia(media.id)}>
       {media.type === "image" && (
@@ -10,6 +17,15 @@ function MediaCard({ media, onOpenMedia, onMoveMedia, onDeleteMedia }) {
       )}
 
       <p>{media.name}</p>
+
+      <label onClick={(event) => event.stopPropagation()}>
+        <input
+          type="checkbox"
+          checked={isSelected}
+          onChange={() => onToggleSelect(media.id)}
+        />
+        Select
+      </label>
 
       <button
         type="button"

@@ -27,4 +27,20 @@ function deleteMedia(mediaId) {
   });
 }
 
-export { getAlbumMedia, uploadMedia, moveMedia, deleteMedia };
+function deleteMultipleMedia(mediaIds) {
+  return apiRequest("/api/media/", {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ mediaIds }),
+  });
+}
+
+export {
+  getAlbumMedia,
+  uploadMedia,
+  moveMedia,
+  deleteMedia,
+  deleteMultipleMedia,
+};
