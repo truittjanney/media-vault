@@ -21,6 +21,16 @@ function moveMedia(mediaId, targetAlbumId) {
   });
 }
 
+function moveMultipleMedia(mediaIds, targetAlbumId) {
+  return apiRequest("/api/media/move", {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ mediaIds, targetAlbumId }),
+  });
+}
+
 function deleteMedia(mediaId) {
   return apiRequest(`/api/media/${mediaId}`, {
     method: "DELETE",
@@ -41,6 +51,7 @@ export {
   getAlbumMedia,
   uploadMedia,
   moveMedia,
+  moveMultipleMedia,
   deleteMedia,
   deleteMultipleMedia,
 };

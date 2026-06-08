@@ -4,6 +4,7 @@ import {
   getAlbumMedia,
   uploadMedia,
   moveMedia,
+  moveMultipleMedia,
   deleteMedia,
   deleteMultipleMedia,
 } from "../services/mediaService.js";
@@ -131,6 +132,33 @@ function AlbumDetailPage() {
     }
   }
 
+  async function handleMoveMultipleMedia() {
+    setErrorMessage("");
+
+    if (selectedMediaIds.length === 0) {
+      setErrorMessage("No media selected to move.");
+      return;
+    }
+
+    const targetAlbumId = Number(prompt("Enter target album ID:"));
+
+    if (!Number.isInteger(targetAlbumId) || targetAlbumId <= 0) {
+      setErrorMessage("Invalid target album id.");
+      return;
+    }
+
+    try {
+      setIsLoading(true);
+      await moveMultipleMedia(selectedMediaIds, targetAlbumId);
+      setSelectedMediaIds([]);
+      await loadMedia();
+    } catch (error) {
+      setErrorMessage(error.message);
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
   async function handleDeleteMedia(mediaId) {
     setErrorMessage("");
 
@@ -192,6 +220,14 @@ function AlbumDetailPage() {
       <p>Album ID: {id}</p>
       <p>Images: {imageCount}</p>
       <p>Videos: {videoCount}</p>
+      <button
+        type="button"
+        onClick={handleMoveMultipleMedia}
+        disabled={selectedMediaIds.length === 0}
+      >
+        Move Selected ({selectedMediaIds.length})
+      </button>
+
       <button
         type="button"
         onClick={handleDeleteMultipleMedia}
