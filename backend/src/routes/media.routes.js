@@ -169,6 +169,40 @@ router.patch("/move", authMiddleware, async (req, res) => {
       },
     });
 
+    const originAlbumId = existingMediaItems[0].albumId;
+
+    const mediaFromDifferentAlbums = existingMediaItems.some(
+      (mediaItem) => mediaItem.albumId !== originAlbumId,
+    );
+
+    if (mediaFromDifferentAlbums) {
+      return res
+        .status(400)
+        .json({ message: "All media items must come from the same album." });
+    }
+
+    const originAlbum = await prisma.album.findFirst({
+      where: {
+        id: originAlbumId,
+        userId,
+      },
+    });
+
+    if (!originAlbum) {
+      return res.status(404).json({ message: "Origin album not found." });
+    }
+
+    if (mediaIds.includes(originAlbum.albumCoverMediaId)) {
+      await prisma.album.update({
+        where: {
+          id: originAlbumId,
+        },
+        data: {
+          albumCoverMediaId: null,
+        },
+      });
+    }
+
     const movedMedia = await prisma.$transaction(
       existingMediaItems.map((mediaItem, index) =>
         prisma.media.update({
