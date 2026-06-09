@@ -9,6 +9,7 @@ const prisma = new PrismaClient();
 
 const router = express.Router();
 
+// Configure multer to store uploaded files in the local uploads folder
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, "uploads/");
@@ -36,6 +37,7 @@ router.post(
       const userId = req.user.userId;
       const albumId = Number(req.body.albumId);
 
+      // Validate the target album id and uploaded files before creating records
       if (!Number.isInteger(albumId)) {
         return res.status(400).json({ message: "Invalid album id." });
       }
@@ -48,6 +50,7 @@ router.post(
           .json({ message: "At least one media file is required." });
       }
 
+      // Confirm the target album exists and belongs to this user
       const existingAlbum = await prisma.album.findFirst({
         where: {
           id: albumId,
@@ -59,6 +62,7 @@ router.post(
         return res.status(404).json({ message: "Album not found." });
       }
 
+      // Count existing album media so new uploads are appended in order
       const mediaCount = await prisma.media.count({
         where: {
           albumId,
@@ -68,6 +72,7 @@ router.post(
 
       const createdMedia = [];
 
+      // Create a media record for each uploaded file with its stored path
       for (let i = 0; i < files.length; i++) {
         const file = files[i];
 
@@ -112,6 +117,7 @@ router.patch("/move", authMiddleware, async (req, res) => {
     const { mediaIds } = req.body;
     const targetAlbumId = Number(req.body.targetAlbumId);
 
+    // Validate mediaIds array and target album id
     const invalidMediaId =
       Array.isArray(mediaIds) &&
       mediaIds.some((mediaId) => !Number.isInteger(mediaId) || mediaId <= 0);
@@ -128,6 +134,7 @@ router.patch("/move", authMiddleware, async (req, res) => {
         .json({ message: "Invalid media id or target album id." });
     }
 
+    // Fetch selected media and verify all requested items exist for this user
     const existingMediaItems = await prisma.media.findMany({
       where: {
         id: {
@@ -144,6 +151,7 @@ router.patch("/move", authMiddleware, async (req, res) => {
         .json({ message: "One or more media items not found." });
     }
 
+    // Confirm destination album exists and belongs to this user
     const destinationAlbum = await prisma.album.findFirst({
       where: {
         id: targetAlbumId,
@@ -155,12 +163,14 @@ router.patch("/move", authMiddleware, async (req, res) => {
       return res.status(404).json({ message: "Target album not found." });
     }
 
+    // Prevent moving media into the album it is already in
     if (existingMediaItems.some((media) => media.albumId === targetAlbumId)) {
       return res.status(400).json({
         message: "One or more media items are already in the target album.",
       });
     }
 
+    // Count destination media so moved items are appended in order
     const destinationMediaCount = await prisma.media.count({
       where: {
         albumId: targetAlbumId,
@@ -169,6 +179,8 @@ router.patch("/move", authMiddleware, async (req, res) => {
       },
     });
 
+    // Use the first media item to determine the origin album
+    // Then verify all selected media came from that same album
     const originAlbumId = existingMediaItems[0].albumId;
 
     const mediaFromDifferentAlbums = existingMediaItems.some(
@@ -181,6 +193,7 @@ router.patch("/move", authMiddleware, async (req, res) => {
         .json({ message: "All media items must come from the same album." });
     }
 
+    // Fetch the origin album so cover cleanup can happen safely
     const originAlbum = await prisma.album.findFirst({
       where: {
         id: originAlbumId,
@@ -192,6 +205,7 @@ router.patch("/move", authMiddleware, async (req, res) => {
       return res.status(404).json({ message: "Origin album not found." });
     }
 
+    // Clear the origin album cover if the cover media is being moved out
     if (mediaIds.includes(originAlbum.albumCoverMediaId)) {
       await prisma.album.update({
         where: {
@@ -203,6 +217,7 @@ router.patch("/move", authMiddleware, async (req, res) => {
       });
     }
 
+    // Move each media item and place it at the end of the destination album
     const movedMedia = await prisma.$transaction(
       existingMediaItems.map((mediaItem, index) =>
         prisma.media.update({
@@ -237,6 +252,7 @@ router.patch("/:id/move", authMiddleware, async (req, res) => {
     const mediaId = Number(req.params.id);
     const targetAlbumId = Number(req.body.targetAlbumId);
 
+    // Validate the media id and target album id before querying records
     if (
       !Number.isInteger(mediaId) ||
       mediaId <= 0 ||
@@ -248,6 +264,7 @@ router.patch("/:id/move", authMiddleware, async (req, res) => {
         .json({ message: "Invalid media id or target album id." });
     }
 
+    // Fetch the media item and confirm it belongs to this user
     const existingMedia = await prisma.media.findFirst({
       where: {
         id: mediaId,
@@ -260,6 +277,7 @@ router.patch("/:id/move", authMiddleware, async (req, res) => {
       return res.status(404).json({ message: "Media not found." });
     }
 
+    // Confirm the destination album exists and belongs to this user
     const destinationAlbum = await prisma.album.findFirst({
       where: {
         id: targetAlbumId,
@@ -271,12 +289,14 @@ router.patch("/:id/move", authMiddleware, async (req, res) => {
       return res.status(404).json({ message: "Target album not found." });
     }
 
+    // Prevent moving media into the album it is already in
     if (existingMedia.albumId === targetAlbumId) {
       return res
         .status(400)
         .json({ message: "Media is already in this album." });
     }
 
+    // Count destination media so the moved item is appended at the end
     const destinationMediaCount = await prisma.media.count({
       where: {
         albumId: targetAlbumId,
@@ -287,6 +307,7 @@ router.patch("/:id/move", authMiddleware, async (req, res) => {
 
     const originAlbumId = existingMedia.albumId;
 
+    // Fetch the origin album so cover cleanup can happen safely
     const originAlbum = await prisma.album.findFirst({
       where: {
         id: originAlbumId,
@@ -298,6 +319,7 @@ router.patch("/:id/move", authMiddleware, async (req, res) => {
       return res.status(404).json({ message: "Origin album not found." });
     }
 
+    // Clear the origin album cover if the cover media is being moved out
     if (mediaId === originAlbum.albumCoverMediaId) {
       await prisma.album.update({
         where: {
@@ -309,6 +331,7 @@ router.patch("/:id/move", authMiddleware, async (req, res) => {
       });
     }
 
+    // Move the media item and place it at the end of the destination album
     const movedMedia = await prisma.media.update({
       where: { id: mediaId },
       data: {
@@ -336,6 +359,7 @@ router.delete("/", authMiddleware, async (req, res) => {
     const userId = req.user.userId;
     const { mediaIds } = req.body;
 
+    // Validate mediaIds array before querying media records
     if (!Array.isArray(mediaIds) || mediaIds.length === 0) {
       return res
         .status(400)
@@ -350,6 +374,7 @@ router.delete("/", authMiddleware, async (req, res) => {
         .json({ message: "All media ids must be positive integers." });
     }
 
+    // Fetch selected media and verify all requested items exist for this user
     const existingMediaItems = await prisma.media.findMany({
       where: {
         id: {
@@ -366,6 +391,7 @@ router.delete("/", authMiddleware, async (req, res) => {
         .json({ message: "One or more media items not found." });
     }
 
+    // Use the first media item to verify all selected media came from one album
     const originAlbumId = existingMediaItems[0].albumId;
 
     const mediaFromDifferentAlbums = existingMediaItems.some(
@@ -378,6 +404,7 @@ router.delete("/", authMiddleware, async (req, res) => {
         .json({ message: "All media items must come from the same album." });
     }
 
+    // Fetch the origin album so cover cleanup can happen safely
     const originAlbum = await prisma.album.findFirst({
       where: {
         id: originAlbumId,
@@ -389,6 +416,7 @@ router.delete("/", authMiddleware, async (req, res) => {
       return res.status(404).json({ message: "Origin album not found." });
     }
 
+    // Clear album cover if the cover media is being deleted
     if (mediaIds.includes(originAlbum.albumCoverMediaId)) {
       await prisma.album.update({
         where: {
@@ -400,6 +428,7 @@ router.delete("/", authMiddleware, async (req, res) => {
       });
     }
 
+    // Delete all selected media items
     const deletedMedia = await prisma.media.deleteMany({
       where: {
         id: {
@@ -429,10 +458,12 @@ router.delete("/:id", authMiddleware, async (req, res) => {
     const userId = req.user.userId;
     const mediaId = Number(req.params.id);
 
+    // Validate media id before querying the database
     if (!Number.isInteger(mediaId) || mediaId <= 0) {
       return res.status(400).json({ message: "Invalid media id." });
     }
 
+    // Find media item and confirm it belongs to this user and is not already deleted
     const existingMedia = await prisma.media.findFirst({
       where: {
         id: mediaId,
@@ -447,6 +478,7 @@ router.delete("/:id", authMiddleware, async (req, res) => {
 
     const originAlbumId = existingMedia.albumId;
 
+    // Find the album this media belongs to and confirm it belongs to this user
     const originAlbum = await prisma.album.findFirst({
       where: {
         id: originAlbumId,
@@ -455,9 +487,10 @@ router.delete("/:id", authMiddleware, async (req, res) => {
     });
 
     if (!originAlbum) {
-      return res.status(404).json({ message: "Album not found." });
+      return res.status(404).json({ message: "Origin album not found." });
     }
 
+    // Clear album cover before deleting if this media is the cover
     if (mediaId === originAlbum.albumCoverMediaId) {
       await prisma.album.update({
         where: {
@@ -469,6 +502,7 @@ router.delete("/:id", authMiddleware, async (req, res) => {
       });
     }
 
+    // Delete the media record
     await prisma.media.delete({
       where: { id: mediaId },
     });
