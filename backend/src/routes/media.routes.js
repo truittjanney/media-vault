@@ -395,6 +395,30 @@ router.delete("/:id", authMiddleware, async (req, res) => {
       return res.status(404).json({ message: "Media not found." });
     }
 
+    const originAlbumId = existingMedia.albumId;
+
+    const originAlbum = await prisma.album.findFirst({
+      where: {
+        id: originAlbumId,
+        userId,
+      },
+    });
+
+    if (!originAlbum) {
+      return res.status(404).json({ message: "Album not found." });
+    }
+
+    if (mediaId === originAlbum.albumCoverMediaId) {
+      await prisma.album.update({
+        where: {
+          id: originAlbumId,
+        },
+        data: {
+          albumCoverMediaId: null,
+        },
+      });
+    }
+
     await prisma.media.delete({
       where: { id: mediaId },
     });
