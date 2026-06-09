@@ -25,12 +25,9 @@ router.post("/signup", async (req, res) => {
       !email.trim() ||
       !password.trim()
     ) {
-      return res
-        .status(400)
-        .json({
-          message:
-            "Name, email, and password are required to create an account",
-        });
+      return res.status(400).json({
+        message: "Name, email, and password are required to create an account",
+      });
     }
 
     const normalizedEmail = email.trim().toLowerCase();

@@ -350,6 +350,56 @@ router.delete("/", authMiddleware, async (req, res) => {
         .json({ message: "All media ids must be positive integers." });
     }
 
+    const existingMediaItems = await prisma.media.findMany({
+      where: {
+        id: {
+          in: mediaIds,
+        },
+        userId,
+        isDeleted: false,
+      },
+    });
+
+    if (existingMediaItems.length !== mediaIds.length) {
+      return res
+        .status(404)
+        .json({ message: "One or more media items not found." });
+    }
+
+    const originAlbumId = existingMediaItems[0].albumId;
+
+    const mediaFromDifferentAlbums = existingMediaItems.some(
+      (mediaItem) => mediaItem.albumId !== originAlbumId,
+    );
+
+    if (mediaFromDifferentAlbums) {
+      return res
+        .status(400)
+        .json({ message: "All media items must come from the same album." });
+    }
+
+    const originAlbum = await prisma.album.findFirst({
+      where: {
+        id: originAlbumId,
+        userId,
+      },
+    });
+
+    if (!originAlbum) {
+      return res.status(404).json({ message: "Origin album not found." });
+    }
+
+    if (mediaIds.includes(originAlbum.albumCoverMediaId)) {
+      await prisma.album.update({
+        where: {
+          id: originAlbumId,
+        },
+        data: {
+          albumCoverMediaId: null,
+        },
+      });
+    }
+
     const deletedMedia = await prisma.media.deleteMany({
       where: {
         id: {
