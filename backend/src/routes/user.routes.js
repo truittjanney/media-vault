@@ -17,6 +17,7 @@ router.post("/signup", async (req, res) => {
   try {
     const { name, email, password } = req.body;
 
+    // Validate required signup fields before creating a user
     if (
       typeof name !== "string" ||
       typeof email !== "string" ||
@@ -32,12 +33,14 @@ router.post("/signup", async (req, res) => {
 
     const normalizedEmail = email.trim().toLowerCase();
 
+    // Normalize and validate the email before checking for duplicates
     if (!normalizedEmail.includes("@") || !normalizedEmail.includes(".")) {
       return res
         .status(400)
         .json({ message: "Please enter a valid email address" });
     }
 
+    // Prevent duplicate accounts with the same email address
     const existingUser = await prisma.user.findUnique({
       where: {
         email: normalizedEmail,
@@ -51,6 +54,7 @@ router.post("/signup", async (req, res) => {
     const saltRounds = 10;
     const hashedPassword = await bcrypt.hash(password, saltRounds);
 
+    // Store the new user with a hashed password and default preferences
     await prisma.user.create({
       data: {
         name: name.trim(),
@@ -80,6 +84,7 @@ router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
 
+    // Validate login credentials before looking up the user
     if (
       typeof email !== "string" ||
       typeof password !== "string" ||
@@ -93,6 +98,7 @@ router.post("/login", async (req, res) => {
 
     const normalizedEmail = email.trim().toLowerCase();
 
+    // Fetch the user with password hash for authentication
     const user = await prisma.user.findUnique({
       where: {
         email: normalizedEmail,
@@ -112,12 +118,14 @@ router.post("/login", async (req, res) => {
       return res.status(401).json({ message: "Invalid email or password" });
     }
 
+    // Compare submitted password against the stored hash
     const passwordMatch = await bcrypt.compare(password, user.passwordHash);
 
     if (!passwordMatch) {
       return res.status(401).json({ message: "Invalid email or password" });
     }
 
+    // Create a JWT the client can use for authenticated routes
     const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, {
       expiresIn: "7d",
     });
@@ -147,6 +155,7 @@ router.get("/profile", authMiddleware, async (req, res) => {
   try {
     const userId = req.user.userId;
 
+    // Fetch the authenticated user's public profile fields
     const user = await prisma.user.findUnique({
       where: { id: userId },
       select: {
@@ -182,6 +191,7 @@ router.put("/profile", authMiddleware, async (req, res) => {
 
     const updateData = {};
 
+    // Build the update data from only the profile fields provided
     // Name Update Validation
     if (name !== undefined) {
       if (typeof name !== "string" || !name.trim()) {
@@ -203,6 +213,7 @@ router.put("/profile", authMiddleware, async (req, res) => {
 
       const normalizedEmail = email.trim().toLowerCase();
 
+      // Validate the new email and make sure it is not owned by another user
       if (!normalizedEmail.includes("@") || !normalizedEmail.includes(".")) {
         return res
           .status(400)
@@ -221,6 +232,7 @@ router.put("/profile", authMiddleware, async (req, res) => {
     }
 
     // Layout Preference Validation
+    // Limit layout preferences to the view modes supported by the client
     const validPageLayouts = ["gallery", "list"];
 
     if (albumLayoutPreference !== undefined) {
@@ -250,6 +262,7 @@ router.put("/profile", authMiddleware, async (req, res) => {
         .json({ message: "No valid profile fields provided." });
     }
 
+    // Update the profile and return the public user fields
     const updatedUser = await prisma.user.update({
       where: { id: userId },
       data: updateData,
@@ -282,12 +295,14 @@ router.delete("/profile", authMiddleware, async (req, res) => {
     const userId = req.user.userId;
     const { password } = req.body;
 
+    // Require the current password before deleting an account
     if (typeof password !== "string" || !password.trim()) {
       return res
         .status(400)
         .json({ message: "Password is required to delete account." });
     }
 
+    // Fetch the authenticated user's password hash for confirmation
     const user = await prisma.user.findUnique({
       where: { id: userId },
       select: {
@@ -300,6 +315,7 @@ router.delete("/profile", authMiddleware, async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
+    // Confirm the submitted password matches before deleting the account
     const passwordMatch = await bcrypt.compare(password, user.passwordHash);
 
     if (!passwordMatch) {
@@ -308,6 +324,7 @@ router.delete("/profile", authMiddleware, async (req, res) => {
         .json({ message: "Incorrect password. Cannot delete account." });
     }
 
+    // Delete the user account
     await prisma.user.delete({
       where: { id: userId },
     });
