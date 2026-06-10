@@ -31,6 +31,16 @@ function moveMultipleMedia(mediaIds, targetAlbumId) {
   });
 }
 
+function toggleMediaFavorite(mediaId, isFavorite) {
+  return apiRequest(`/api/media/${mediaId}/favorite`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ isFavorite }),
+  });
+}
+
 function deleteMedia(mediaId) {
   return apiRequest(`/api/media/${mediaId}`, {
     method: "DELETE",
@@ -52,6 +62,7 @@ export {
   uploadMedia,
   moveMedia,
   moveMultipleMedia,
+  toggleMediaFavorite,
   deleteMedia,
   deleteMultipleMedia,
 };

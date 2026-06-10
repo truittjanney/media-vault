@@ -2,6 +2,7 @@ function MediaCard({
   media,
   isSelected,
   onToggleSelect,
+  onToggleFavorite,
   onOpenMedia,
   onMoveMedia,
   onDeleteMedia,
@@ -26,6 +27,17 @@ function MediaCard({
         />
         Select
       </label>
+
+      <button
+        type="button"
+        title={media.isFavorite ? "Remove from favorites" : "Add to favorites"}
+        onClick={(event) => {
+          event.stopPropagation();
+          onToggleFavorite(media.id, media.isFavorite);
+        }}
+      >
+        {media.isFavorite ? "❤️" : "🤍"}
+      </button>
 
       <button
         type="button"

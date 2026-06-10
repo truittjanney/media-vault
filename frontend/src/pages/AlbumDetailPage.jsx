@@ -5,6 +5,7 @@ import {
   uploadMedia,
   moveMedia,
   moveMultipleMedia,
+  toggleMediaFavorite,
   deleteMedia,
   deleteMultipleMedia,
 } from "../services/mediaService.js";
@@ -159,6 +160,20 @@ function AlbumDetailPage() {
     }
   }
 
+  async function handleToggleMediaFavorite(mediaId, currentFavoriteValue) {
+    setErrorMessage("");
+
+    try {
+      setIsLoading(true);
+      await toggleMediaFavorite(mediaId, !currentFavoriteValue);
+      await loadMedia();
+    } catch (error) {
+      setErrorMessage(error.message);
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
   async function handleDeleteMedia(mediaId) {
     setErrorMessage("");
 
@@ -258,6 +273,7 @@ function AlbumDetailPage() {
             media={file}
             isSelected={selectedMediaIds.includes(file.id)}
             onToggleSelect={handleToggleSelectMedia}
+            onToggleFavorite={handleToggleMediaFavorite}
             onOpenMedia={handleOpenMedia}
             onMoveMedia={handleMoveMedia}
             onDeleteMedia={handleDeleteMedia}
