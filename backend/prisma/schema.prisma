@@ -54,6 +54,7 @@ model Media {
   deletedTime DateTime?
   mediaPosition Int
   filePath String
+  isFavorite Boolean @default(false)
 
   user User @relation(fields: [userId], references: [id])
   album Album @relation("AlbumMedia", fields: [albumId], references: [id])
