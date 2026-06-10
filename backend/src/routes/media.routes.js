@@ -350,6 +350,60 @@ router.patch("/:id/move", authMiddleware, async (req, res) => {
   }
 });
 
+// ###########################################
+// PATCH API Route - Toggle Media Favorites
+// ###########################################
+// Mounted at /api/media
+router.patch("/:id/favorite", authMiddleware, async (req, res) => {
+  try {
+    const userId = req.user.userId;
+    const mediaId = Number(req.params.id);
+    const { isFavorite } = req.body;
+
+    // Validate that the media ID is a positive integer
+    if (!Number.isInteger(mediaId) || mediaId <= 0) {
+      return res.status(400).json({ message: "Invalid media id." });
+    }
+
+    // Validate that favorite status is explicitly true or false
+    if (typeof isFavorite !== "boolean") {
+      return res
+        .status(400)
+        .json({ message: "Favorite status must be true or false." });
+    }
+
+    // Validate that the media item exists and belongs to this user
+    const existingMedia = await prisma.media.findFirst({
+      where: {
+        id: mediaId,
+        userId,
+        isDeleted: false,
+      },
+    });
+
+    if (!existingMedia) {
+      return res.status(404).json({ message: "Media not found." });
+    }
+
+    // Update only the favorite status for this media item
+    const updatedMedia = await prisma.media.update({
+      where: {
+        id: mediaId,
+      },
+      data: {
+        isFavorite,
+      },
+    });
+    return res.status(200).json({
+      message: "Media favorite updated successfully.",
+      media: updatedMedia,
+    });
+  } catch (error) {
+    console.error("Error updating favorite", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+});
+
 // #################################################
 // DELETE API Route - Delete Multiple Media Items
 // #################################################
