@@ -15,6 +15,7 @@ model User {
   albumPinHash String
   albumLayoutPreference String
   mediaLayoutPreference String
+  albumSortPreference String @default("name-asc")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

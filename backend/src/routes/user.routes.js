@@ -164,6 +164,7 @@ router.get("/profile", authMiddleware, async (req, res) => {
         email: true,
         albumLayoutPreference: true,
         mediaLayoutPreference: true,
+        albumSortPreference: true,
         createdAt: true,
       },
     });
@@ -186,8 +187,13 @@ router.get("/profile", authMiddleware, async (req, res) => {
 router.put("/profile", authMiddleware, async (req, res) => {
   try {
     const userId = req.user.userId;
-    const { name, email, albumLayoutPreference, mediaLayoutPreference } =
-      req.body;
+    const {
+      name,
+      email,
+      albumLayoutPreference,
+      mediaLayoutPreference,
+      albumSortPreference,
+    } = req.body;
 
     const updateData = {};
 
@@ -255,11 +261,30 @@ router.put("/profile", authMiddleware, async (req, res) => {
       updateData.mediaLayoutPreference = mediaLayoutPreference;
     }
 
+    // Limit album sorting to the options supported by the client
+    const validAlbumSortPreferences = [
+      "name-asc",
+      "name-desc",
+      "created-desc",
+      "updated-desc",
+    ];
+
+    if (albumSortPreference !== undefined) {
+      if (!validAlbumSortPreferences.includes(albumSortPreference)) {
+        return res.status(400).json({
+          message:
+            "Album sorting preference must be A-Z, Z-A, newest created, or recently updated.",
+        });
+      }
+
+      updateData.albumSortPreference = albumSortPreference;
+    }
+
     // Prevent Empty Update
     if (Object.keys(updateData).length === 0) {
       return res
         .status(400)
-        .json({ message: "No valid profile fields provided." });
+        .json({ message: "No valid profile changes provided." });
     }
 
     // Update the profile and return the public user fields
@@ -272,12 +297,13 @@ router.put("/profile", authMiddleware, async (req, res) => {
         email: true,
         albumLayoutPreference: true,
         mediaLayoutPreference: true,
+        albumSortPreference: true,
         createdAt: true,
       },
     });
 
     res.status(200).json({
-      message: "User profile updated successfully",
+      message: "Profile updated successfully",
       user: updatedUser,
     });
   } catch (error) {
