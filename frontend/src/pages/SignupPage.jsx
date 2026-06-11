@@ -1,4 +1,4 @@
-import { signup } from "../services/authService.js";
+import { userSignup } from "../services/userService.js";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -20,7 +20,7 @@ function SignupPage() {
     setErrorMessage("");
 
     try {
-      const data = await signup(name, email, password);
+      const data = await userSignup(name, email, password);
       navigate("/login");
     } catch (error) {
       setErrorMessage(error.message);

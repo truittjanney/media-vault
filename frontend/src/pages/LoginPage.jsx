@@ -1,4 +1,4 @@
-import { login } from "../services/authService.js";
+import { userLogin } from "../services/userService.js";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -19,7 +19,7 @@ function LoginPage() {
     setErrorMessage("");
 
     try {
-      const data = await login(email, password);
+      const data = await userLogin(email, password);
       localStorage.setItem("token", data.token);
       navigate("/albums");
     } catch (error) {
