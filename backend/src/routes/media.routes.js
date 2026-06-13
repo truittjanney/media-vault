@@ -31,7 +31,8 @@ const upload = multer({ storage });
 router.post(
   "/",
   authMiddleware,
-  upload.array("media", 20),
+  // Allow up to 50 files per upload request
+  upload.array("media", 50),
   async (req, res) => {
     try {
       const userId = req.user.userId;

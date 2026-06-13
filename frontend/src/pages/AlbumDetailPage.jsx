@@ -19,7 +19,7 @@ function AlbumDetailPage() {
   // ####################################################
   const [album, setAlbum] = useState(null);
   const [media, setMedia] = useState([]);
-  const [selectedFile, setSelectedFile] = useState(null);
+  const [selectedFiles, setSelectedFiles] = useState([]);
   const [selectedMedia, setSelectedMedia] = useState(null);
   const [selectedMediaIds, setSelectedMediaIds] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -70,6 +70,14 @@ function AlbumDetailPage() {
     }
   }
 
+  function handleFileChange(event) {
+    setErrorMessage("");
+
+    const files = Array.from(event.target.files);
+
+    setSelectedFiles((previousFiles) => [...previousFiles, ...files]);
+  }
+
   function handleBackToAlbums() {
     navigate("/albums");
   }
@@ -94,19 +102,23 @@ function AlbumDetailPage() {
     event.preventDefault();
     setErrorMessage("");
 
-    if (!selectedFile) {
-      setErrorMessage("Please select a file to upload.");
+    if (selectedFiles.length === 0) {
+      setErrorMessage("Please select at least one file to upload.");
       return;
     }
 
     const formData = new FormData();
     formData.append("albumId", id);
-    formData.append("media", selectedFile);
+
+    selectedFiles.forEach((file) => {
+      formData.append("media", file);
+    });
 
     try {
       setIsLoading(true);
       await uploadMedia(formData);
-      setSelectedFile(null);
+      setSelectedFiles([]);
+      event.target.reset();
       await loadMedia();
     } catch (error) {
       setErrorMessage(error.message);
@@ -260,8 +272,14 @@ function AlbumDetailPage() {
       <form onSubmit={handleUploadMedia}>
         <input
           type="file"
-          onChange={(event) => setSelectedFile(event.target.files[0])}
+          accept="image/*,video/*"
+          multiple
+          onChange={handleFileChange}
         />
+
+        {selectedFiles.length > 0 && (
+          <p>{selectedFiles.length} file(s) selected</p>
+        )}
 
         <button type="submit" disabled={isLoading}>
           Upload
