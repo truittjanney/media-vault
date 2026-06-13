@@ -17,6 +17,7 @@ function AlbumDetailPage() {
   // ####################################################
   // STATE
   // ####################################################
+  const [album, setAlbum] = useState(null);
   const [media, setMedia] = useState([]);
   const [selectedFile, setSelectedFile] = useState(null);
   const [selectedMedia, setSelectedMedia] = useState(null);
@@ -37,6 +38,7 @@ function AlbumDetailPage() {
     try {
       setIsLoading(true);
       const data = await getAlbumMedia(id);
+      setAlbum(data.album || null);
       setMedia(data.media || []);
     } catch (error) {
       setErrorMessage(error.message);
@@ -231,7 +233,7 @@ function AlbumDetailPage() {
   // ####################################################
   return (
     <div>
-      <h1>Album Media</h1>
+      <h1>{album?.name || "Album"}</h1>
       <p>Album ID: {id}</p>
       <p>Images: {imageCount}</p>
       <p>Videos: {videoCount}</p>

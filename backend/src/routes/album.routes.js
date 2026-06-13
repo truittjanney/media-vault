@@ -122,7 +122,7 @@ router.get("/:id/media", authMiddleware, async (req, res) => {
       },
     });
 
-    return res.status(200).json({ media });
+    return res.status(200).json({ album: existingAlbum, media });
   } catch (error) {
     console.error("Error listing album contents.", error);
     return res.status(500).json({ message: "Internal server error" });
