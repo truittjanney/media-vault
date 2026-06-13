@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { getUserProfile, updateUserProfile } from "../services/userService.js";
 import {
   getAlbums,
   createAlbum,
@@ -14,6 +15,7 @@ function AlbumsPage() {
   // ####################################################
   const [albums, setAlbums] = useState([]);
   const [albumName, setAlbumName] = useState("");
+  const [albumSortPreference, setAlbumSortPreference] = useState("name-asc");
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const navigate = useNavigate();
@@ -23,6 +25,20 @@ function AlbumsPage() {
   // ####################################################
 
   // DATA LOADING
+  async function loadUserProfile() {
+    setErrorMessage("");
+
+    try {
+      setIsLoading(true);
+      const data = await getUserProfile();
+      setAlbumSortPreference(data.user.albumSortPreference);
+    } catch (error) {
+      setErrorMessage(error.message);
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
   async function loadAlbums() {
     setErrorMessage("");
 
@@ -49,6 +65,22 @@ function AlbumsPage() {
   }
 
   // API EVENT HANDLERS
+  async function handleAlbumSortOptions(event) {
+    setErrorMessage("");
+
+    const newSortPreference = event.target.value;
+
+    setAlbumSortPreference(newSortPreference);
+
+    try {
+      await updateUserProfile({
+        albumSortPreference: newSortPreference,
+      });
+    } catch (error) {
+      setErrorMessage(error.message);
+    }
+  }
+
   async function handleCreateAlbumSubmit(event) {
     event.preventDefault();
     setErrorMessage("");
@@ -113,8 +145,32 @@ function AlbumsPage() {
   // EFFECTS
   // ####################################################
   useEffect(() => {
+    loadUserProfile();
     loadAlbums();
   }, []);
+
+  // ####################################################
+  // DERIVED VALUES
+  // ####################################################
+  const sortedAlbums = [...albums].sort((a, b) => {
+    if (albumSortPreference === "name-asc") {
+      return a.name.localeCompare(b.name);
+    }
+
+    if (albumSortPreference === "name-desc") {
+      return b.name.localeCompare(a.name);
+    }
+
+    if (albumSortPreference === "created-desc") {
+      return new Date(b.createdAt) - new Date(a.createdAt);
+    }
+
+    if (albumSortPreference === "updated-desc") {
+      return new Date(b.updatedAt) - new Date(a.updatedAt);
+    }
+
+    return 0;
+  });
 
   // ####################################################
   // USER INTERFACE
@@ -127,8 +183,20 @@ function AlbumsPage() {
         Logout
       </button>
 
+      <label htmlFor="albumSortPreference">Sort albums:</label>
+      <select
+        id="albumSortPreference"
+        value={albumSortPreference}
+        onChange={handleAlbumSortOptions}
+      >
+        <option value="name-asc">A-Z</option>
+        <option value="name-desc">Z-A</option>
+        <option value="created-desc">Newest Created</option>
+        <option value="updated-desc">Recently Updated</option>
+      </select>
+
       <div>
-        {albums.map((album) => (
+        {sortedAlbums.map((album) => (
           <AlbumCard
             key={album.id}
             album={album}
@@ -143,7 +211,7 @@ function AlbumsPage() {
 
       {errorMessage && <p>{errorMessage}</p>}
 
-      {!isLoading && !errorMessage && albums.length === 0 && (
+      {!isLoading && !errorMessage && sortedAlbums.length === 0 && (
         <p>No albums yet</p>
       )}
 
