@@ -22,6 +22,7 @@ function AlbumDetailPage() {
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [selectedMedia, setSelectedMedia] = useState(null);
   const [selectedMediaIds, setSelectedMediaIds] = useState([]);
+  const [isDragging, setIsDragging] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const { id } = useParams();
@@ -70,7 +71,11 @@ function AlbumDetailPage() {
     }
   }
 
-  function handleFileChange(event) {
+  function handleBackToAlbums() {
+    navigate("/albums");
+  }
+
+  function handleChooseMediaFiles(event) {
     setErrorMessage("");
 
     const files = Array.from(event.target.files);
@@ -78,8 +83,24 @@ function AlbumDetailPage() {
     setSelectedFiles((previousFiles) => [...previousFiles, ...files]);
   }
 
-  function handleBackToAlbums() {
-    navigate("/albums");
+  function handleDragOver(event) {
+    event.preventDefault();
+    setIsDragging(true);
+  }
+
+  function handleDragLeave(event) {
+    setIsDragging(false);
+  }
+
+  function handleFileDrop(event) {
+    event.preventDefault();
+    setErrorMessage("");
+
+    const droppedFiles = Array.from(event.dataTransfer.files);
+
+    setSelectedFiles((previousFiles) => [...previousFiles, ...droppedFiles]);
+
+    setIsDragging(false);
   }
 
   // API EVENT HANDLERS
@@ -270,12 +291,30 @@ function AlbumDetailPage() {
       </button>
 
       <form onSubmit={handleUploadMedia}>
-        <input
-          type="file"
-          accept="image/*,video/*"
-          multiple
-          onChange={handleFileChange}
-        />
+        <div
+          onDragOver={handleDragOver}
+          onDragLeave={handleDragLeave}
+          onDrop={handleFileDrop}
+          style={{
+            border: "2px dashed black",
+            padding: "40px",
+            margin: "20px 0",
+            textAlign: "center",
+          }}
+        >
+          {isDragging ? (
+            <p>Drop files here</p>
+          ) : (
+            <p>Drag and drop files here, or choose files below</p>
+          )}
+
+          <input
+            type="file"
+            accept="image/*,video/*"
+            multiple
+            onChange={handleChooseMediaFiles}
+          />
+        </div>
 
         {selectedFiles.length > 0 && (
           <p>{selectedFiles.length} file(s) selected</p>
