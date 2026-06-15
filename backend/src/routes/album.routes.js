@@ -231,7 +231,7 @@ router.patch("/:id/lock", authMiddleware, async (req, res) => {
   try {
     const userId = req.user.userId;
     const albumId = Number(req.params.id);
-    const { pin } = req.body;
+    const { pin } = req.body || {};
 
     // Validate the album id from the URL
     if (!Number.isInteger(albumId) || albumId <= 0) {
@@ -331,6 +331,94 @@ router.patch("/:id/lock", authMiddleware, async (req, res) => {
     });
   } catch (error) {
     console.error("Error adding album lock:", error);
+    return res.status(500).json({ message: "Internal server error." });
+  }
+});
+
+// ###########################################
+// PATCH API Route - Remove Album Lock
+// ###########################################
+// Mounted at /api/albums
+router.patch("/:id/remove-lock", authMiddleware, async (req, res) => {
+  try {
+    const userId = req.user.userId;
+    const albumId = Number(req.params.id);
+    const { pin } = req.body || {};
+
+    // Validate the album id from the URL
+    if (!Number.isInteger(albumId) || albumId <= 0) {
+      return res.status(400).json({ message: "Invalid album id." });
+    }
+
+    // Validate the PIN as exactly 4 numbers
+    if (typeof pin !== "string" || !pin.trim()) {
+      return res.status(400).json({ message: "PIN is required." });
+    }
+
+    const trimmedPin = pin.trim();
+
+    if (!/^\d{4}$/.test(trimmedPin)) {
+      return res.status(400).json({
+        message: "PIN must be exactly 4 digits.",
+      });
+    }
+
+    // Confirm the album exists and belongs to the authenticated user
+    const existingAlbum = await prisma.album.findFirst({
+      where: {
+        id: albumId,
+        userId,
+      },
+    });
+
+    if (!existingAlbum) {
+      return res.status(404).json({ message: "Album not found." });
+    }
+
+    if (!existingAlbum.isLocked) {
+      return res.status(400).json({ message: "Album is already unlocked." });
+    }
+
+    // Fetch the user's album PIN hash so the provided PIN can be verified
+    const existingUser = await prisma.user.findUnique({
+      where: {
+        id: userId,
+      },
+      select: {
+        id: true,
+        albumPinHash: true,
+      },
+    });
+
+    if (!existingUser) {
+      return res.status(404).json({ message: "User not found." });
+    }
+
+    // Verify the user's PIN before removing the album lock
+    const isValidPin = await bcrypt.compare(
+      trimmedPin,
+      existingUser.albumPinHash,
+    );
+
+    if (!isValidPin) {
+      return res.status(401).json({ message: "Invalid PIN." });
+    }
+
+    // Mark this album as unlocked
+    await prisma.album.update({
+      where: {
+        id: albumId,
+      },
+      data: {
+        isLocked: false,
+      },
+    });
+
+    return res.status(200).json({
+      message: "Album lock removed successfully.",
+    });
+  } catch (error) {
+    console.error("Error removing album lock:", error);
     return res.status(500).json({ message: "Internal server error." });
   }
 });
