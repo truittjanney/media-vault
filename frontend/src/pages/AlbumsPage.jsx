@@ -3,8 +3,11 @@ import { useNavigate } from "react-router-dom";
 import { getUserProfile, updateUserProfile } from "../services/userService.js";
 import {
   getAlbums,
+  verifyAlbumPin,
   createAlbum,
   updateAlbum,
+  addAlbumLock,
+  removeAlbumLock,
   deleteAlbum,
 } from "../services/albumService.js";
 import { AlbumCard } from "../components/AlbumCard.jsx";
@@ -54,9 +57,29 @@ function AlbumsPage() {
   }
 
   // SYNC EVENT HANDLERS
-  function handleOpenAlbum(albumId) {
+  async function handleOpenAlbum(album) {
     setErrorMessage("");
-    navigate(`/albums/${albumId}`);
+
+    if (!album.isLocked) {
+      navigate(`/albums/${album.id}`);
+      return;
+    }
+
+    const pin = prompt("Enter album PIN:");
+
+    if (!pin) {
+      return;
+    }
+
+    try {
+      const data = await verifyAlbumPin(album.id, pin);
+
+      if (data.verified) {
+        navigate(`/albums/${album.id}`);
+      }
+    } catch (error) {
+      setErrorMessage(error.message);
+    }
   }
 
   function logoutUser() {
@@ -115,6 +138,46 @@ function AlbumsPage() {
     try {
       setIsLoading(true);
       await updateAlbum(albumId, { name: trimmedName });
+      await loadAlbums();
+    } catch (error) {
+      setErrorMessage(error.message);
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  async function handleAddAlbumLock(albumId) {
+    setErrorMessage("");
+
+    const pin = prompt("Enter a 4-digit album PIN:");
+
+    if (!pin) {
+      return;
+    }
+
+    try {
+      setIsLoading(true);
+      await addAlbumLock(albumId, pin);
+      await loadAlbums();
+    } catch (error) {
+      setErrorMessage(error.message);
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  async function handleRemoveAlbumLock(albumId) {
+    setErrorMessage("");
+
+    const pin = prompt("Enter your album PIN:");
+
+    if (!pin) {
+      return;
+    }
+
+    try {
+      setIsLoading(true);
+      await removeAlbumLock(albumId, pin);
       await loadAlbums();
     } catch (error) {
       setErrorMessage(error.message);
@@ -201,6 +264,8 @@ function AlbumsPage() {
             key={album.id}
             album={album}
             onOpenAlbum={handleOpenAlbum}
+            onAddAlbumLock={handleAddAlbumLock}
+            onRemoveAlbumLock={handleRemoveAlbumLock}
             onRenameAlbum={handleRenameAlbum}
             onDeleteAlbum={handleDeleteAlbum}
           />

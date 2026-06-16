@@ -1,9 +1,33 @@
-function AlbumCard({ album, onOpenAlbum, onRenameAlbum, onDeleteAlbum }) {
+function AlbumCard({
+  album,
+  onOpenAlbum,
+  onRenameAlbum,
+  onAddAlbumLock,
+  onRemoveAlbumLock,
+  onDeleteAlbum,
+}) {
   return (
-    <div onClick={() => onOpenAlbum(album.id)}>
+    <div onClick={() => onOpenAlbum(album)}>
       <div>Album Cover</div>
-      <h3>{album.name}</h3>
+      <h3>
+        {album.name} {album.isLocked && "🔒"}
+      </h3>
       <p>Total Files: {album.totalCount || 0}</p>
+
+      <button
+        type="button"
+        onClick={(event) => {
+          event.stopPropagation();
+
+          if (album.isLocked) {
+            onRemoveAlbumLock(album.id);
+          } else {
+            onAddAlbumLock(album.id);
+          }
+        }}
+      >
+        {album.isLocked ? "Remove Lock" : "Lock"}
+      </button>
 
       <button
         onClick={(event) => {
