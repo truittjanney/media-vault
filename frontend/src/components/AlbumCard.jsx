@@ -14,22 +14,21 @@ function AlbumCard({
       </h3>
       <p>Total Files: {album.totalCount || 0}</p>
 
+      {!album.isLocked && (
+        <button
+          type="button"
+          onClick={(event) => {
+            event.stopPropagation();
+            onAddAlbumLock(album.id);
+          }}
+        >
+          Lock
+        </button>
+      )}
+
       <button
         type="button"
-        onClick={(event) => {
-          event.stopPropagation();
-
-          if (album.isLocked) {
-            onRemoveAlbumLock(album.id);
-          } else {
-            onAddAlbumLock(album.id);
-          }
-        }}
-      >
-        {album.isLocked ? "Remove Lock" : "Lock"}
-      </button>
-
-      <button
+        disabled={album.isLocked}
         onClick={(event) => {
           event.stopPropagation();
           const newName = prompt("Enter new album name:", album.name);
@@ -42,6 +41,8 @@ function AlbumCard({
       </button>
 
       <button
+        type="button"
+        disabled={album.isLocked}
         onClick={(event) => {
           event.stopPropagation();
           onDeleteAlbum(album.id);
