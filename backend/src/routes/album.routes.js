@@ -277,6 +277,45 @@ router.put("/:id", authMiddleware, async (req, res) => {
       return res.status(404).json({ message: "Album not found." });
     }
 
+    // Prevent locked albums from being edited until their lock is removed
+    if (existingAlbum.isLocked) {
+      return res.status(403).json({
+        message: "Remove the album lock before editing this album.",
+      });
+    }
+
+    // Verify the selected cover media belongs to this user and this album before saving the foreign key
+    if (albumCoverMediaId !== undefined) {
+      if (albumCoverMediaId === null) {
+        updateAlbum.albumCoverMediaId = null;
+      } else {
+        const coverMediaId = Number(albumCoverMediaId);
+
+        if (!Number.isInteger(coverMediaId) || coverMediaId <= 0) {
+          return res.status(400).json({
+            message: "Invalid album cover media id.",
+          });
+        }
+
+        const coverMedia = await prisma.media.findFirst({
+          where: {
+            id: coverMediaId,
+            userId,
+            albumId,
+            isDeleted: false,
+          },
+        });
+
+        if (!coverMedia) {
+          return res.status(400).json({
+            message: "Album cover must be a media item from this album.",
+          });
+        }
+
+        updateAlbum.albumCoverMediaId = coverMediaId;
+      }
+    }
+
     // Update the album and return the fields the client needs
     const updatedAlbum = await prisma.album.update({
       where: {
@@ -529,6 +568,13 @@ router.delete("/:id", authMiddleware, async (req, res) => {
 
     if (!existingAlbum) {
       return res.status(404).json({ message: "Album not found." });
+    }
+
+    // Prevent locked albums from being deleted until their lock is removed
+    if (existingAlbum.isLocked) {
+      return res.status(403).json({
+        message: "Remove the album lock before deleting this album.",
+      });
     }
 
     // Delete the album record
