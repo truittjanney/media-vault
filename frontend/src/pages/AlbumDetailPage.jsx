@@ -28,6 +28,8 @@ function AlbumDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
 
+  const MAX_UPLOAD_FILES = 50;
+
   // ####################################################
   // FUNCTIONS / EVENT HANDLERS
   // ####################################################
@@ -76,11 +78,8 @@ function AlbumDetailPage() {
   }
 
   function handleChooseMediaFiles(event) {
-    setErrorMessage("");
-
     const files = Array.from(event.target.files);
-
-    setSelectedFiles((previousFiles) => [...previousFiles, ...files]);
+    addFilesToSelection(files);
   }
 
   function handleDragOver(event) {
@@ -94,13 +93,23 @@ function AlbumDetailPage() {
 
   function handleFileDrop(event) {
     event.preventDefault();
-    setErrorMessage("");
+    setIsDragging(false);
 
     const droppedFiles = Array.from(event.dataTransfer.files);
+    addFilesToSelection(droppedFiles);
+  }
 
-    setSelectedFiles((previousFiles) => [...previousFiles, ...droppedFiles]);
+  function addFilesToSelection(newFiles) {
+    setErrorMessage("");
 
-    setIsDragging(false);
+    if (selectedFiles.length + newFiles.length > MAX_UPLOAD_FILES) {
+      setErrorMessage(
+        `You can upload up to ${MAX_UPLOAD_FILES} files at a time.`,
+      );
+      return;
+    }
+
+    setSelectedFiles((previousFiles) => [...previousFiles, ...newFiles]);
   }
 
   // API EVENT HANDLERS
@@ -125,6 +134,13 @@ function AlbumDetailPage() {
 
     if (selectedFiles.length === 0) {
       setErrorMessage("Please select at least one file to upload.");
+      return;
+    }
+
+    if (selectedFiles.length > MAX_UPLOAD_FILES) {
+      setErrorMessage(
+        `You can upload up to ${MAX_UPLOAD_FILES} files at a time.`,
+      );
       return;
     }
 
@@ -316,9 +332,9 @@ function AlbumDetailPage() {
           />
         </div>
 
-        {selectedFiles.length > 0 && (
-          <p>{selectedFiles.length} file(s) selected</p>
-        )}
+        <p>
+          {selectedFiles.length} / {MAX_UPLOAD_FILES} file(s) selected
+        </p>
 
         <button type="submit" disabled={isLoading}>
           Upload
