@@ -1,3 +1,8 @@
+/*
+##########################################################
+REUSABLE CLASSES: APP LAYOUT
+##########################################################
+*/
 .app-shell {
   min-height: 100vh;
   background: var(--bg);
@@ -30,6 +35,11 @@
   font-size: 16px;
 }
 
+/*
+##########################################################
+REUSABLE CLASSES: BUTTONS
+##########################################################
+*/
 .mv-btn {
   display: inline-flex;
   align-items: center;
@@ -90,6 +100,20 @@
   background: var(--danger-hover);
 }
 
+.mv-btn-full {
+  width: 100%;
+}
+
+.mv-btn-small {
+  padding: 6px 10px;
+  font-size: 14px;
+}
+
+/*
+##########################################################
+REUSABLE CLASSES: CARDS
+##########################################################
+*/
 .mv-card {
   background: var(--surface);
   border: 1px solid var(--border);
@@ -101,6 +125,11 @@
   padding: 24px;
 }
 
+/*
+##########################################################
+REUSABLE CLASSES: FORMS
+##########################################################
+*/
 .mv-form {
   display: flex;
   flex-direction: column;
@@ -134,6 +163,40 @@
   border-color: var(--primary);
 }
 
+/*
+##########################################################
+REUSABLE CLASSES: FEEDBACK STATES
+##########################################################
+*/
+.mv-alert {
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  font-weight: 600;
+}
+
+.mv-alert-error {
+  background: #fee2e2;
+  color: #991b1b;
+  border: 1px solid #fecaca;
+}
+
+.mv-status {
+  margin-bottom: 16px;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.mv-empty-state {
+  text-align: center;
+  padding: 48px 24px;
+  color: var(--text-muted);
+}
+
+/*
+##########################################################
+AUTH CLASSES (SIGNUP/LOGIN PAGE)
+##########################################################
+*/
 .auth-page {
   min-height: 100vh;
   display: flex;
@@ -193,18 +256,120 @@
   text-decoration: underline;
 }
 
-.mv-btn-full {
-  width: 100%;
+/*
+##########################################################
+ALBUMS PAGE CLASSES
+##########################################################
+*/
+.albums-controls-card {
+  margin-bottom: 24px;
 }
 
-.mv-alert {
-  border-radius: var(--radius-sm);
-  padding: 10px 12px;
-  font-weight: 600;
+.albums-controls-row {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
 }
 
-.mv-alert-error {
-  background: #fee2e2;
-  color: #991b1b;
-  border: 1px solid #fecaca;
+.albums-create-form {
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+  flex: 1 1 360px;
+}
+
+.albums-create-field {
+  flex: 1;
+  min-width: 220px;
+}
+
+.albums-sort-field {
+  min-width: 220px;
+}
+
+.albums-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 20px;
+}
+
+/*
+##########################################################
+ALBUM CARD CLASSES
+##########################################################
+*/
+.album-card {
+  overflow: hidden;
+  cursor: pointer;
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.album-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--primary-border);
+}
+
+.album-card-locked {
+  background: linear-gradient(
+    180deg,
+    var(--surface) 0%,
+    var(--surface-soft) 100%
+  );
+}
+
+.album-card-cover {
+  height: 150px;
+  background: linear-gradient(135deg, var(--primary-soft), #ffffff);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+  font-weight: 700;
+}
+
+.album-card-body {
+  padding: 16px;
+}
+
+.album-card-title-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.album-card-title {
+  margin: 0;
+  font-size: 20px;
+  line-height: 1.2;
+  color: var(--text);
+}
+
+.album-lock-badge {
+  flex: 0 0 auto;
+  background: var(--primary-soft);
+  border: 1px solid var(--primary-border);
+  border-radius: 999px;
+  padding: 2px 8px;
+  font-size: 14px;
+}
+
+.album-card-meta {
+  margin: 0 0 16px;
+  color: var(--text-muted);
+  font-size: 14px;
+}
+
+.album-card-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
 }
