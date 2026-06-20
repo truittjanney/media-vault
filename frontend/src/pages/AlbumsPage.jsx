@@ -239,60 +239,99 @@ function AlbumsPage() {
   // USER INTERFACE
   // ####################################################
   return (
-    <div>
-      <h1>Albums</h1>
+    <main className="page-container">
+      <header className="page-header">
+        <div>
+          <h1 className="page-title">Albums</h1>
+          <p className="page-subtitle">
+            Organize, protect, and manage your private media.
+          </p>
+        </div>
 
-      <button type="button" onClick={logoutUser}>
-        Logout
-      </button>
+        <button
+          className="mv-btn mv-btn-secondary"
+          type="button"
+          onClick={logoutUser}
+        >
+          Logout
+        </button>
+      </header>
 
-      <label htmlFor="albumSortPreference">Sort albums:</label>
-      <select
-        id="albumSortPreference"
-        value={albumSortPreference}
-        onChange={handleAlbumSortOptions}
-      >
-        <option value="name-asc">A-Z</option>
-        <option value="name-desc">Z-A</option>
-        <option value="created-desc">Newest Created</option>
-        <option value="updated-desc">Recently Updated</option>
-      </select>
-
-      <div>
-        {sortedAlbums.map((album) => (
-          <AlbumCard
-            key={album.id}
-            album={album}
-            onOpenAlbum={handleOpenAlbum}
-            onAddAlbumLock={handleAddAlbumLock}
-            onRemoveAlbumLock={handleRemoveAlbumLock}
-            onRenameAlbum={handleRenameAlbum}
-            onDeleteAlbum={handleDeleteAlbum}
-          />
-        ))}
-      </div>
-
-      {isLoading && <p>Loading albums...</p>}
-
-      {errorMessage && <p>{errorMessage}</p>}
-
-      {!isLoading && !errorMessage && sortedAlbums.length === 0 && (
-        <p>No albums yet</p>
+      {errorMessage && (
+        <p className="mv-alert mv-alert-error">{errorMessage}</p>
       )}
 
-      <form onSubmit={handleCreateAlbumSubmit}>
-        <label htmlFor="albumName">Album Name:</label>
-        <input
-          type="text"
-          id="albumName"
-          value={albumName}
-          onChange={(e) => setAlbumName(e.target.value)}
-        />
-        <button type="submit" disabled={isLoading}>
-          Create Album
-        </button>
-      </form>
-    </div>
+      <section className="mv-card mv-card-padded albums-controls-card">
+        <div className="albums-controls-row">
+          <form
+            className="albums-create-form"
+            onSubmit={handleCreateAlbumSubmit}
+          >
+            <div className="mv-field albums-create-field">
+              <label className="mv-label" htmlFor="albumName">
+                Album Name
+              </label>
+              <input
+                className="mv-input"
+                type="text"
+                id="albumName"
+                value={albumName}
+                onChange={(e) => setAlbumName(e.target.value)}
+              />
+            </div>
+
+            <button
+              className="mv-btn mv-btn-primary"
+              type="submit"
+              disabled={isLoading}
+            >
+              Create Album
+            </button>
+          </form>
+
+          <div className="mv-field albums-sort-field">
+            <label className="mv-label" htmlFor="albumSortPreference">
+              Sort albums
+            </label>
+            <select
+              className="mv-select"
+              id="albumSortPreference"
+              value={albumSortPreference}
+              onChange={handleAlbumSortOptions}
+            >
+              <option value="name-asc">A-Z</option>
+              <option value="name-desc">Z-A</option>
+              <option value="created-desc">Newest Created</option>
+              <option value="updated-desc">Recently Updated</option>
+            </select>
+          </div>
+        </div>
+      </section>
+
+      {isLoading && <p className="mv-status">Loading albums...</p>}
+
+      {!isLoading && !errorMessage && sortedAlbums.length === 0 && (
+        <div className="mv-card mv-empty-state">
+          <p>No albums yet. Create your first album to get started.</p>
+        </div>
+      )}
+
+      {sortedAlbums.length > 0 && (
+        <section className="albums-grid">
+          {sortedAlbums.map((album) => (
+            <AlbumCard
+              key={album.id}
+              album={album}
+              onOpenAlbum={handleOpenAlbum}
+              onAddAlbumLock={handleAddAlbumLock}
+              onRemoveAlbumLock={handleRemoveAlbumLock}
+              onRenameAlbum={handleRenameAlbum}
+              onDeleteAlbum={handleDeleteAlbum}
+            />
+          ))}
+        </section>
+      )}
+    </main>
   );
 }
 
