@@ -1,6 +1,6 @@
 import { userLogin } from "../services/userService.js";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 function LoginPage() {
   // ####################################################
@@ -77,6 +77,13 @@ function LoginPage() {
             </button>
           </div>
         </form>
+
+        <p className="auth-footer">
+          Don't have an account?{" "}
+          <Link className="auth-link" to="/signup">
+            Create Account
+          </Link>
+        </p>
       </section>
     </main>
   );
