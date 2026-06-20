@@ -31,30 +31,54 @@ function LoginPage() {
   // USER INTERFACE
   // ####################################################
   return (
-    <div>
-      <h1>MediaVault</h1>
-      <h2>Login</h2>
+    <main className="auth-page">
+      <section className="mv-card mv-card-padded auth-card">
+        <div className="auth-header">
+          <h1 className="auth-logo">MediaVault</h1>
+          <p className="auth-tagline">Your private photo and video vault</p>
+        </div>
 
-      {errorMessage && <p>{errorMessage}</p>}
+        <h2 className="auth-title">Login</h2>
 
-      <form onSubmit={handleSubmit}>
-        <label>Email: </label>
-        <input
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
-        <label>Password: </label>
-        <input
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
+        {errorMessage && (
+          <p className="mv-alert mv-alert-error">{errorMessage}</p>
+        )}
 
-        <button type="button">Forgot Password?</button>
-        <button type="submit">Login</button>
-      </form>
-    </div>
+        <form className="mv-form" onSubmit={handleSubmit}>
+          <div className="mv-field">
+            <label className="mv-label" htmlFor="email">
+              Email
+            </label>
+            <input
+              id="email"
+              className="mv-input"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+          </div>
+
+          <div className="mv-field">
+            <label className="mv-label" htmlFor="password">
+              Password
+            </label>
+            <input
+              id="password"
+              className="mv-input"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+          </div>
+
+          <div className="auth-actions">
+            <button className="mv-btn mv-btn-primary mv-btn-full" type="submit">
+              Login
+            </button>
+          </div>
+        </form>
+      </section>
+    </main>
   );
 }
 
