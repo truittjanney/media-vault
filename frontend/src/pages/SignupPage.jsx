@@ -20,7 +20,7 @@ function SignupPage() {
     setErrorMessage("");
 
     try {
-      const data = await userSignup(name, email, password);
+      await userSignup(name, email, password);
       navigate("/login");
     } catch (error) {
       setErrorMessage(error.message);
