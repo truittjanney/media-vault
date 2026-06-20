@@ -180,6 +180,12 @@ REUSABLE CLASSES: FEEDBACK STATES
   border: 1px solid #fecaca;
 }
 
+.mv-alert-success {
+  background: var(--primary-soft);
+  color: var(--primary-hover);
+  border: 1px solid var(--primary-border);
+}
+
 .mv-status {
   margin-bottom: 16px;
   color: var(--text-muted);
