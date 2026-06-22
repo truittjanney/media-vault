@@ -8,64 +8,97 @@ function MediaCard({
   onDeleteMedia,
 }) {
   return (
-    <div onClick={() => onOpenMedia(media.id)}>
-      {media.type === "image" && (
-        <img src={`http://localhost:5001${media.filePath}`} alt={media.name} />
-      )}
+    <article
+      className={`mv-card media-card ${isSelected ? "media-card-selected" : ""}`}
+      onClick={() => onOpenMedia(media.id)}
+    >
+      <div className="media-card-preview">
+        {media.type === "image" && (
+          <img
+            className="media-card-media"
+            src={`http://localhost:5001${media.filePath}`}
+            alt={media.name}
+          />
+        )}
 
-      {media.type === "video" && (
-        <video src={`http://localhost:5001${media.filePath}`} controls />
-      )}
+        {media.type === "video" && (
+          <video
+            className="media-card-media"
+            src={`http://localhost:5001${media.filePath}`}
+            muted
+            playsInline
+            preload="metadata"
+          />
+        )}
 
-      <p>{media.name}</p>
+        <div className="media-card-overlay">
+          <label
+            className="media-card-select"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <input
+              type="checkbox"
+              checked={isSelected}
+              onChange={() => onToggleSelect(media.id)}
+            />
+            Select
+          </label>
 
-      <label onClick={(event) => event.stopPropagation()}>
-        <input
-          type="checkbox"
-          checked={isSelected}
-          onChange={() => onToggleSelect(media.id)}
-        />
-        Select
-      </label>
+          <button
+            className={`media-card-favorite ${
+              media.isFavorite ? "media-card-favorite-active" : ""
+            }`}
+            type="button"
+            title={
+              media.isFavorite ? "Remove from favorites" : "Add to favorites"
+            }
+            onClick={(event) => {
+              event.stopPropagation();
+              onToggleFavorite(media.id, media.isFavorite);
+            }}
+          >
+            {media.isFavorite ? "❤️" : "🤍"}
+          </button>
+        </div>
+      </div>
 
-      <button
-        type="button"
-        title={media.isFavorite ? "Remove from favorites" : "Add to favorites"}
-        onClick={(event) => {
-          event.stopPropagation();
-          onToggleFavorite(media.id, media.isFavorite);
-        }}
-      >
-        {media.isFavorite ? "❤️" : "🤍"}
-      </button>
+      <div className="media-card-body">
+        <p className="media-card-name" title={media.name}>
+          {media.name}
+        </p>
 
-      <button
-        type="button"
-        onClick={(event) => {
-          event.stopPropagation();
+        <div className="media-card-actions">
+          <button
+            className="mv-btn mv-btn-secondary mv-btn-small"
+            type="button"
+            onClick={(event) => {
+              event.stopPropagation();
 
-          const targetAlbumId = Number(prompt("Enter target album ID:"));
+              const targetAlbumId = Number(prompt("Enter target album ID:"));
 
-          if (!Number.isInteger(targetAlbumId) || targetAlbumId <= 0) {
-            return;
-          }
+              if (!Number.isInteger(targetAlbumId) || targetAlbumId <= 0) {
+                return;
+              }
 
-          onMoveMedia(media.id, targetAlbumId);
-        }}
-      >
-        Move
-      </button>
+              onMoveMedia(media.id, targetAlbumId);
+            }}
+          >
+            Move
+          </button>
 
-      <button
-        type="button"
-        onClick={(event) => {
-          event.stopPropagation();
-          onDeleteMedia(media.id);
-        }}
-      >
-        Delete
-      </button>
-    </div>
+          <button
+            className="mv-btn mv-btn-danger mv-btn-small"
+            type="button"
+            onClick={(event) => {
+              event.stopPropagation();
+              onDeleteMedia(media.id);
+            }}
+          >
+            Delete
+          </button>
+        </div>
+      </div>
+    </article>
   );
 }
 
