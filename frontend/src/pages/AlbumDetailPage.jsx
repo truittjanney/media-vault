@@ -281,99 +281,143 @@ function AlbumDetailPage() {
   // USER INTERFACE
   // ####################################################
   return (
-    <div>
-      <h1>{album?.name || "Album"}</h1>
-      <p>Album ID: {id}</p>
-      <p>Images: {imageCount}</p>
-      <p>Videos: {videoCount}</p>
-      <button
-        type="button"
-        onClick={handleMoveMultipleMedia}
-        disabled={selectedMediaIds.length === 0}
-      >
-        Move Selected ({selectedMediaIds.length})
-      </button>
+    <main className="page-container">
+      <header className="page-header">
+        <div>
+          <h1 className="page-title">{album?.name || "Album"}</h1>
 
-      <button
-        type="button"
-        onClick={handleDeleteMultipleMedia}
-        disabled={selectedMediaIds.length === 0}
-      >
-        Delete Selected ({selectedMediaIds.length})
-      </button>
+          <p className="page-subtitle">
+            Manage this album’s photos, videos, uploads, and selected media.
+          </p>
 
-      <button type="button" onClick={handleBackToAlbums}>
-        Back
-      </button>
-
-      <form onSubmit={handleUploadMedia}>
-        <div
-          onDragOver={handleDragOver}
-          onDragLeave={handleDragLeave}
-          onDrop={handleFileDrop}
-          style={{
-            border: "2px dashed black",
-            padding: "40px",
-            margin: "20px 0",
-            textAlign: "center",
-          }}
-        >
-          {isDragging ? (
-            <p>Drop files here</p>
-          ) : (
-            <p>Drag and drop files here, or choose files below</p>
-          )}
-
-          <input
-            type="file"
-            accept="image/*,video/*"
-            multiple
-            onChange={handleChooseMediaFiles}
-          />
+          <div className="album-detail-summary">
+            <span className="album-stat-pill">Images: {imageCount}</span>
+            <span className="album-stat-pill">Videos: {videoCount}</span>
+            <span className="album-stat-pill">Total: {media.length}</span>
+          </div>
         </div>
 
-        <p>
-          {selectedFiles.length} / {MAX_UPLOAD_FILES} file(s) selected
-        </p>
-
-        <button type="submit" disabled={isLoading}>
-          Upload
+        <button
+          className="mv-btn mv-btn-secondary"
+          type="button"
+          onClick={handleBackToAlbums}
+        >
+          Back to Albums
         </button>
-      </form>
+      </header>
 
-      <div>
-        {media.map((file) => (
-          <MediaCard
-            key={file.id}
-            media={file}
-            isSelected={selectedMediaIds.includes(file.id)}
-            onToggleSelect={handleToggleSelectMedia}
-            onToggleFavorite={handleToggleMediaFavorite}
-            onOpenMedia={handleOpenMedia}
-            onMoveMedia={handleMoveMedia}
-            onDeleteMedia={handleDeleteMedia}
-          />
-        ))}
-      </div>
+      {errorMessage && (
+        <p className="mv-alert mv-alert-error">{errorMessage}</p>
+      )}
 
-      <div>
-        {selectedMedia && (
+      {selectedMediaIds.length > 0 && (
+        <section className="mv-card mv-card-padded selected-toolbar">
+          <p className="selected-toolbar-text">
+            {selectedMediaIds.length} item(s) selected
+          </p>
+
+          <div className="selected-toolbar-actions">
+            <button
+              className="mv-btn mv-btn-secondary"
+              type="button"
+              onClick={handleMoveMultipleMedia}
+            >
+              Move Selected
+            </button>
+
+            <button
+              className="mv-btn mv-btn-danger"
+              type="button"
+              onClick={handleDeleteMultipleMedia}
+            >
+              Delete Selected
+            </button>
+          </div>
+        </section>
+      )}
+
+      <section className="mv-card mv-card-padded upload-card">
+        <form className="mv-form" onSubmit={handleUploadMedia}>
+          <div
+            className={`upload-drop-zone ${
+              isDragging ? "upload-drop-zone-active" : ""
+            }`}
+            onDragOver={handleDragOver}
+            onDragLeave={handleDragLeave}
+            onDrop={handleFileDrop}
+          >
+            {isDragging ? (
+              <p className="upload-drop-title">Drop files here</p>
+            ) : (
+              <>
+                <p className="upload-drop-title">Drag and drop files here</p>
+                <p className="upload-drop-subtitle">
+                  Or choose photos/videos below. Up to {MAX_UPLOAD_FILES} files
+                  at a time.
+                </p>
+              </>
+            )}
+
+            <input
+              className="upload-file-input"
+              type="file"
+              accept="image/*,video/*"
+              multiple
+              onChange={handleChooseMediaFiles}
+            />
+          </div>
+
+          <div className="upload-actions">
+            <p className="upload-count">
+              {selectedFiles.length} / {MAX_UPLOAD_FILES} file(s) selected
+            </p>
+
+            <button
+              className="mv-btn mv-btn-primary"
+              type="submit"
+              disabled={isLoading}
+            >
+              Upload
+            </button>
+          </div>
+        </form>
+      </section>
+
+      {isLoading && <p className="mv-status">Loading media...</p>}
+
+      {!isLoading && !errorMessage && media.length === 0 && (
+        <div className="mv-card mv-empty-state">
+          <p>No media content yet. Upload your first photo or video.</p>
+        </div>
+      )}
+
+      {media.length > 0 && (
+        <section className="media-grid">
+          {media.map((file) => (
+            <MediaCard
+              key={file.id}
+              media={file}
+              isSelected={selectedMediaIds.includes(file.id)}
+              onToggleSelect={handleToggleSelectMedia}
+              onToggleFavorite={handleToggleMediaFavorite}
+              onOpenMedia={handleOpenMedia}
+              onMoveMedia={handleMoveMedia}
+              onDeleteMedia={handleDeleteMedia}
+            />
+          ))}
+        </section>
+      )}
+
+      {selectedMedia && (
+        <section className="media-viewer-section">
           <MediaViewer
             media={selectedMedia}
             onSetAlbumCover={handleSetAlbumCover}
             onCloseMediaViewer={handleCloseMediaViewer}
           />
-        )}
-      </div>
-
-      {isLoading && <p>Loading media...</p>}
-
-      {errorMessage && <p>{errorMessage}</p>}
-
-      {!isLoading && !errorMessage && media.length === 0 && (
-        <p>No media content yet.</p>
+        </section>
       )}
-    </div>
+    </main>
   );
 }
 

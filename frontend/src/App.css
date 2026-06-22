@@ -387,3 +387,107 @@ ALBUM CARD CLASSES
   flex-wrap: wrap;
   gap: 8px;
 }
+
+/*
+##########################################################
+ALBUM DETAIL PAGE CLASSES
+##########################################################
+*/
+.album-detail-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.album-stat-pill {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 6px 12px;
+  background: var(--surface);
+  color: var(--text-muted);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.selected-toolbar {
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.selected-toolbar-text {
+  margin: 0;
+  color: var(--text);
+  font-weight: 700;
+}
+
+.selected-toolbar-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.upload-card {
+  margin-bottom: 24px;
+}
+
+.upload-drop-zone {
+  border: 2px dashed var(--border);
+  border-radius: var(--radius-lg);
+  padding: 40px 24px;
+  text-align: center;
+  background: var(--surface-soft);
+  transition:
+    border-color 0.2s ease,
+    background-color 0.2s ease;
+}
+
+.upload-drop-zone-active {
+  border-color: var(--primary);
+  background: var(--primary-soft);
+}
+
+.upload-drop-title {
+  margin: 0 0 8px;
+  font-weight: 800;
+  color: var(--text);
+}
+
+.upload-drop-subtitle {
+  margin: 0 0 18px;
+  color: var(--text-muted);
+}
+
+.upload-file-input {
+  max-width: 100%;
+}
+
+.upload-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.upload-count {
+  margin: 0;
+  color: var(--text-muted);
+  font-weight: 700;
+}
+
+.media-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 20px;
+}
+
+.media-viewer-section {
+  margin-top: 24px;
+}
