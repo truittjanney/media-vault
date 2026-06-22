@@ -593,3 +593,127 @@ MEDIA CARD CLASSES
   gap: 8px;
   flex-wrap: wrap;
 }
+
+/*
+##########################################################
+MEDIA VIEWER CLASSES
+##########################################################
+*/
+.media-viewer-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: rgba(15, 23, 42, 0.72);
+  padding: 32px 16px;
+  overflow-y: auto;
+}
+
+.media-viewer-card {
+  width: min(1100px, 100%);
+  margin: 0 auto;
+}
+
+.media-viewer-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.media-viewer-title {
+  margin: 0;
+  font-size: 24px;
+  color: var(--text);
+}
+
+.media-viewer-subtitle {
+  margin: 6px 0 0;
+  color: var(--text-muted);
+  word-break: break-word;
+}
+
+.media-viewer-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.media-viewer-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(280px, 1fr);
+  gap: 20px;
+}
+
+.media-viewer-stage {
+  min-height: 420px;
+  background: #0f172a;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.media-viewer-media {
+  max-width: 100%;
+  max-height: 70vh;
+  object-fit: contain;
+  display: block;
+}
+
+.media-info-panel {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface-soft);
+  padding: 18px;
+}
+
+.media-info-title {
+  margin: 0 0 16px;
+  font-size: 20px;
+  color: var(--text);
+}
+
+.media-info-list {
+  display: grid;
+  gap: 12px;
+}
+
+.media-info-row {
+  display: grid;
+  gap: 4px;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 10px;
+}
+
+.media-info-row:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.media-info-label {
+  color: var(--text-muted);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.media-info-value {
+  color: var(--text);
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 900px) {
+  .media-viewer-header {
+    flex-direction: column;
+  }
+
+  .media-viewer-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .media-viewer-stage {
+    min-height: 280px;
+  }
+}
