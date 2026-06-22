@@ -6,12 +6,34 @@ function AlbumCard({
   onRemoveAlbumLock,
   onDeleteAlbum,
 }) {
+  const albumCoverMedia = album.albumCoverMedia;
+
   return (
     <article
       className={`mv-card album-card ${album.isLocked ? "album-card-locked" : ""}`}
       onClick={() => onOpenAlbum(album)}
     >
-      <div className="album-card-cover">Album Cover</div>
+      <div className="album-card-cover">
+        {albumCoverMedia?.type === "image" && (
+          <img
+            className="album-card-cover-media"
+            src={`http://localhost:5001${albumCoverMedia.filePath}`}
+            alt={`${album.name} album cover`}
+          />
+        )}
+
+        {albumCoverMedia?.type === "video" && (
+          <video
+            className="album-card-cover-media"
+            src={`http://localhost:5001${albumCoverMedia.filePath}`}
+            muted
+            playsInline
+            preload="metadata"
+          />
+        )}
+
+        {!albumCoverMedia && <span>No Album Cover</span>}
+      </div>
 
       <div className="album-card-body">
         <div className="album-card-title-row">
