@@ -421,6 +421,38 @@ function AlbumsPage() {
 
               <div className="album-action-row">
                 <div className="album-action-text">
+                  <p className="album-action-title">
+                    {selectedAlbumForActions.isLocked
+                      ? "Remove Lock"
+                      : "Lock Album"}
+                  </p>
+
+                  <p className="album-action-description">
+                    {selectedAlbumForActions.isLocked
+                      ? "Remove PIN protection from this album."
+                      : "Require your PIN before opening this album."}
+                  </p>
+                </div>
+
+                <button
+                  className="mv-btn mv-btn-secondary"
+                  type="button"
+                  onClick={async () => {
+                    if (selectedAlbumForActions.isLocked) {
+                      await handleRemoveAlbumLock(selectedAlbumForActions.id);
+                    } else {
+                      await handleAddAlbumLock(selectedAlbumForActions.id);
+                    }
+
+                    handleCloseAlbumActionsModal();
+                  }}
+                >
+                  {selectedAlbumForActions.isLocked ? "Remove Lock" : "Lock"}
+                </button>
+              </div>
+
+              <div className="album-action-row">
+                <div className="album-action-text">
                   <p className="album-action-title">Rename Album</p>
                   <p className="album-action-description">
                     Change the display name for this album.
