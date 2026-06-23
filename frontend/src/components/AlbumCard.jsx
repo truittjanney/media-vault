@@ -1,11 +1,4 @@
-function AlbumCard({
-  album,
-  onOpenAlbum,
-  onRenameAlbum,
-  onAddAlbumLock,
-  onRemoveAlbumLock,
-  onDeleteAlbum,
-}) {
+function AlbumCard({ album, onOpenAlbum, onOpenAlbumActions }) {
   const albumCoverMedia = album.albumCoverMedia;
 
   return (
@@ -14,6 +7,17 @@ function AlbumCard({
       onClick={() => onOpenAlbum(album)}
     >
       <div className="album-card-cover">
+        <button
+          className="album-card-options-button"
+          type="button"
+          onClick={(event) => {
+            event.stopPropagation();
+            onOpenAlbumActions(album);
+          }}
+        >
+          ⋯
+        </button>
+
         {albumCoverMedia?.type === "image" && (
           <img
             className="album-card-cover-media"
@@ -43,48 +47,6 @@ function AlbumCard({
         </div>
 
         <p className="album-card-meta">Total Files: {album.totalCount || 0}</p>
-
-        <div className="album-card-actions">
-          {!album.isLocked && (
-            <button
-              className="mv-btn mv-btn-secondary mv-btn-small"
-              type="button"
-              onClick={(event) => {
-                event.stopPropagation();
-                onAddAlbumLock(album.id);
-              }}
-            >
-              Lock
-            </button>
-          )}
-
-          <button
-            className="mv-btn mv-btn-secondary mv-btn-small"
-            type="button"
-            disabled={album.isLocked}
-            onClick={(event) => {
-              event.stopPropagation();
-              const newName = prompt("Enter new album name:", album.name);
-              if (newName !== null) {
-                onRenameAlbum(album.id, newName);
-              }
-            }}
-          >
-            Rename
-          </button>
-
-          <button
-            className="mv-btn mv-btn-danger mv-btn-small"
-            type="button"
-            disabled={album.isLocked}
-            onClick={(event) => {
-              event.stopPropagation();
-              onDeleteAlbum(album.id);
-            }}
-          >
-            Delete
-          </button>
-        </div>
       </div>
     </article>
   );

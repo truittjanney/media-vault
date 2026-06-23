@@ -20,6 +20,7 @@ function AlbumsPage() {
   const [albumName, setAlbumName] = useState("");
   const [albumSortPreference, setAlbumSortPreference] = useState("name-asc");
   const [isCreateAlbumModalOpen, setIsCreateAlbumModalOpen] = useState(false);
+  const [selectedAlbumForActions, setSelectedAlbumForActions] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const navigate = useNavigate();
@@ -92,6 +93,16 @@ function AlbumsPage() {
   function handleCloseCreateAlbumModal() {
     setAlbumName("");
     setIsCreateAlbumModalOpen(false);
+  }
+
+  function handleOpenAlbumActionsModal(album) {
+    setErrorMessage("");
+    setSelectedAlbumForActions(album);
+  }
+
+  function handleCloseAlbumActionsModal() {
+    setErrorMessage("");
+    setSelectedAlbumForActions(null);
   }
 
   function logoutUser() {
@@ -255,6 +266,7 @@ function AlbumsPage() {
   // ####################################################
   return (
     <main className="page-container">
+      {/* Page Header */}
       <header className="page-header">
         <div>
           <h1 className="page-title">Albums</h1>
@@ -263,6 +275,7 @@ function AlbumsPage() {
           </p>
         </div>
 
+        {/* Logout Button */}
         <button
           className="mv-btn mv-btn-secondary"
           type="button"
@@ -272,10 +285,11 @@ function AlbumsPage() {
         </button>
       </header>
 
-      {errorMessage && !isCreateAlbumModalOpen && (
+      {errorMessage && !isCreateAlbumModalOpen && !selectedAlbumForActions && (
         <p className="mv-alert mv-alert-error">{errorMessage}</p>
       )}
 
+      {/* Create Album Button */}
       <section className="mv-card mv-card-padded albums-controls-card">
         <div className="albums-controls-row">
           <div className="albums-controls-actions">
@@ -315,6 +329,7 @@ function AlbumsPage() {
         </div>
       )}
 
+      {/* Create Album Modal */}
       {isCreateAlbumModalOpen && (
         <div className="mv-modal-overlay" onClick={handleCloseCreateAlbumModal}>
           <section
@@ -328,9 +343,7 @@ function AlbumsPage() {
               <h2 className="mv-modal-title" id="createAlbumTitle">
                 Create Album
               </h2>
-              <p className="mv-modal-subtitle">
-                Name your new private media album.
-              </p>
+              <p className="mv-modal-subtitle">Name your new album.</p>
             </div>
 
             {errorMessage && (
@@ -373,6 +386,104 @@ function AlbumsPage() {
         </div>
       )}
 
+      {/* Album Actions Modal */}
+      {selectedAlbumForActions && (
+        <div
+          className="mv-modal-overlay"
+          onClick={handleCloseAlbumActionsModal}
+        >
+          <section
+            className="mv-card mv-card-padded mv-modal-card"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="albumActionsTitle"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <div className="mv-modal-header">
+              <h2 className="mv-modal-title" id="albumActionsTitle">
+                Album Options
+              </h2>
+
+              <p className="mv-modal-subtitle">
+                {selectedAlbumForActions.name}
+              </p>
+            </div>
+
+            <div className="album-actions-list">
+              <div className="album-action-row">
+                <div className="album-action-text">
+                  <p className="album-action-title">Album Status</p>
+                  <p className="album-action-description">
+                    {selectedAlbumForActions.isLocked ? "Locked" : "Unlocked"}
+                  </p>
+                </div>
+              </div>
+
+              <div className="album-action-row">
+                <div className="album-action-text">
+                  <p className="album-action-title">Rename Album</p>
+                  <p className="album-action-description">
+                    Change the display name for this album.
+                  </p>
+                </div>
+
+                <button
+                  className="mv-btn mv-btn-secondary"
+                  type="button"
+                  onClick={async () => {
+                    const newName = prompt(
+                      "Enter new album name:",
+                      selectedAlbumForActions.name,
+                    );
+
+                    if (newName !== null) {
+                      await handleRenameAlbum(
+                        selectedAlbumForActions.id,
+                        newName,
+                      );
+                      handleCloseAlbumActionsModal();
+                    }
+                  }}
+                >
+                  Rename
+                </button>
+              </div>
+
+              <div className="album-action-row">
+                <div className="album-action-text">
+                  <p className="album-action-title">Delete Album</p>
+                  <p className="album-action-description">
+                    Permanently delete this album and its media records.
+                  </p>
+                </div>
+
+                <button
+                  className="mv-btn mv-btn-danger"
+                  type="button"
+                  onClick={async () => {
+                    await handleDeleteAlbum(selectedAlbumForActions.id);
+                    handleCloseAlbumActionsModal();
+                  }}
+                >
+                  Delete
+                </button>
+              </div>
+            </div>
+
+            <div className="mv-modal-actions">
+              <button
+                className="mv-btn mv-btn-secondary"
+                type="button"
+                onClick={handleCloseAlbumActionsModal}
+              >
+                Close
+              </button>
+            </div>
+          </section>
+        </div>
+      )}
+
+      {/* Albums Grid */}
       {sortedAlbums.length > 0 && (
         <section className="albums-grid">
           {sortedAlbums.map((album) => (
@@ -380,10 +491,7 @@ function AlbumsPage() {
               key={album.id}
               album={album}
               onOpenAlbum={handleOpenAlbum}
-              onAddAlbumLock={handleAddAlbumLock}
-              onRemoveAlbumLock={handleRemoveAlbumLock}
-              onRenameAlbum={handleRenameAlbum}
-              onDeleteAlbum={handleDeleteAlbum}
+              onOpenAlbumActions={handleOpenAlbumActionsModal}
             />
           ))}
         </section>
