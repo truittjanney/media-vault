@@ -375,6 +375,7 @@ ALBUM CARD CLASSES
   color: var(--text-muted);
   font-weight: 700;
   overflow: hidden;
+  position: relative;
 }
 
 .album-card-cover-media {
@@ -422,6 +423,66 @@ ALBUM CARD CLASSES
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
+}
+
+.album-card-options-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 34px;
+  height: 34px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.92);
+  color: var(--text);
+  font-size: 20px;
+  font-weight: 800;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.album-card-options-button:hover {
+  background: var(--surface-soft);
+}
+
+/*
+##########################################################
+ALBUM ACTIONS MODAL CLASSES
+##########################################################
+*/
+.album-actions-list {
+  display: grid;
+  gap: 12px;
+}
+
+.album-action-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 14px;
+  background: var(--surface-soft);
+}
+
+.album-action-text {
+  display: grid;
+  gap: 4px;
+}
+
+.album-action-title {
+  margin: 0;
+  color: var(--text);
+  font-weight: 800;
+}
+
+.album-action-description {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 14px;
 }
 
 /*
