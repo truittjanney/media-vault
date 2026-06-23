@@ -19,6 +19,7 @@ function AlbumsPage() {
   const [albums, setAlbums] = useState([]);
   const [albumName, setAlbumName] = useState("");
   const [albumSortPreference, setAlbumSortPreference] = useState("name-asc");
+  const [isCreateAlbumModalOpen, setIsCreateAlbumModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const navigate = useNavigate();
@@ -82,6 +83,17 @@ function AlbumsPage() {
     }
   }
 
+  function handleOpenCreateAlbumModal() {
+    setErrorMessage("");
+    setAlbumName("");
+    setIsCreateAlbumModalOpen(true);
+  }
+
+  function handleCloseCreateAlbumModal() {
+    setAlbumName("");
+    setIsCreateAlbumModalOpen(false);
+  }
+
   function logoutUser() {
     localStorage.removeItem("token");
     navigate("/login");
@@ -108,15 +120,18 @@ function AlbumsPage() {
     event.preventDefault();
     setErrorMessage("");
 
-    if (albumName.trim() === "") {
+    const trimmedAlbumName = albumName.trim();
+
+    if (trimmedAlbumName === "") {
       setErrorMessage("Album name cannot be empty");
       return;
     }
 
     try {
       setIsLoading(true);
-      await createAlbum({ name: albumName });
+      await createAlbum({ name: trimmedAlbumName });
       setAlbumName("");
+      setIsCreateAlbumModalOpen(false);
       await loadAlbums();
     } catch (error) {
       setErrorMessage(error.message);
@@ -257,37 +272,21 @@ function AlbumsPage() {
         </button>
       </header>
 
-      {errorMessage && (
+      {errorMessage && !isCreateAlbumModalOpen && (
         <p className="mv-alert mv-alert-error">{errorMessage}</p>
       )}
 
       <section className="mv-card mv-card-padded albums-controls-card">
         <div className="albums-controls-row">
-          <form
-            className="albums-create-form"
-            onSubmit={handleCreateAlbumSubmit}
-          >
-            <div className="mv-field albums-create-field">
-              <label className="mv-label" htmlFor="albumName">
-                Album Name
-              </label>
-              <input
-                className="mv-input"
-                type="text"
-                id="albumName"
-                value={albumName}
-                onChange={(e) => setAlbumName(e.target.value)}
-              />
-            </div>
-
+          <div className="albums-controls-actions">
             <button
               className="mv-btn mv-btn-primary"
-              type="submit"
-              disabled={isLoading}
+              type="button"
+              onClick={handleOpenCreateAlbumModal}
             >
               Create Album
             </button>
-          </form>
+          </div>
 
           <div className="mv-field albums-sort-field">
             <label className="mv-label" htmlFor="albumSortPreference">
@@ -313,6 +312,64 @@ function AlbumsPage() {
       {!isLoading && !errorMessage && sortedAlbums.length === 0 && (
         <div className="mv-card mv-empty-state">
           <p>No albums yet. Create your first album to get started.</p>
+        </div>
+      )}
+
+      {isCreateAlbumModalOpen && (
+        <div className="mv-modal-overlay" onClick={handleCloseCreateAlbumModal}>
+          <section
+            className="mv-card mv-card-padded mv-modal-card"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="createAlbumTitle"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <div className="mv-modal-header">
+              <h2 className="mv-modal-title" id="createAlbumTitle">
+                Create Album
+              </h2>
+              <p className="mv-modal-subtitle">
+                Name your new private media album.
+              </p>
+            </div>
+
+            {errorMessage && (
+              <p className="mv-alert mv-alert-error">{errorMessage}</p>
+            )}
+
+            <form className="mv-form" onSubmit={handleCreateAlbumSubmit}>
+              <div className="mv-field">
+                <label className="mv-label" htmlFor="albumName">
+                  Album Name
+                </label>
+                <input
+                  className="mv-input"
+                  type="text"
+                  id="albumName"
+                  value={albumName}
+                  onChange={(e) => setAlbumName(e.target.value)}
+                />
+              </div>
+
+              <div className="mv-modal-actions">
+                <button
+                  className="mv-btn mv-btn-secondary"
+                  type="button"
+                  onClick={handleCloseCreateAlbumModal}
+                >
+                  Cancel
+                </button>
+
+                <button
+                  className="mv-btn mv-btn-primary"
+                  type="submit"
+                  disabled={isLoading}
+                >
+                  Create Album
+                </button>
+              </div>
+            </form>
+          </section>
         </div>
       )}
 
