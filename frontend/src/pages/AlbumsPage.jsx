@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { getUserProfile, updateUserProfile } from "../services/userService.js";
 import {
   getAlbums,
@@ -307,11 +307,13 @@ function AlbumsPage() {
 
           {/* Profile Settings Button */}
           <button
-            className="mv-btn mv-btn-secondary"
+            className="profile-icon-button"
             type="button"
+            aria-label="Profile settings"
+            title="Profile settings"
             onClick={() => navigate("/profile")}
           >
-            👤 Profile
+            👤
           </button>
         </div>
       </header>
@@ -321,7 +323,7 @@ function AlbumsPage() {
       )}
 
       {/* Create Album Button */}
-      <section className="mv-card mv-card-padded albums-create-card">
+      <section className="albums-create-section">
         <button
           className="mv-btn mv-btn-primary"
           type="button"

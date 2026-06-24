@@ -324,8 +324,27 @@ ALBUMS PAGE CLASSES
   min-width: 220px;
 }
 
-.albums-create-card {
-  max-width: 360px;
+.profile-icon-button {
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--text);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  box-shadow: var(--shadow-sm);
+}
+
+.profile-icon-button:hover {
+  background: var(--surface-soft);
+  border-color: var(--primary-border);
+}
+
+.albums-create-section {
   margin: 0 auto 24px;
   display: flex;
   justify-content: center;
@@ -685,19 +704,6 @@ MEDIA CARD CLASSES
 .media-card-favorite-active {
   background: #fee2e2;
   border-color: #fecaca;
-}
-
-.media-card-body {
-  padding: 12px;
-}
-
-.media-card-name {
-  margin: 0 0 12px;
-  color: var(--text);
-  font-weight: 700;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 
 /*
