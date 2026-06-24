@@ -823,3 +823,75 @@ MEDIA VIEWER CLASSES
     min-height: 280px;
   }
 }
+
+/*
+##########################################################
+PROFILE PAGE CLASSES
+##########################################################
+*/
+.profile-settings-card {
+  max-width: 760px;
+  margin: 0 auto;
+}
+
+.profile-section-title {
+  margin: 0 0 18px;
+  font-size: 22px;
+  color: var(--text);
+}
+
+.profile-settings-list {
+  display: grid;
+  gap: 12px;
+}
+
+.profile-settings-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  background: var(--surface-soft);
+}
+
+.profile-settings-title {
+  margin: 0;
+  font-weight: 800;
+  color: var(--text);
+}
+
+.profile-settings-description {
+  margin: 4px 0 0;
+  color: var(--text-muted);
+}
+
+.profile-coming-soon-badge {
+  flex: 0 0 auto;
+  border: 1px solid var(--primary-border);
+  border-radius: 999px;
+  padding: 6px 10px;
+  background: var(--primary-soft);
+  color: var(--primary-hover);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.profile-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 24px;
+}
+
+.profile-page-header {
+  max-width: 760px;
+  margin: 0 auto 24px;
+}
+
+.profile-page-header .page-title,
+.profile-page-header .page-subtitle {
+  text-align: center;
+}
