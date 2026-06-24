@@ -200,7 +200,13 @@ function AlbumDetailPage() {
       return;
     }
 
-    const targetAlbumId = Number(prompt("Enter target album ID:"));
+    const targetAlbumInput = prompt("Enter target album ID:");
+
+    if (targetAlbumInput === null) {
+      return;
+    }
+
+    const targetAlbumId = Number(targetAlbumInput);
 
     if (!Number.isInteger(targetAlbumId) || targetAlbumId <= 0) {
       setErrorMessage("Invalid target album id.");
