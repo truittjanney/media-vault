@@ -285,6 +285,18 @@ function AlbumDetailPage() {
     loadMedia();
   }, [id]);
 
+  useEffect(() => {
+    if (!errorMessage) {
+      return;
+    }
+
+    const timer = setTimeout(() => {
+      setErrorMessage("");
+    }, 5000);
+
+    return () => clearTimeout(timer);
+  }, [errorMessage]);
+
   // ####################################################
   // DERIVED VALUES
   // ####################################################
