@@ -278,8 +278,8 @@ function AlbumsPage() {
   // ####################################################
   return (
     <main className="page-container">
-      {/* Page Header */}
-      <header className="page-header">
+      {/* Page Header & Subheader */}
+      <header className="page-header albums-page-header">
         <div>
           <h1 className="page-title">Albums</h1>
           <p className="page-subtitle">
@@ -287,36 +287,10 @@ function AlbumsPage() {
           </p>
         </div>
 
-        {/* Profile Settings Button */}
-        <button
-          className="mv-btn mv-btn-secondary"
-          type="button"
-          onClick={() => navigate("/profile")}
-        >
-          👤 Profile
-        </button>
-      </header>
-
-      {errorMessage && !isCreateAlbumModalOpen && !selectedAlbumForActions && (
-        <p className="mv-alert mv-alert-error">{errorMessage}</p>
-      )}
-
-      {/* Create Album Button */}
-      <section className="mv-card mv-card-padded albums-controls-card">
-        <div className="albums-controls-row">
-          <div className="albums-controls-actions">
-            <button
-              className="mv-btn mv-btn-primary"
-              type="button"
-              onClick={handleOpenCreateAlbumModal}
-            >
-              Create Album
-            </button>
-          </div>
-
-          <div className="mv-field albums-sort-field">
+        <div className="albums-header-actions">
+          <div className="mv-field albums-header-sort-field">
             <label className="mv-label" htmlFor="albumSortPreference">
-              Sort albums
+              Sort Albums
             </label>
             <select
               className="mv-select"
@@ -330,7 +304,31 @@ function AlbumsPage() {
               <option value="updated-desc">Recently Updated</option>
             </select>
           </div>
+
+          {/* Profile Settings Button */}
+          <button
+            className="mv-btn mv-btn-secondary"
+            type="button"
+            onClick={() => navigate("/profile")}
+          >
+            👤 Profile
+          </button>
         </div>
+      </header>
+
+      {errorMessage && !isCreateAlbumModalOpen && !selectedAlbumForActions && (
+        <p className="mv-alert mv-alert-error">{errorMessage}</p>
+      )}
+
+      {/* Create Album Button */}
+      <section className="mv-card mv-card-padded albums-create-card">
+        <button
+          className="mv-btn mv-btn-primary"
+          type="button"
+          onClick={handleOpenCreateAlbumModal}
+        >
+          + Create Album
+        </button>
       </section>
 
       {isLoading && <p className="mv-status">Loading albums...</p>}
