@@ -65,12 +65,6 @@ function MediaCard({
           </button>
         </div>
       </div>
-
-      <div className="media-card-body">
-        <p className="media-card-name" title={media.name}>
-          {media.name}
-        </p>
-      </div>
     </article>
   );
 }
