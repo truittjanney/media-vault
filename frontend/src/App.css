@@ -419,12 +419,6 @@ ALBUM CARD CLASSES
   font-size: 14px;
 }
 
-.album-card-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
 .album-card-options-button {
   position: absolute;
   top: 10px;
@@ -642,17 +636,38 @@ MEDIA CARD CLASSES
 }
 
 .media-card-select {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
+  width: 34px;
+  height: 34px;
   border: 1px solid var(--border);
   border-radius: 999px;
-  padding: 4px 8px;
   background: rgba(255, 255, 255, 0.92);
-  color: var(--text);
-  font-size: 13px;
-  font-weight: 700;
   cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.media-card-select input {
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border: 2px solid var(--text-muted);
+  border-radius: 999px;
+  cursor: pointer;
+  display: grid;
+  place-content: center;
+}
+
+.media-card-select input:checked {
+  background: var(--primary);
+  border-color: var(--primary);
+}
+
+.media-card-select input:checked::before {
+  content: "✓";
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 800;
 }
 
 .media-card-favorite {
@@ -683,12 +698,6 @@ MEDIA CARD CLASSES
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-}
-
-.media-card-actions {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
 }
 
 /*

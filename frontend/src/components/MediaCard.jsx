@@ -1,16 +1,21 @@
 function MediaCard({
   media,
   isSelected,
+  isSelectionMode,
   onToggleSelect,
   onToggleFavorite,
   onOpenMedia,
-  onMoveMedia,
-  onDeleteMedia,
 }) {
   return (
     <article
       className={`mv-card media-card ${isSelected ? "media-card-selected" : ""}`}
-      onClick={() => onOpenMedia(media.id)}
+      onClick={() => {
+        if (isSelectionMode) {
+          onToggleSelect(media.id);
+        } else {
+          onOpenMedia(media.id);
+        }
+      }}
     >
       <div className="media-card-preview">
         {media.type === "image" && (
@@ -41,7 +46,6 @@ function MediaCard({
               checked={isSelected}
               onChange={() => onToggleSelect(media.id)}
             />
-            Select
           </label>
 
           <button
@@ -66,37 +70,6 @@ function MediaCard({
         <p className="media-card-name" title={media.name}>
           {media.name}
         </p>
-
-        <div className="media-card-actions">
-          <button
-            className="mv-btn mv-btn-secondary mv-btn-small"
-            type="button"
-            onClick={(event) => {
-              event.stopPropagation();
-
-              const targetAlbumId = Number(prompt("Enter target album ID:"));
-
-              if (!Number.isInteger(targetAlbumId) || targetAlbumId <= 0) {
-                return;
-              }
-
-              onMoveMedia(media.id, targetAlbumId);
-            }}
-          >
-            Move
-          </button>
-
-          <button
-            className="mv-btn mv-btn-danger mv-btn-small"
-            type="button"
-            onClick={(event) => {
-              event.stopPropagation();
-              onDeleteMedia(media.id);
-            }}
-          >
-            Delete
-          </button>
-        </div>
       </div>
     </article>
   );

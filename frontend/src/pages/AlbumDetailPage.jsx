@@ -112,6 +112,14 @@ function AlbumDetailPage() {
     setSelectedFiles((previousFiles) => [...previousFiles, ...newFiles]);
   }
 
+  function handleSelectAllMedia() {
+    setSelectedMediaIds(media.map((file) => file.id));
+  }
+
+  function handleCancelMediaSelection() {
+    setSelectedMediaIds([]);
+  }
+
   // API EVENT HANDLERS
   async function handleSetAlbumCover(mediaId) {
     setErrorMessage("");
@@ -276,6 +284,7 @@ function AlbumDetailPage() {
   // ####################################################
   const imageCount = media.filter((file) => file.type === "image").length;
   const videoCount = media.filter((file) => file.type === "video").length;
+  const isSelectionMode = selectedMediaIds.length > 0;
 
   // ####################################################
   // USER INTERFACE
@@ -293,7 +302,6 @@ function AlbumDetailPage() {
           <div className="album-detail-summary">
             <span className="album-stat-pill">Images: {imageCount}</span>
             <span className="album-stat-pill">Videos: {videoCount}</span>
-            <span className="album-stat-pill">Total: {media.length}</span>
           </div>
         </div>
 
@@ -320,17 +328,33 @@ function AlbumDetailPage() {
             <button
               className="mv-btn mv-btn-secondary"
               type="button"
-              onClick={handleMoveMultipleMedia}
+              onClick={handleSelectAllMedia}
             >
-              Move Selected
+              Select All
             </button>
 
             <button
-              className="mv-btn mv-btn-danger"
+              className="mv-btn mv-btn-secondary"
+              type="button"
+              onClick={handleMoveMultipleMedia}
+            >
+              ➡️Move To
+            </button>
+
+            <button
+              className="mv-btn mv-btn-secondary"
               type="button"
               onClick={handleDeleteMultipleMedia}
             >
-              Delete Selected
+              🗑️Delete Selected
+            </button>
+
+            <button
+              className="mv-btn mv-btn-secondary"
+              type="button"
+              onClick={handleCancelMediaSelection}
+            >
+              Cancel
             </button>
           </div>
         </section>
@@ -398,11 +422,10 @@ function AlbumDetailPage() {
               key={file.id}
               media={file}
               isSelected={selectedMediaIds.includes(file.id)}
+              isSelectionMode={isSelectionMode}
               onToggleSelect={handleToggleSelectMedia}
               onToggleFavorite={handleToggleMediaFavorite}
               onOpenMedia={handleOpenMedia}
-              onMoveMedia={handleMoveMedia}
-              onDeleteMedia={handleDeleteMedia}
             />
           ))}
         </section>
