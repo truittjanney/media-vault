@@ -409,19 +409,21 @@ function AlbumDetailPage() {
             />
           </div>
 
-          <div className="upload-actions">
-            <p className="upload-count">
-              {selectedFiles.length} / {MAX_UPLOAD_FILES} file(s) selected
-            </p>
+          {selectedFiles.length > 0 && (
+            <div className="upload-actions">
+              <p className="upload-count">
+                {selectedFiles.length} / {MAX_UPLOAD_FILES} file(s) selected
+              </p>
 
-            <button
-              className="mv-btn mv-btn-primary"
-              type="submit"
-              disabled={isLoading}
-            >
-              Upload
-            </button>
-          </div>
+              <button
+                className="mv-btn mv-btn-primary"
+                type="submit"
+                disabled={isLoading}
+              >
+                Upload
+              </button>
+            </div>
+          )}
         </form>
       </section>
 
