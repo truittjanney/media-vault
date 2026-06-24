@@ -318,8 +318,8 @@ function AlbumDetailPage() {
           </p>
 
           <div className="album-detail-summary">
-            <span className="album-stat-pill">Images: {imageCount}</span>
-            <span className="album-stat-pill">Videos: {videoCount}</span>
+            <span className="album-stat-pill">📸 Images: {imageCount}</span>
+            <span className="album-stat-pill">🎥 Videos: {videoCount}</span>
           </div>
         </div>
 
@@ -356,7 +356,7 @@ function AlbumDetailPage() {
               type="button"
               onClick={handleMoveMultipleMedia}
             >
-              ➡️Move To
+              ➡️ Move To
             </button>
 
             <button
@@ -364,7 +364,7 @@ function AlbumDetailPage() {
               type="button"
               onClick={handleDeleteMultipleMedia}
             >
-              🗑️Delete Selected
+              🗑️ Delete Selected
             </button>
 
             <button
