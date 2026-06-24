@@ -4,6 +4,7 @@ import { Routes, Route, Navigate } from "react-router-dom";
 
 import { LoginPage } from "./pages/LoginPage";
 import { SignupPage } from "./pages/SignupPage";
+import { ProfilePage } from "./pages/ProfilePage";
 import { AlbumsPage } from "./pages/AlbumsPage";
 import { AlbumDetailPage } from "./pages/AlbumDetailPage";
 
@@ -14,6 +15,7 @@ function App() {
         <Route path="/" element={<Navigate to="/login" />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/signup" element={<SignupPage />} />
+        <Route path="/profile" element={<ProfilePage />} />
         <Route path="/albums" element={<AlbumsPage />} />
         <Route path="/albums/:id" element={<AlbumDetailPage />} />
       </Routes>

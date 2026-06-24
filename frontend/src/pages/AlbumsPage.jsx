@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { getUserProfile, updateUserProfile } from "../services/userService.js";
 import {
   getAlbums,
@@ -287,13 +287,13 @@ function AlbumsPage() {
           </p>
         </div>
 
-        {/* Logout Button */}
+        {/* Profile Settings Button */}
         <button
           className="mv-btn mv-btn-secondary"
           type="button"
-          onClick={logoutUser}
+          onClick={() => navigate("/profile")}
         >
-          Logout
+          👤 Profile
         </button>
       </header>
 
