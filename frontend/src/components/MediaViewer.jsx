@@ -1,4 +1,10 @@
-function MediaViewer({ media, onSetAlbumCover, onCloseMediaViewer }) {
+function MediaViewer({
+  media,
+  onSetAlbumCover,
+  onShowPreviousMedia,
+  onShowNextMedia,
+  onCloseMediaViewer,
+}) {
   return (
     <div className="media-viewer-overlay">
       <article className="mv-card mv-card-padded media-viewer-card">
@@ -30,25 +36,43 @@ function MediaViewer({ media, onSetAlbumCover, onCloseMediaViewer }) {
         </header>
 
         <div className="media-viewer-layout">
-          <div className="media-viewer-stage">
-            {media.type === "image" && (
-              <img
-                className="media-viewer-media"
-                src={`http://localhost:5001${media.filePath}`}
-                alt={media.name}
-              />
-            )}
+          <div className="media-viewer-navigation-row">
+            <button
+              className="media-viewer-nav-button"
+              type="button"
+              onClick={onShowPreviousMedia}
+            >
+              ←
+            </button>
 
-            {media.type === "video" && (
-              <video
-                className="media-viewer-media"
-                src={`http://localhost:5001${media.filePath}`}
-                controls
-              />
-            )}
+            <div className="media-viewer-stage">
+              {media.type === "image" && (
+                <img
+                  className="media-viewer-media"
+                  src={`http://localhost:5001${media.filePath}`}
+                  alt={media.name}
+                />
+              )}
+
+              {media.type === "video" && (
+                <video
+                  className="media-viewer-media"
+                  src={`http://localhost:5001${media.filePath}`}
+                  controls
+                />
+              )}
+            </div>
+
+            <button
+              className="media-viewer-nav-button"
+              type="button"
+              onClick={onShowNextMedia}
+            >
+              →
+            </button>
           </div>
 
-          <aside className="media-info-panel">
+          {/* <aside className="media-info-panel">
             <h3 className="media-info-title">File Info</h3>
 
             <div className="media-info-list">
@@ -101,7 +125,7 @@ function MediaViewer({ media, onSetAlbumCover, onCloseMediaViewer }) {
                 </span>
               </div>
             </div>
-          </aside>
+          </aside> */}
         </div>
       </article>
     </div>

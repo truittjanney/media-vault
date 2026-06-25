@@ -753,11 +753,12 @@ MEDIA VIEWER CLASSES
 
 .media-viewer-layout {
   display: grid;
-  grid-template-columns: minmax(0, 2fr) minmax(280px, 1fr);
+  grid-template-columns: 1fr;
   gap: 20px;
 }
 
 .media-viewer-stage {
+  position: relative;
   min-height: 420px;
   background: #0f172a;
   border-radius: var(--radius-md);
@@ -765,6 +766,34 @@ MEDIA VIEWER CLASSES
   align-items: center;
   justify-content: center;
   overflow: hidden;
+}
+
+.media-viewer-navigation-row {
+  display: grid;
+  grid-template-columns: 52px minmax(0, 1fr) 52px;
+  align-items: center;
+  gap: 12px;
+}
+
+.media-viewer-nav-button {
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--text);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  font-weight: 800;
+  box-shadow: var(--shadow-sm);
+}
+
+.media-viewer-nav-button:hover {
+  background: var(--surface-soft);
+  border-color: var(--primary-border);
 }
 
 .media-viewer-media {

@@ -61,10 +61,6 @@ function AlbumDetailPage() {
     setSelectedMedia(clickedMedia);
   }
 
-  function handleCloseMediaViewer() {
-    setSelectedMedia(null);
-  }
-
   function handleToggleSelectMedia(mediaId) {
     if (selectedMediaIds.includes(mediaId)) {
       setSelectedMediaIds(selectedMediaIds.filter((id) => id !== mediaId));
@@ -118,6 +114,47 @@ function AlbumDetailPage() {
 
   function handleCancelMediaSelection() {
     setSelectedMediaIds([]);
+  }
+
+  function handleShowPreviousMedia() {
+    if (!selectedMedia || media.length === 0) {
+      return;
+    }
+
+    const currentIndex = media.findIndex(
+      (file) => file.id === selectedMedia.id,
+    );
+
+    if (currentIndex === -1) {
+      return;
+    }
+
+    const previousIndex =
+      currentIndex === 0 ? media.length - 1 : currentIndex - 1;
+
+    setSelectedMedia(media[previousIndex]);
+  }
+
+  function handleShowNextMedia() {
+    if (!selectedMedia || media.length === 0) {
+      return;
+    }
+
+    const currentIndex = media.findIndex(
+      (file) => file.id === selectedMedia.id,
+    );
+
+    if (currentIndex === -1) {
+      return;
+    }
+
+    const nextIndex = currentIndex === media.length - 1 ? 0 : currentIndex + 1;
+
+    setSelectedMedia(media[nextIndex]);
+  }
+
+  function handleCloseMediaViewer() {
+    setSelectedMedia(null);
   }
 
   // API EVENT HANDLERS
@@ -456,6 +493,8 @@ function AlbumDetailPage() {
           <MediaViewer
             media={selectedMedia}
             onSetAlbumCover={handleSetAlbumCover}
+            onShowPreviousMedia={handleShowPreviousMedia}
+            onShowNextMedia={handleShowNextMedia}
             onCloseMediaViewer={handleCloseMediaViewer}
           />
         </section>
