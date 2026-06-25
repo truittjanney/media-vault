@@ -3,6 +3,7 @@ function MediaViewer({
   onSetAlbumCover,
   onShowPreviousMedia,
   onShowNextMedia,
+  onOpenMediaOptionsModal,
   onCloseMediaViewer,
 }) {
   return (
@@ -18,11 +19,13 @@ function MediaViewer({
 
           <div className="media-viewer-actions">
             <button
-              className="mv-btn mv-btn-primary"
+              className="media-viewer-options-button"
               type="button"
-              onClick={() => onSetAlbumCover(media.id)}
+              aria-label="Media options"
+              title="Media options"
+              onClick={onOpenMediaOptionsModal}
             >
-              Set as Album Cover
+              ⋯
             </button>
 
             <button
@@ -71,61 +74,6 @@ function MediaViewer({
               →
             </button>
           </div>
-
-          {/* <aside className="media-info-panel">
-            <h3 className="media-info-title">File Info</h3>
-
-            <div className="media-info-list">
-              <div className="media-info-row">
-                <span className="media-info-label">Name</span>
-                <span className="media-info-value">
-                  {media.name || "Not available"}
-                </span>
-              </div>
-
-              <div className="media-info-row">
-                <span className="media-info-label">Type</span>
-                <span className="media-info-value">
-                  {media.type || "Not available"}
-                </span>
-              </div>
-
-              <div className="media-info-row">
-                <span className="media-info-label">Format</span>
-                <span className="media-info-value">
-                  {media.format || "Not available"}
-                </span>
-              </div>
-
-              <div className="media-info-row">
-                <span className="media-info-label">File size</span>
-                <span className="media-info-value">
-                  {media.fileSize ? `${media.fileSize} bytes` : "Not available"}
-                </span>
-              </div>
-
-              <div className="media-info-row">
-                <span className="media-info-label">Resolution</span>
-                <span className="media-info-value">
-                  {media.resolution || "Not available"}
-                </span>
-              </div>
-
-              <div className="media-info-row">
-                <span className="media-info-label">Imported</span>
-                <span className="media-info-value">
-                  {media.importedTime || "Not available"}
-                </span>
-              </div>
-
-              <div className="media-info-row">
-                <span className="media-info-label">Created</span>
-                <span className="media-info-value">
-                  {media.createdTime || "Not available"}
-                </span>
-              </div>
-            </div>
-          </aside> */}
         </div>
       </article>
     </div>

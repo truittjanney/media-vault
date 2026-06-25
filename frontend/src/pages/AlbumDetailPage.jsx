@@ -23,6 +23,7 @@ function AlbumDetailPage() {
   const [selectedMedia, setSelectedMedia] = useState(null);
   const [selectedMediaIds, setSelectedMediaIds] = useState([]);
   const [isDragging, setIsDragging] = useState(false);
+  const [isMediaOptionsModalOpen, setIsMediaOptionsModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const { id } = useParams();
@@ -153,8 +154,19 @@ function AlbumDetailPage() {
     setSelectedMedia(media[nextIndex]);
   }
 
+  function handleOpenMediaOptionsModal() {
+    setErrorMessage("");
+    setIsMediaOptionsModalOpen(true);
+  }
+
+  function handleCloseMediaOptionsModal() {
+    setErrorMessage("");
+    setIsMediaOptionsModalOpen(false);
+  }
+
   function handleCloseMediaViewer() {
     setSelectedMedia(null);
+    setIsMediaOptionsModalOpen(false);
   }
 
   // API EVENT HANDLERS
@@ -472,6 +484,99 @@ function AlbumDetailPage() {
         </div>
       )}
 
+      {/* Media Options Modal */}
+      {selectedMedia && isMediaOptionsModalOpen && (
+        <div
+          className="mv-modal-overlay"
+          onClick={handleCloseMediaOptionsModal}
+        >
+          <section
+            className="mv-card mv-card-padded mv-modal-card"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="mediaOptionsTitle"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <div className="mv-modal-header">
+              <h2 className="mv-modal-title" id="mediaOptionsTitle">
+                Media Options
+              </h2>
+
+              <p className="mv-modal-subtitle">
+                {selectedMedia.name || "Not available"}
+              </p>
+            </div>
+
+            <div className="media-info-panel">
+              <h3 className="media-info-title">File Info</h3>
+
+              <div className="media-info-list">
+                <div className="media-info-row">
+                  <span className="media-info-label">Name</span>
+                  <span className="media-info-value">
+                    {selectedMedia.name || "Not available"}
+                  </span>
+                </div>
+
+                <div className="media-info-row">
+                  <span className="media-info-label">Type</span>
+                  <span className="media-info-value">
+                    {selectedMedia.type || "Not available"}
+                  </span>
+                </div>
+
+                <div className="media-info-row">
+                  <span className="media-info-label">Format</span>
+                  <span className="media-info-value">
+                    {selectedMedia.format || "Not available"}
+                  </span>
+                </div>
+
+                <div className="media-info-row">
+                  <span className="media-info-label">File size</span>
+                  <span className="media-info-value">
+                    {selectedMedia.fileSize
+                      ? `${selectedMedia.fileSize} bytes`
+                      : "Not available"}
+                  </span>
+                </div>
+
+                <div className="media-info-row">
+                  <span className="media-info-label">Resolution</span>
+                  <span className="media-info-value">
+                    {selectedMedia.resolution || "Not available"}
+                  </span>
+                </div>
+
+                <div className="media-info-row">
+                  <span className="media-info-label">Imported</span>
+                  <span className="media-info-value">
+                    {selectedMedia.importedTime || "Not available"}
+                  </span>
+                </div>
+
+                <div className="media-info-row">
+                  <span className="media-info-label">Created</span>
+                  <span className="media-info-value">
+                    {selectedMedia.createdTime || "Not available"}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <div className="mv-modal-actions">
+              <button
+                className="mv-btn mv-btn-secondary"
+                type="button"
+                onClick={handleCloseMediaOptionsModal}
+              >
+                Close
+              </button>
+            </div>
+          </section>
+        </div>
+      )}
+
       {media.length > 0 && (
         <section className="media-grid">
           {media.map((file) => (
@@ -495,6 +600,8 @@ function AlbumDetailPage() {
             onSetAlbumCover={handleSetAlbumCover}
             onShowPreviousMedia={handleShowPreviousMedia}
             onShowNextMedia={handleShowNextMedia}
+            onOpenMediaOptionsModal={handleOpenMediaOptionsModal}
+            onCloseMediaOptionsModal={handleCloseMediaOptionsModal}
             onCloseMediaViewer={handleCloseMediaViewer}
           />
         </section>

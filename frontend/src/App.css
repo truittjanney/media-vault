@@ -844,6 +844,27 @@ MEDIA VIEWER CLASSES
   overflow-wrap: anywhere;
 }
 
+.media-viewer-options-button {
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--text);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  font-weight: 800;
+  box-shadow: var(--shadow-sm);
+}
+
+.media-viewer-options-button:hover {
+  background: var(--surface-soft);
+  border-color: var(--primary-border);
+}
+
 @media (max-width: 900px) {
   .media-viewer-header {
     flex-direction: column;
