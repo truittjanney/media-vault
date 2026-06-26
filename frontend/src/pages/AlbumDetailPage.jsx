@@ -32,10 +32,8 @@ function AlbumDetailPage() {
   const MAX_UPLOAD_FILES = 50;
 
   // ####################################################
-  // FUNCTIONS / EVENT HANDLERS
+  // FUNCTIONS: DATA LOADING
   // ####################################################
-
-  // DATA LOADING
   async function loadMedia() {
     setErrorMessage("");
 
@@ -51,7 +49,9 @@ function AlbumDetailPage() {
     }
   }
 
-  // SYNC EVENT HANDLERS
+  // ####################################################
+  // FUNCTIONS: SYNC EVENT HANDLERS
+  // ####################################################
   function handleOpenMedia(mediaId) {
     const clickedMedia = media.find((file) => file.id === mediaId);
 
@@ -169,7 +169,9 @@ function AlbumDetailPage() {
     setIsMediaOptionsModalOpen(false);
   }
 
-  // API EVENT HANDLERS
+  // ####################################################
+  // FUNCTIONS: API EVENT HANDLERS
+  // ####################################################
   async function handleSetAlbumCover(mediaId) {
     setErrorMessage("");
 
@@ -277,9 +279,24 @@ function AlbumDetailPage() {
   async function handleToggleMediaFavorite(mediaId, currentFavoriteValue) {
     setErrorMessage("");
 
+    const nextFavoriteValue = !currentFavoriteValue;
+
     try {
       setIsLoading(true);
-      await toggleMediaFavorite(mediaId, !currentFavoriteValue);
+
+      await toggleMediaFavorite(mediaId, nextFavoriteValue);
+
+      setSelectedMedia((previousSelectedMedia) => {
+        if (!previousSelectedMedia || previousSelectedMedia.id !== mediaId) {
+          return previousSelectedMedia;
+        }
+
+        return {
+          ...previousSelectedMedia,
+          isFavorite: nextFavoriteValue,
+        };
+      });
+
       await loadMedia();
     } catch (error) {
       setErrorMessage(error.message);
@@ -358,6 +375,11 @@ function AlbumDetailPage() {
   // ####################################################
   return (
     <main className="page-container">
+      {/*
+      ######################################
+      UI: PAGE HEADER & SUBHEADER
+      ######################################
+      */}
       <header className="page-header">
         <div>
           <h1 className="page-title">{album?.name || "Album"}</h1>
@@ -385,6 +407,11 @@ function AlbumDetailPage() {
         <p className="mv-alert mv-alert-error">{errorMessage}</p>
       )}
 
+      {/*
+      ######################################
+      UI: SELECTED TOOLBAR ACTIONS
+      ######################################
+      */}
       {selectedMediaIds.length > 0 && (
         <section className="mv-card mv-card-padded selected-toolbar">
           <p className="selected-toolbar-text">
@@ -427,6 +454,11 @@ function AlbumDetailPage() {
         </section>
       )}
 
+      {/*
+      ######################################
+      UI: UPLOAD DROP ZONE
+      ######################################
+      */}
       <section className="mv-card mv-card-padded upload-card">
         <form className="mv-form" onSubmit={handleUploadMedia}>
           <div
@@ -484,7 +516,11 @@ function AlbumDetailPage() {
         </div>
       )}
 
-      {/* Media Options Modal */}
+      {/*
+      ######################################
+      UI: MEDIA OPTIONS MODAL
+      ######################################
+      */}
       {selectedMedia && isMediaOptionsModalOpen && (
         <div
           className="mv-modal-overlay"
@@ -507,6 +543,47 @@ function AlbumDetailPage() {
               </p>
             </div>
 
+            <div className="modal-actions-list">
+              <div className="modal-action-row">
+                <div className="modal-action-text">
+                  <p className="modal-action-title">Set as Album Cover</p>
+                  <p className="modal-action-description">
+                    Use this media item as the album thumbnail.
+                  </p>
+                </div>
+
+                <button
+                  className="mv-btn mv-btn-primary"
+                  type="button"
+                  onClick={async () => {
+                    await handleSetAlbumCover(selectedMedia.id);
+                    handleCloseMediaOptionsModal();
+                  }}
+                >
+                  Set Cover
+                </button>
+
+                <button
+                  className="mv-btn mv-btn-secondary"
+                  type="button"
+                  onClick={async () => {
+                    await handleToggleMediaFavorite(
+                      selectedMedia.id,
+                      selectedMedia.isFavorite,
+                    );
+                    handleCloseMediaOptionsModal();
+                  }}
+                >
+                  {selectedMedia.isFavorite ? "Remove Favorite" : "Favorite"}
+                </button>
+              </div>
+            </div>
+
+            {/*
+      ######################################
+      UI: MEDIA OPTIONS MODAL (FILE INFO)
+      ######################################
+      */}
             <div className="media-info-panel">
               <h3 className="media-info-title">File Info</h3>
 
@@ -577,6 +654,11 @@ function AlbumDetailPage() {
         </div>
       )}
 
+      {/*
+      ######################################
+      UI: MEDIA GRID
+      ######################################
+      */}
       {media.length > 0 && (
         <section className="media-grid">
           {media.map((file) => (
@@ -601,7 +683,6 @@ function AlbumDetailPage() {
             onShowPreviousMedia={handleShowPreviousMedia}
             onShowNextMedia={handleShowNextMedia}
             onOpenMediaOptionsModal={handleOpenMediaOptionsModal}
-            onCloseMediaOptionsModal={handleCloseMediaOptionsModal}
             onCloseMediaViewer={handleCloseMediaViewer}
           />
         </section>
