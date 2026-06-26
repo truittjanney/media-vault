@@ -207,6 +207,44 @@ REUSABLE CLASSES: MODALS
 
 /*
 ##########################################################
+REUSABLE CLASSES: MODAL ACTION ROWS
+##########################################################
+*/
+.modal-actions-list {
+  display: grid;
+  gap: 12px;
+}
+
+.modal-action-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 14px;
+  background: var(--surface-soft);
+}
+
+.modal-action-text {
+  display: grid;
+  gap: 4px;
+}
+
+.modal-action-title {
+  margin: 0;
+  color: var(--text);
+  font-weight: 800;
+}
+
+.modal-action-description {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 14px;
+}
+
+/*
+##########################################################
 REUSABLE CLASSES: FEEDBACK STATES
 ##########################################################
 */
@@ -458,44 +496,6 @@ ALBUM CARD CLASSES
 
 .album-card-options-button:hover {
   background: var(--surface-soft);
-}
-
-/*
-##########################################################
-ALBUM ACTIONS MODAL CLASSES
-##########################################################
-*/
-.album-actions-list {
-  display: grid;
-  gap: 12px;
-}
-
-.album-action-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-md);
-  padding: 14px;
-  background: var(--surface-soft);
-}
-
-.album-action-text {
-  display: grid;
-  gap: 4px;
-}
-
-.album-action-title {
-  margin: 0;
-  color: var(--text);
-  font-weight: 800;
-}
-
-.album-action-description {
-  margin: 0;
-  color: var(--text-muted);
-  font-size: 14px;
 }
 
 /*
