@@ -2,11 +2,10 @@ import { useNavigate } from "react-router-dom";
 
 function ProfilePage() {
   // ####################################################
-  // FUNCTIONS / EVENT HANDLERS
+  // FUNCTIONS: SYNC EVENT HANDLERS
   // ####################################################
   const navigate = useNavigate();
 
-  // SYNC EVENT HANDLERS
   function logoutUser() {
     localStorage.removeItem("token");
     navigate("/login");

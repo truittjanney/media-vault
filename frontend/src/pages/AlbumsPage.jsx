@@ -26,10 +26,8 @@ function AlbumsPage() {
   const navigate = useNavigate();
 
   // ####################################################
-  // FUNCTIONS / EVENT HANDLERS
+  // FUNCTIONS: DATA LOADING
   // ####################################################
-
-  // DATA LOADING
   async function loadUserProfile() {
     setErrorMessage("");
 
@@ -58,7 +56,9 @@ function AlbumsPage() {
     }
   }
 
-  // SYNC EVENT HANDLERS
+  // ####################################################
+  // FUNCTIONS: SYNC EVENT HANDLERS
+  // ####################################################
   async function handleOpenAlbum(album) {
     setErrorMessage("");
 
@@ -110,7 +110,9 @@ function AlbumsPage() {
     navigate("/login");
   }
 
-  // API EVENT HANDLERS
+  // ####################################################
+  // FUNCTIONS: API EVENT HANDLERS
+  // ####################################################
   async function handleAlbumSortOptions(event) {
     setErrorMessage("");
 
@@ -278,7 +280,11 @@ function AlbumsPage() {
   // ####################################################
   return (
     <main className="page-container">
-      {/* Page Header & Subheader */}
+      {/*
+      ######################################
+      UI: PAGE HEADER & SUBHEADER
+      ######################################
+      */}
       <header className="page-header albums-page-header">
         <div>
           <h1 className="page-title">Albums</h1>
@@ -305,7 +311,6 @@ function AlbumsPage() {
             </select>
           </div>
 
-          {/* Profile Settings Button */}
           <button
             className="profile-icon-button"
             type="button"
@@ -322,7 +327,11 @@ function AlbumsPage() {
         <p className="mv-alert mv-alert-error">{errorMessage}</p>
       )}
 
-      {/* Create Album Button */}
+      {/*
+      ######################################
+      UI: CREATE ALBUM BUTTON
+      ######################################
+      */}
       <section className="albums-create-section">
         <button
           className="mv-btn mv-btn-primary"
@@ -341,7 +350,11 @@ function AlbumsPage() {
         </div>
       )}
 
-      {/* Create Album Modal */}
+      {/*
+      ######################################
+      UI: CREATE ALBUM MODAL
+      ######################################
+      */}
       {isCreateAlbumModalOpen && (
         <div className="mv-modal-overlay" onClick={handleCloseCreateAlbumModal}>
           <section
@@ -398,7 +411,11 @@ function AlbumsPage() {
         </div>
       )}
 
-      {/* Album Actions Modal */}
+      {/*
+      ######################################
+      UI: ALBUM ACTIONS MODAL
+      ######################################
+      */}
       {selectedAlbumForActions && (
         <div
           className="mv-modal-overlay"
@@ -421,25 +438,25 @@ function AlbumsPage() {
               </p>
             </div>
 
-            <div className="album-actions-list">
-              <div className="album-action-row">
-                <div className="album-action-text">
-                  <p className="album-action-title">Album Status</p>
-                  <p className="album-action-description">
+            <div className="modal-actions-list">
+              <div className="modal-action-row">
+                <div className="modal-action-text">
+                  <p className="modal-action-title">Album Status</p>
+                  <p className="modal-action-description">
                     {selectedAlbumForActions.isLocked ? "Locked" : "Unlocked"}
                   </p>
                 </div>
               </div>
 
-              <div className="album-action-row">
-                <div className="album-action-text">
-                  <p className="album-action-title">
+              <div className="modal-action-row">
+                <div className="modal-action-text">
+                  <p className="modal-action-title">
                     {selectedAlbumForActions.isLocked
                       ? "Remove Lock"
                       : "Lock Album"}
                   </p>
 
-                  <p className="album-action-description">
+                  <p className="modal-action-description">
                     {selectedAlbumForActions.isLocked
                       ? "Remove PIN protection from this album."
                       : "Require your PIN before opening this album."}
@@ -463,10 +480,10 @@ function AlbumsPage() {
                 </button>
               </div>
 
-              <div className="album-action-row">
-                <div className="album-action-text">
-                  <p className="album-action-title">Rename Album</p>
-                  <p className="album-action-description">
+              <div className="modal-action-row">
+                <div className="modal-action-text">
+                  <p className="modal-action-title">Rename Album</p>
+                  <p className="modal-action-description">
                     Change the display name for this album.
                   </p>
                 </div>
@@ -493,10 +510,10 @@ function AlbumsPage() {
                 </button>
               </div>
 
-              <div className="album-action-row">
-                <div className="album-action-text">
-                  <p className="album-action-title">Delete Album</p>
-                  <p className="album-action-description">
+              <div className="modal-action-row">
+                <div className="modal-action-text">
+                  <p className="modal-action-title">Delete Album</p>
+                  <p className="modal-action-description">
                     Permanently delete this album and its media records.
                   </p>
                 </div>
@@ -527,7 +544,11 @@ function AlbumsPage() {
         </div>
       )}
 
-      {/* Albums Grid */}
+      {/*
+      ######################################
+      UI: ALBUMS GRID
+      ######################################
+      */}
       {sortedAlbums.length > 0 && (
         <section className="albums-grid">
           {sortedAlbums.map((album) => (

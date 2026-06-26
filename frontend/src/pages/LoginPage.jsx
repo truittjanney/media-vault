@@ -12,7 +12,7 @@ function LoginPage() {
   const navigate = useNavigate();
 
   // ####################################################
-  // FUNCTIONS / EVENT HANDLERS
+  // FUNCTIONS: API EVENT HANDLERS
   // ####################################################
   async function handleSubmit(event) {
     event.preventDefault();
