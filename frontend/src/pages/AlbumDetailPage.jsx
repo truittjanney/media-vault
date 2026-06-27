@@ -576,6 +576,44 @@ function AlbumDetailPage() {
                 >
                   {selectedMedia.isFavorite ? "Remove Favorite" : "Favorite"}
                 </button>
+
+                <button
+                  className="mv-btn mv-btn-secondary"
+                  type="button"
+                  onClick={async () => {
+                    const targetAlbumInput = prompt("Enter target album ID:");
+
+                    if (targetAlbumInput === null) {
+                      return;
+                    }
+
+                    const targetAlbumId = Number(targetAlbumInput);
+
+                    if (
+                      !Number.isInteger(targetAlbumId) ||
+                      targetAlbumId <= 0
+                    ) {
+                      setErrorMessage("Invalid target album id.");
+                      return;
+                    }
+
+                    await handleMoveMedia(selectedMedia.id, targetAlbumId);
+                    handleCloseMediaOptionsModal();
+                  }}
+                >
+                  Move To
+                </button>
+
+                <button
+                  className="mv-btn mv-btn-secondary"
+                  type="button"
+                  onClick={async () => {
+                    await handleDeleteMedia(selectedMedia.id);
+                    handleCloseMediaOptionsModal();
+                  }}
+                >
+                  Delete
+                </button>
               </div>
             </div>
 
@@ -584,72 +622,76 @@ function AlbumDetailPage() {
       UI: MEDIA OPTIONS MODAL (FILE INFO)
       ######################################
       */}
-            <div className="media-info-panel">
-              <h3 className="media-info-title">File Info</h3>
+            <details className="media-info-details">
+              <summary className="media-info-summary">File Info</summary>
 
-              <div className="media-info-list">
-                <div className="media-info-row">
-                  <span className="media-info-label">Name</span>
-                  <span className="media-info-value">
-                    {selectedMedia.name || "Not available"}
-                  </span>
-                </div>
+              <div className="media-info-panel">
+                <h3 className="media-info-title">File Info</h3>
 
-                <div className="media-info-row">
-                  <span className="media-info-label">Type</span>
-                  <span className="media-info-value">
-                    {selectedMedia.type || "Not available"}
-                  </span>
-                </div>
+                <div className="media-info-list">
+                  <div className="media-info-row">
+                    <span className="media-info-label">Name</span>
+                    <span className="media-info-value">
+                      {selectedMedia.name || "Not available"}
+                    </span>
+                  </div>
 
-                <div className="media-info-row">
-                  <span className="media-info-label">Format</span>
-                  <span className="media-info-value">
-                    {selectedMedia.format || "Not available"}
-                  </span>
-                </div>
+                  <div className="media-info-row">
+                    <span className="media-info-label">Type</span>
+                    <span className="media-info-value">
+                      {selectedMedia.type || "Not available"}
+                    </span>
+                  </div>
 
-                <div className="media-info-row">
-                  <span className="media-info-label">File size</span>
-                  <span className="media-info-value">
-                    {selectedMedia.fileSize
-                      ? `${selectedMedia.fileSize} bytes`
-                      : "Not available"}
-                  </span>
-                </div>
+                  <div className="media-info-row">
+                    <span className="media-info-label">Format</span>
+                    <span className="media-info-value">
+                      {selectedMedia.format || "Not available"}
+                    </span>
+                  </div>
 
-                <div className="media-info-row">
-                  <span className="media-info-label">Resolution</span>
-                  <span className="media-info-value">
-                    {selectedMedia.resolution || "Not available"}
-                  </span>
-                </div>
+                  <div className="media-info-row">
+                    <span className="media-info-label">File size</span>
+                    <span className="media-info-value">
+                      {selectedMedia.fileSize
+                        ? `${selectedMedia.fileSize} bytes`
+                        : "Not available"}
+                    </span>
+                  </div>
 
-                <div className="media-info-row">
-                  <span className="media-info-label">Imported</span>
-                  <span className="media-info-value">
-                    {selectedMedia.importedTime || "Not available"}
-                  </span>
-                </div>
+                  <div className="media-info-row">
+                    <span className="media-info-label">Resolution</span>
+                    <span className="media-info-value">
+                      {selectedMedia.resolution || "Not available"}
+                    </span>
+                  </div>
 
-                <div className="media-info-row">
-                  <span className="media-info-label">Created</span>
-                  <span className="media-info-value">
-                    {selectedMedia.createdTime || "Not available"}
-                  </span>
+                  <div className="media-info-row">
+                    <span className="media-info-label">Imported</span>
+                    <span className="media-info-value">
+                      {selectedMedia.importedTime || "Not available"}
+                    </span>
+                  </div>
+
+                  <div className="media-info-row">
+                    <span className="media-info-label">Created</span>
+                    <span className="media-info-value">
+                      {selectedMedia.createdTime || "Not available"}
+                    </span>
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <div className="mv-modal-actions">
-              <button
-                className="mv-btn mv-btn-secondary"
-                type="button"
-                onClick={handleCloseMediaOptionsModal}
-              >
-                Close
-              </button>
-            </div>
+              <div className="mv-modal-actions">
+                <button
+                  className="mv-btn mv-btn-secondary"
+                  type="button"
+                  onClick={handleCloseMediaOptionsModal}
+                >
+                  Close
+                </button>
+              </div>
+            </details>
           </section>
         </div>
       )}
