@@ -241,46 +241,6 @@ function AlbumsPage() {
     }
   }
 
-  async function handleAddAlbumLock(albumId) {
-    setErrorMessage("");
-
-    const pin = prompt("Enter a 4-digit album PIN:");
-
-    if (!pin) {
-      return;
-    }
-
-    try {
-      setIsLoading(true);
-      await addAlbumLock(albumId, pin);
-      await loadAlbums();
-    } catch (error) {
-      setErrorMessage(error.message);
-    } finally {
-      setIsLoading(false);
-    }
-  }
-
-  async function handleRemoveAlbumLock(albumId) {
-    setErrorMessage("");
-
-    const pin = prompt("Enter your album PIN:");
-
-    if (!pin) {
-      return;
-    }
-
-    try {
-      setIsLoading(true);
-      await removeAlbumLock(albumId, pin);
-      await loadAlbums();
-    } catch (error) {
-      setErrorMessage(error.message);
-    } finally {
-      setIsLoading(false);
-    }
-  }
-
   async function handleDeleteAlbum(albumId) {
     setErrorMessage("");
 
