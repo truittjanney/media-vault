@@ -1,6 +1,5 @@
 function MediaViewer({
   media,
-  onSetAlbumCover,
   onShowPreviousMedia,
   onShowNextMedia,
   onOpenMediaOptionsModal,

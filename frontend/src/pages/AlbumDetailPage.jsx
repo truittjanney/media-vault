@@ -9,7 +9,7 @@ import {
   deleteMedia,
   deleteMultipleMedia,
 } from "../services/mediaService.js";
-import { updateAlbum } from "../services/albumService.js";
+import { getAlbums, updateAlbum } from "../services/albumService.js";
 import { MediaCard } from "../components/MediaCard.jsx";
 import { MediaViewer } from "../components/MediaViewer.jsx";
 
@@ -24,6 +24,9 @@ function AlbumDetailPage() {
   const [selectedMediaIds, setSelectedMediaIds] = useState([]);
   const [isDragging, setIsDragging] = useState(false);
   const [isMediaOptionsModalOpen, setIsMediaOptionsModalOpen] = useState(false);
+  const [isMoveMediaModalOpen, setIsMoveMediaModalOpen] = useState(false);
+  const [mediaIdsToMove, setMediaIdsToMove] = useState([]);
+  const [availableAlbums, setAvailableAlbums] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const { id } = useParams();
@@ -46,6 +49,17 @@ function AlbumDetailPage() {
       setErrorMessage(error.message);
     } finally {
       setIsLoading(false);
+    }
+  }
+
+  async function loadAvailableAlbums() {
+    setErrorMessage("");
+
+    try {
+      const data = await getAlbums();
+      setAvailableAlbums(data.albums || []);
+    } catch (error) {
+      setErrorMessage(error.message);
     }
   }
 
@@ -164,9 +178,23 @@ function AlbumDetailPage() {
     setIsMediaOptionsModalOpen(false);
   }
 
+  function handleOpenMoveMediaModal(mediaIds) {
+    setErrorMessage("");
+    setMediaIdsToMove(mediaIds);
+    setIsMoveMediaModalOpen(true);
+  }
+
+  function handleCloseMoveMediaModal() {
+    setErrorMessage("");
+    setMediaIdsToMove([]);
+    setIsMoveMediaModalOpen(false);
+  }
+
   function handleCloseMediaViewer() {
     setSelectedMedia(null);
     setIsMediaOptionsModalOpen(false);
+    setIsMoveMediaModalOpen(false);
+    setMediaIdsToMove([]);
   }
 
   // ####################################################
@@ -243,21 +271,13 @@ function AlbumDetailPage() {
     }
   }
 
-  async function handleMoveMultipleMedia() {
+  async function handleConfirmMoveMedia(targetAlbumId) {
     setErrorMessage("");
 
-    if (selectedMediaIds.length === 0) {
+    if (mediaIdsToMove.length === 0) {
       setErrorMessage("No media selected to move.");
       return;
     }
-
-    const targetAlbumInput = prompt("Enter target album ID:");
-
-    if (targetAlbumInput === null) {
-      return;
-    }
-
-    const targetAlbumId = Number(targetAlbumInput);
 
     if (!Number.isInteger(targetAlbumId) || targetAlbumId <= 0) {
       setErrorMessage("Invalid target album id.");
@@ -266,8 +286,16 @@ function AlbumDetailPage() {
 
     try {
       setIsLoading(true);
-      await moveMultipleMedia(selectedMediaIds, targetAlbumId);
+
+      if (mediaIdsToMove.length === 1) {
+        await moveMedia(mediaIdsToMove[0], targetAlbumId);
+      } else {
+        await moveMultipleMedia(mediaIdsToMove, targetAlbumId);
+      }
+
       setSelectedMediaIds([]);
+      setSelectedMedia(null);
+      handleCloseMoveMediaModal();
       await loadMedia();
     } catch (error) {
       setErrorMessage(error.message);
@@ -352,6 +380,14 @@ function AlbumDetailPage() {
   }, [id]);
 
   useEffect(() => {
+    if (!isMoveMediaModalOpen) {
+      return;
+    }
+
+    loadAvailableAlbums();
+  }, [isMoveMediaModalOpen]);
+
+  useEffect(() => {
     if (!errorMessage) {
       return;
     }
@@ -385,7 +421,7 @@ function AlbumDetailPage() {
           <h1 className="page-title">{album?.name || "Album"}</h1>
 
           <p className="page-subtitle">
-            Manage this album’s photos, videos, uploads, and selected media.
+            Manage this album’s photos, videos, and uploads.
           </p>
 
           <div className="album-detail-summary">
@@ -430,7 +466,7 @@ function AlbumDetailPage() {
             <button
               className="mv-btn mv-btn-secondary"
               type="button"
-              onClick={handleMoveMultipleMedia}
+              onClick={() => handleOpenMoveMediaModal(selectedMediaIds)}
             >
               ➡️ Move To
             </button>
@@ -548,7 +584,7 @@ function AlbumDetailPage() {
                 <div className="modal-action-text">
                   <p className="modal-action-title">Set as Album Cover</p>
                   <p className="modal-action-description">
-                    Use this media item as the album thumbnail.
+                    Use this media item as the album cover.
                   </p>
                 </div>
 
@@ -562,6 +598,19 @@ function AlbumDetailPage() {
                 >
                   Set Cover
                 </button>
+              </div>
+
+              <div className="modal-action-row">
+                <div className="modal-action-text">
+                  <p className="modal-action-title">
+                    {selectedMedia.isFavorite ? "Remove Favorite" : "Favorite"}
+                  </p>
+                  <p className="modal-action-description">
+                    {selectedMedia.isFavorite
+                      ? "Remove this media item from your favorites."
+                      : "Mark this media item as a favorite."}
+                  </p>
+                </div>
 
                 <button
                   className="mv-btn mv-btn-secondary"
@@ -574,35 +623,37 @@ function AlbumDetailPage() {
                     handleCloseMediaOptionsModal();
                   }}
                 >
-                  {selectedMedia.isFavorite ? "Remove Favorite" : "Favorite"}
+                  {selectedMedia.isFavorite ? "Remove" : "Favorite"}
                 </button>
+              </div>
+
+              <div className="modal-action-row">
+                <div className="modal-action-text">
+                  <p className="modal-action-title">Move To</p>
+                  <p className="modal-action-description">
+                    Move this media item to another album.
+                  </p>
+                </div>
 
                 <button
                   className="mv-btn mv-btn-secondary"
                   type="button"
-                  onClick={async () => {
-                    const targetAlbumInput = prompt("Enter target album ID:");
-
-                    if (targetAlbumInput === null) {
-                      return;
-                    }
-
-                    const targetAlbumId = Number(targetAlbumInput);
-
-                    if (
-                      !Number.isInteger(targetAlbumId) ||
-                      targetAlbumId <= 0
-                    ) {
-                      setErrorMessage("Invalid target album id.");
-                      return;
-                    }
-
-                    await handleMoveMedia(selectedMedia.id, targetAlbumId);
+                  onClick={() => {
                     handleCloseMediaOptionsModal();
+                    handleOpenMoveMediaModal([selectedMedia.id]);
                   }}
                 >
                   Move To
                 </button>
+              </div>
+
+              <div className="modal-action-row">
+                <div className="modal-action-text">
+                  <p className="modal-action-title">Delete</p>
+                  <p className="modal-action-description">
+                    Permanently remove this media item from the album.
+                  </p>
+                </div>
 
                 <button
                   className="mv-btn mv-btn-secondary"
@@ -681,17 +732,90 @@ function AlbumDetailPage() {
                   </div>
                 </div>
               </div>
-
-              <div className="mv-modal-actions">
-                <button
-                  className="mv-btn mv-btn-secondary"
-                  type="button"
-                  onClick={handleCloseMediaOptionsModal}
-                >
-                  Close
-                </button>
-              </div>
             </details>
+
+            <div className="mv-modal-actions">
+              <button
+                className="mv-btn mv-btn-secondary"
+                type="button"
+                onClick={handleCloseMediaOptionsModal}
+              >
+                Close
+              </button>
+            </div>
+          </section>
+        </div>
+      )}
+
+      {/*
+      ######################################
+      UI: MOVE MEDIA MODAL
+      ######################################
+      */}
+      {isMoveMediaModalOpen && (
+        <div className="mv-modal-overlay" onClick={handleCloseMoveMediaModal}>
+          <section
+            className="mv-card mv-card-padded mv-modal-card"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="moveMediaTitle"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <div className="mv-modal-header">
+              <h2 className="mv-modal-title" id="moveMediaTitle">
+                Move To Album
+              </h2>
+
+              <p className="mv-modal-subtitle">
+                Choose where to move {mediaIdsToMove.length} item(s).
+              </p>
+            </div>
+
+            <div className="modal-actions-list">
+              {availableAlbums.map((targetAlbum) => {
+                const isCurrentAlbum = targetAlbum.id === Number(id);
+
+                return (
+                  <div
+                    className={`modal-action-row ${
+                      isCurrentAlbum ? "modal-action-row-disabled" : ""
+                    }`}
+                    key={targetAlbum.id}
+                  >
+                    <div className="modal-action-text">
+                      <p className="modal-action-title">
+                        {targetAlbum.name} {targetAlbum.isLocked && "🔒"}
+                      </p>
+
+                      <p className="modal-action-description">
+                        {isCurrentAlbum
+                          ? "Current album"
+                          : `${targetAlbum.totalCount || 0} file(s)`}
+                      </p>
+                    </div>
+
+                    <button
+                      className="mv-btn mv-btn-secondary"
+                      type="button"
+                      disabled={isCurrentAlbum || isLoading}
+                      onClick={() => handleConfirmMoveMedia(targetAlbum.id)}
+                    >
+                      {isCurrentAlbum ? "Current" : "Move Here"}
+                    </button>
+                  </div>
+                );
+              })}
+            </div>
+
+            <div className="mv-modal-actions">
+              <button
+                className="mv-btn mv-btn-secondary"
+                type="button"
+                onClick={handleCloseMoveMediaModal}
+              >
+                Cancel
+              </button>
+            </div>
           </section>
         </div>
       )}
@@ -721,7 +845,6 @@ function AlbumDetailPage() {
         <section className="media-viewer-section">
           <MediaViewer
             media={selectedMedia}
-            onSetAlbumCover={handleSetAlbumCover}
             onShowPreviousMedia={handleShowPreviousMedia}
             onShowNextMedia={handleShowNextMedia}
             onOpenMediaOptionsModal={handleOpenMediaOptionsModal}

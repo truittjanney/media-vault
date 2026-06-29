@@ -226,6 +226,10 @@ REUSABLE CLASSES: MODAL ACTION ROWS
   background: var(--surface-soft);
 }
 
+.modal-action-row-disabled {
+  opacity: 0.65;
+}
+
 .modal-action-text {
   display: grid;
   gap: 4px;
