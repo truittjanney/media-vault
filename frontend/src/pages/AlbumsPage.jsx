@@ -21,6 +21,10 @@ function AlbumsPage() {
   const [albumSortPreference, setAlbumSortPreference] = useState("name-asc");
   const [isCreateAlbumModalOpen, setIsCreateAlbumModalOpen] = useState(false);
   const [selectedAlbumForActions, setSelectedAlbumForActions] = useState(null);
+  const [isAlbumPinModalOpen, setIsAlbumPinModalOpen] = useState(false);
+  const [selectedAlbumForPin, setSelectedAlbumForPin] = useState(null);
+  const [albumPinInput, setAlbumPinInput] = useState("");
+  const [albumPinError, setAlbumPinError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const navigate = useNavigate();
@@ -59,29 +63,15 @@ function AlbumsPage() {
   // ####################################################
   // FUNCTIONS: SYNC EVENT HANDLERS
   // ####################################################
-  async function handleOpenAlbum(album) {
+  function handleOpenAlbum(album) {
     setErrorMessage("");
 
-    if (!album.isLocked) {
-      navigate(`/albums/${album.id}`);
+    if (album.isLocked) {
+      handleOpenAlbumPinModal(album);
       return;
     }
 
-    const pin = prompt("Enter album PIN:");
-
-    if (!pin) {
-      return;
-    }
-
-    try {
-      const data = await verifyAlbumPin(album.id, pin);
-
-      if (data.verified) {
-        navigate(`/albums/${album.id}`);
-      }
-    } catch (error) {
-      setErrorMessage(error.message);
-    }
+    navigate(`/albums/${album.id}`);
   }
 
   function handleOpenCreateAlbumModal() {
@@ -103,6 +93,28 @@ function AlbumsPage() {
   function handleCloseAlbumActionsModal() {
     setErrorMessage("");
     setSelectedAlbumForActions(null);
+  }
+
+  function handleOpenAlbumPinModal(album) {
+    setErrorMessage("");
+    setAlbumPinError("");
+    setAlbumPinInput("");
+    setSelectedAlbumForPin(album);
+    setIsAlbumPinModalOpen(true);
+  }
+
+  function handleCloseAlbumPinModal() {
+    setAlbumPinError("");
+    setAlbumPinInput("");
+    setSelectedAlbumForPin(null);
+    setIsAlbumPinModalOpen(false);
+  }
+
+  function handleChangeAlbumPinInput(event) {
+    const numbersOnly = event.target.value.replace(/\D/g, "");
+
+    setAlbumPinInput(numbersOnly);
+    setAlbumPinError("");
   }
 
   function logoutUser() {
@@ -148,6 +160,41 @@ function AlbumsPage() {
       await loadAlbums();
     } catch (error) {
       setErrorMessage(error.message);
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  async function handleSubmitAlbumPin(event) {
+    event.preventDefault();
+    setAlbumPinError("");
+
+    if (!albumPinInput.trim()) {
+      setAlbumPinError("Please enter your PIN.");
+      return;
+    }
+
+    if (!selectedAlbumForPin) {
+      setAlbumPinError("No album selected.");
+      return;
+    }
+
+    const albumId = selectedAlbumForPin.id;
+
+    try {
+      setIsLoading(true);
+
+      const data = await verifyAlbumPin(albumId, albumPinInput);
+
+      if (!data.verified) {
+        setAlbumPinError("Incorrect PIN.");
+        return;
+      }
+
+      handleCloseAlbumPinModal();
+      navigate(`/albums/${albumId}`);
+    } catch (error) {
+      setAlbumPinError("Incorrect PIN.");
     } finally {
       setIsLoading(false);
     }
@@ -404,6 +451,74 @@ function AlbumsPage() {
                   disabled={isLoading}
                 >
                   Create Album
+                </button>
+              </div>
+            </form>
+          </section>
+        </div>
+      )}
+
+      {/*
+      ######################################
+      UI: ALBUM PIN MODAL
+      ######################################
+      */}
+      {isAlbumPinModalOpen && selectedAlbumForPin && (
+        <div className="mv-modal-overlay" onClick={handleCloseAlbumPinModal}>
+          <section
+            className="mv-card mv-card-padded mv-modal-card"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="albumPinTitle"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <div className="mv-modal-header">
+              <h2 className="mv-modal-title" id="albumPinTitle">
+                Enter Album PIN
+              </h2>
+
+              <p className="mv-modal-subtitle">
+                Enter your PIN to open {selectedAlbumForPin.name}.
+              </p>
+            </div>
+
+            {albumPinError && (
+              <p className="mv-alert mv-alert-error">{albumPinError}</p>
+            )}
+
+            <form className="mv-form" onSubmit={handleSubmitAlbumPin}>
+              <div className="mv-field">
+                <label className="mv-label" htmlFor="albumPinInput">
+                  Album PIN
+                </label>
+
+                <input
+                  className="mv-input"
+                  type="password"
+                  id="albumPinInput"
+                  inputMode="numeric"
+                  maxLength={4}
+                  value={albumPinInput}
+                  onChange={handleChangeAlbumPinInput}
+                  autoFocus
+                />
+              </div>
+
+              <div className="mv-modal-actions">
+                <button
+                  className="mv-btn mv-btn-secondary"
+                  type="button"
+                  onClick={handleCloseAlbumPinModal}
+                >
+                  Cancel
+                </button>
+
+                <button
+                  className="mv-btn mv-btn-primary"
+                  type="submit"
+                  disabled={isLoading}
+                >
+                  OK
                 </button>
               </div>
             </form>
