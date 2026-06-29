@@ -25,6 +25,7 @@ function AlbumsPage() {
   const [selectedAlbumForPin, setSelectedAlbumForPin] = useState(null);
   const [albumPinInput, setAlbumPinInput] = useState("");
   const [albumPinError, setAlbumPinError] = useState("");
+  const [albumPinModalMode, setAlbumPinModalMode] = useState("open-album");
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const navigate = useNavigate();
@@ -67,7 +68,7 @@ function AlbumsPage() {
     setErrorMessage("");
 
     if (album.isLocked) {
-      handleOpenAlbumPinModal(album);
+      handleOpenAlbumPinModal(album, "open-album");
       return;
     }
 
@@ -95,11 +96,12 @@ function AlbumsPage() {
     setSelectedAlbumForActions(null);
   }
 
-  function handleOpenAlbumPinModal(album) {
+  function handleOpenAlbumPinModal(album, mode = "open-album") {
     setErrorMessage("");
     setAlbumPinError("");
     setAlbumPinInput("");
     setSelectedAlbumForPin(album);
+    setAlbumPinModalMode(mode);
     setIsAlbumPinModalOpen(true);
   }
 
@@ -107,6 +109,7 @@ function AlbumsPage() {
     setAlbumPinError("");
     setAlbumPinInput("");
     setSelectedAlbumForPin(null);
+    setAlbumPinModalMode("open-album");
     setIsAlbumPinModalOpen(false);
   }
 
@@ -184,17 +187,34 @@ function AlbumsPage() {
     try {
       setIsLoading(true);
 
-      const data = await verifyAlbumPin(albumId, albumPinInput);
+      if (albumPinModalMode === "open-album") {
+        const data = await verifyAlbumPin(albumId, albumPinInput);
 
-      if (!data.verified) {
-        setAlbumPinError("Incorrect PIN.");
+        if (!data.verified) {
+          setAlbumPinError("Incorrect PIN.");
+          return;
+        }
+
+        handleCloseAlbumPinModal();
+        navigate(`/albums/${albumId}`);
         return;
       }
 
-      handleCloseAlbumPinModal();
-      navigate(`/albums/${albumId}`);
+      if (albumPinModalMode === "add-lock") {
+        await addAlbumLock(albumId, albumPinInput);
+        handleCloseAlbumPinModal();
+        await loadAlbums();
+        return;
+      }
+
+      if (albumPinModalMode === "remove-lock") {
+        await removeAlbumLock(albumId, albumPinInput);
+        handleCloseAlbumPinModal();
+        await loadAlbums();
+        return;
+      }
     } catch (error) {
-      setAlbumPinError("Incorrect PIN.");
+      setAlbumPinError(error.message || "Something went wrong.");
     } finally {
       setIsLoading(false);
     }
@@ -322,6 +342,22 @@ function AlbumsPage() {
     return 0;
   });
 
+  let albumPinModalDescription = "";
+
+  if (selectedAlbumForPin) {
+    if (albumPinModalMode === "open-album") {
+      albumPinModalDescription = `Enter your PIN to open ${selectedAlbumForPin.name}.`;
+    }
+
+    if (albumPinModalMode === "add-lock") {
+      albumPinModalDescription = `Enter your PIN to add a lock to ${selectedAlbumForPin.name}.`;
+    }
+
+    if (albumPinModalMode === "remove-lock") {
+      albumPinModalDescription = `Enter your PIN to remove the lock from ${selectedAlbumForPin.name}.`;
+    }
+  }
+
   // ####################################################
   // USER INTERFACE
   // ####################################################
@@ -336,7 +372,7 @@ function AlbumsPage() {
         <div>
           <h1 className="page-title">Albums</h1>
           <p className="page-subtitle">
-            Organize, protect, and manage your private media.
+            Organize, protect, and manage your photos and videos.
           </p>
         </div>
 
@@ -477,9 +513,7 @@ function AlbumsPage() {
                 Enter Album PIN
               </h2>
 
-              <p className="mv-modal-subtitle">
-                Enter your PIN to open {selectedAlbumForPin.name}.
-              </p>
+              <p className="mv-modal-subtitle">{albumPinModalDescription}</p>
             </div>
 
             {albumPinError && (
@@ -581,14 +615,13 @@ function AlbumsPage() {
                 <button
                   className="mv-btn mv-btn-secondary"
                   type="button"
-                  onClick={async () => {
-                    if (selectedAlbumForActions.isLocked) {
-                      await handleRemoveAlbumLock(selectedAlbumForActions.id);
-                    } else {
-                      await handleAddAlbumLock(selectedAlbumForActions.id);
-                    }
+                  onClick={() => {
+                    const mode = selectedAlbumForActions.isLocked
+                      ? "remove-lock"
+                      : "add-lock";
 
                     handleCloseAlbumActionsModal();
+                    handleOpenAlbumPinModal(selectedAlbumForActions, mode);
                   }}
                 >
                   {selectedAlbumForActions.isLocked ? "Remove Lock" : "Lock"}
