@@ -183,6 +183,11 @@ REUSABLE CLASSES: MODALS
   width: min(440px, 100%);
 }
 
+.mv-modal-card-wide {
+  width: min(760px, calc(100vw - 32px));
+  max-width: 760px;
+}
+
 .mv-modal-header {
   margin-bottom: 20px;
 }
@@ -216,13 +221,13 @@ REUSABLE CLASSES: MODAL ACTION ROWS
 }
 
 .modal-action-row {
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 140px;
   align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  border: 1px solid var(--border);
+  gap: 20px;
+  border: 1px solid var(--primary-border);
   border-radius: var(--radius-md);
-  padding: 14px;
+  padding: 16px 18px;
   background: var(--surface-soft);
 }
 
@@ -245,6 +250,29 @@ REUSABLE CLASSES: MODAL ACTION ROWS
   margin: 0;
   color: var(--text-muted);
   font-size: 14px;
+}
+
+.modal-action-button {
+  width: 140px;
+  min-height: 52px;
+  justify-content: center;
+}
+
+.modal-action-button-active {
+  border-color: var(--primary);
+  background: var(--primary-soft);
+  color: var(--primary);
+  font-size: 22px;
+}
+
+@media (max-width: 700px) {
+  .modal-action-row {
+    grid-template-columns: 1fr;
+  }
+
+  .modal-action-button {
+    width: 100%;
+  }
 }
 
 /*
@@ -465,15 +493,6 @@ ALBUM CARD CLASSES
   color: var(--text);
 }
 
-.album-lock-badge {
-  flex: 0 0 auto;
-  background: var(--primary-soft);
-  border: 1px solid var(--primary-border);
-  border-radius: 999px;
-  padding: 2px 8px;
-  font-size: 14px;
-}
-
 .album-card-meta {
   margin: 0;
   color: var(--text-muted);
@@ -500,6 +519,58 @@ ALBUM CARD CLASSES
 
 .album-card-options-button:hover {
   background: var(--surface-soft);
+}
+
+.album-lock-badge {
+  flex: 0 0 auto;
+  background: var(--primary-soft);
+  border: 1px solid var(--primary-border);
+  border-radius: 999px;
+  padding: 2px 8px;
+  font-size: 14px;
+}
+
+.album-lock-toggle {
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--text);
+  font-weight: 800;
+}
+
+.album-lock-toggle-track {
+  width: 52px;
+  height: 30px;
+  border-radius: 999px;
+  background: var(--border);
+  padding: 3px;
+  display: inline-flex;
+  align-items: center;
+  transition: background 0.2s ease;
+}
+
+.album-lock-toggle-thumb {
+  width: 24px;
+  height: 24px;
+  border-radius: 999px;
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.2s ease;
+}
+
+.album-lock-toggle-on .album-lock-toggle-track {
+  background: var(--primary);
+}
+
+.album-lock-toggle-on .album-lock-toggle-thumb {
+  transform: translateX(22px);
+}
+
+.album-lock-toggle-text {
+  min-width: 76px;
 }
 
 /*

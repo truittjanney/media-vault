@@ -550,15 +550,6 @@ function AlbumsPage() {
             <div className="modal-actions-list">
               <div className="modal-action-row">
                 <div className="modal-action-text">
-                  <p className="modal-action-title">Album Status</p>
-                  <p className="modal-action-description">
-                    {selectedAlbumForActions.isLocked ? "Locked" : "Unlocked"}
-                  </p>
-                </div>
-              </div>
-
-              <div className="modal-action-row">
-                <div className="modal-action-text">
                   <p className="modal-action-title">
                     {selectedAlbumForActions.isLocked
                       ? "Remove Lock"
@@ -573,8 +564,13 @@ function AlbumsPage() {
                 </div>
 
                 <button
-                  className="mv-btn mv-btn-secondary"
+                  className={`album-lock-toggle ${
+                    selectedAlbumForActions.isLocked
+                      ? "album-lock-toggle-on"
+                      : ""
+                  }`}
                   type="button"
+                  aria-pressed={selectedAlbumForActions.isLocked}
                   onClick={() => {
                     const mode = selectedAlbumForActions.isLocked
                       ? "remove-lock"
@@ -584,7 +580,13 @@ function AlbumsPage() {
                     handleOpenAlbumPinModal(selectedAlbumForActions, mode);
                   }}
                 >
-                  {selectedAlbumForActions.isLocked ? "Remove Lock" : "Lock"}
+                  <span className="album-lock-toggle-track">
+                    <span className="album-lock-toggle-thumb" />
+                  </span>
+
+                  <span className="album-lock-toggle-text">
+                    {selectedAlbumForActions.isLocked ? "Locked" : "Unlocked"}
+                  </span>
                 </button>
               </div>
 

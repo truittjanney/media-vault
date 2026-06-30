@@ -563,7 +563,7 @@ function AlbumDetailPage() {
           onClick={handleCloseMediaOptionsModal}
         >
           <section
-            className="mv-card mv-card-padded mv-modal-card"
+            className="mv-card mv-card-padded mv-modal-card mv-modal-card-wide"
             role="dialog"
             aria-modal="true"
             aria-labelledby="mediaOptionsTitle"
@@ -589,7 +589,7 @@ function AlbumDetailPage() {
                 </div>
 
                 <button
-                  className="mv-btn mv-btn-primary"
+                  className="mv-btn mv-btn-secondary modal-action-button"
                   type="button"
                   onClick={async () => {
                     await handleSetAlbumCover(selectedMedia.id);
@@ -613,17 +613,24 @@ function AlbumDetailPage() {
                 </div>
 
                 <button
-                  className="mv-btn mv-btn-secondary"
+                  className={`mv-btn mv-btn-secondary modal-action-button ${selectedMedia.isFavorite ? "modal-action-button-active" : ""}`}
                   type="button"
+                  aria-label={
+                    selectedMedia.isFavorite ? "Remove favorite" : "Favorite"
+                  }
+                  title={
+                    selectedMedia.isFavorite ? "Remove favorite" : "Favorite"
+                  }
+                  aria-pressed={selectedMedia.isFavorite}
+                  disabled={isLoading}
                   onClick={async () => {
                     await handleToggleMediaFavorite(
                       selectedMedia.id,
                       selectedMedia.isFavorite,
                     );
-                    handleCloseMediaOptionsModal();
                   }}
                 >
-                  {selectedMedia.isFavorite ? "Remove" : "Favorite"}
+                  {selectedMedia.isFavorite ? "❤️" : "♡"}
                 </button>
               </div>
 
@@ -636,7 +643,7 @@ function AlbumDetailPage() {
                 </div>
 
                 <button
-                  className="mv-btn mv-btn-secondary"
+                  className="mv-btn mv-btn-secondary modal-action-button"
                   type="button"
                   onClick={() => {
                     handleCloseMediaOptionsModal();
@@ -656,7 +663,7 @@ function AlbumDetailPage() {
                 </div>
 
                 <button
-                  className="mv-btn mv-btn-secondary"
+                  className="mv-btn mv-btn-danger modal-action-button"
                   type="button"
                   onClick={async () => {
                     await handleDeleteMedia(selectedMedia.id);
