@@ -27,6 +27,8 @@ function AlbumDetailPage() {
   const [isMoveMediaModalOpen, setIsMoveMediaModalOpen] = useState(false);
   const [mediaIdsToMove, setMediaIdsToMove] = useState([]);
   const [availableAlbums, setAvailableAlbums] = useState([]);
+  const [isDeleteSelectedModalOpen, setIsDeleteSelectedModalOpen] =
+    useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
@@ -189,6 +191,22 @@ function AlbumDetailPage() {
     setErrorMessage("");
     setMediaIdsToMove([]);
     setIsMoveMediaModalOpen(false);
+  }
+
+  function handleOpenDeleteSelectedModal() {
+    setErrorMessage("");
+
+    if (selectedMediaIds.length === 0) {
+      setErrorMessage("No media selected for deletion.");
+      return;
+    }
+
+    setIsDeleteSelectedModalOpen(true);
+  }
+
+  function handleCloseDeleteSelectedModal() {
+    setErrorMessage("");
+    setIsDeleteSelectedModalOpen(false);
   }
 
   function handleCloseMediaViewer() {
@@ -358,14 +376,11 @@ function AlbumDetailPage() {
       return;
     }
 
-    if (!window.confirm("Delete selected media?")) {
-      return;
-    }
-
     try {
       setIsLoading(true);
       await deleteMultipleMedia(selectedMediaIds);
       setSelectedMediaIds([]);
+      handleCloseDeleteSelectedModal();
       await loadMedia();
     } catch (error) {
       setErrorMessage(error.message);
@@ -492,7 +507,7 @@ function AlbumDetailPage() {
             <button
               className="mv-btn mv-btn-secondary"
               type="button"
-              onClick={handleDeleteMultipleMedia}
+              onClick={handleOpenDeleteSelectedModal}
             >
               🗑️ Delete Selected
             </button>
@@ -846,6 +861,60 @@ function AlbumDetailPage() {
                 onClick={handleCloseMoveMediaModal}
               >
                 Cancel
+              </button>
+            </div>
+          </section>
+        </div>
+      )}
+
+      {/*
+      ######################################
+      UI: DELETE SELECTED MEDIA MODAL
+      ######################################
+      */}
+      {isDeleteSelectedModalOpen && (
+        <div
+          className="mv-modal-overlay"
+          onClick={handleCloseDeleteSelectedModal}
+        >
+          <section
+            className="mv-card mv-card-padded mv-modal-card"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="deleteSelectedTitle"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <div className="mv-modal-header">
+              <h2 className="mv-modal-title" id="deleteSelectedTitle">
+                Delete Selected Media
+              </h2>
+
+              <p className="mv-modal-subtitle">
+                Are you sure you want to delete {selectedMediaIds.length}{" "}
+                selected item(s)?
+              </p>
+            </div>
+
+            <p className="modal-warning-text">
+              This will permanently remove the selected media from this album.
+            </p>
+
+            <div className="mv-modal-actions">
+              <button
+                className="mv-btn mv-btn-secondary"
+                type="button"
+                onClick={handleCloseDeleteSelectedModal}
+              >
+                Cancel
+              </button>
+
+              <button
+                className="mv-btn mv-btn-danger"
+                type="button"
+                disabled={isLoading}
+                onClick={handleDeleteMultipleMedia}
+              >
+                Delete
               </button>
             </div>
           </section>
