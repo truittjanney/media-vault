@@ -602,6 +602,12 @@ function AlbumsPage() {
                   className="mv-btn mv-btn-secondary"
                   type="button"
                   onClick={async () => {
+                    if (selectedAlbumForActions.isLocked) {
+                      setSelectedAlbumForActions(null);
+                      setErrorMessage("Unlock this album before renaming it.");
+                      return;
+                    }
+
                     const newName = prompt(
                       "Enter new album name:",
                       selectedAlbumForActions.name,
@@ -632,6 +638,12 @@ function AlbumsPage() {
                   className="mv-btn mv-btn-danger"
                   type="button"
                   onClick={async () => {
+                    if (selectedAlbumForActions.isLocked) {
+                      setSelectedAlbumForActions(null);
+                      setErrorMessage("Unlock this album before deleting it.");
+                      return;
+                    }
+
                     await handleDeleteAlbum(selectedAlbumForActions.id);
                     handleCloseAlbumActionsModal();
                   }}
