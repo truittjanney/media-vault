@@ -26,6 +26,10 @@ function AlbumsPage() {
   const [albumPinInput, setAlbumPinInput] = useState("");
   const [albumPinError, setAlbumPinError] = useState("");
   const [albumPinModalMode, setAlbumPinModalMode] = useState("open-album");
+  const [albumEditModalMode, setAlbumEditModalMode] = useState(null);
+  const [selectedAlbumForEdit, setSelectedAlbumForEdit] = useState(null);
+  const [renameAlbumInput, setRenameAlbumInput] = useState("");
+  const [albumEditError, setAlbumEditError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const navigate = useNavigate();
@@ -118,6 +122,31 @@ function AlbumsPage() {
 
     setAlbumPinInput(numbersOnly);
     setAlbumPinError("");
+  }
+
+  function handleOpenAlbumEditModal(album, mode) {
+    setErrorMessage("");
+    setAlbumEditError("");
+    setSelectedAlbumForEdit(album);
+    setAlbumEditModalMode(mode);
+
+    if (mode === "rename") {
+      setRenameAlbumInput(album.name);
+    } else {
+      setRenameAlbumInput("");
+    }
+  }
+
+  function handleCloseAlbumEditModal() {
+    setAlbumEditError("");
+    setRenameAlbumInput("");
+    setSelectedAlbumForEdit(null);
+    setAlbumEditModalMode(null);
+  }
+
+  function handleChangeRenameAlbumInput(event) {
+    setRenameAlbumInput(event.target.value);
+    setAlbumEditError("");
   }
 
   function logoutUser() {
@@ -220,40 +249,40 @@ function AlbumsPage() {
     }
   }
 
-  async function handleRenameAlbum(albumId, newName) {
-    setErrorMessage("");
+  async function handleSubmitAlbumEdit(event) {
+    event.preventDefault();
+    setAlbumEditError("");
 
-    const trimmedName = newName.trim();
-
-    if (trimmedName === "") {
-      setErrorMessage("Album name cannot be empty");
+    if (!selectedAlbumForEdit) {
+      setAlbumEditError("No album selected.");
       return;
     }
 
     try {
       setIsLoading(true);
-      await updateAlbum(albumId, { name: trimmedName });
-      await loadAlbums();
+
+      if (albumEditModalMode === "rename") {
+        const trimmedName = renameAlbumInput.trim();
+
+        if (trimmedName === "") {
+          setAlbumEditError("Album name cannot be empty.");
+          return;
+        }
+
+        await updateAlbum(selectedAlbumForEdit.id, { name: trimmedName });
+        handleCloseAlbumEditModal();
+        await loadAlbums();
+        return;
+      }
+
+      if (albumEditModalMode === "delete") {
+        await deleteAlbum(selectedAlbumForEdit.id);
+        handleCloseAlbumEditModal();
+        await loadAlbums();
+        return;
+      }
     } catch (error) {
-      setErrorMessage(error.message);
-    } finally {
-      setIsLoading(false);
-    }
-  }
-
-  async function handleDeleteAlbum(albumId) {
-    setErrorMessage("");
-
-    if (!window.confirm("Delete this album?")) {
-      return;
-    }
-
-    try {
-      setIsLoading(true);
-      await deleteAlbum(albumId);
-      await loadAlbums();
-    } catch (error) {
-      setErrorMessage(error.message);
+      setAlbumEditError(error.message);
     } finally {
       setIsLoading(false);
     }
@@ -522,6 +551,88 @@ function AlbumsPage() {
 
       {/*
       ######################################
+      UI: ALBUM EDIT MODAL
+      ######################################
+      */}
+      {albumEditModalMode && selectedAlbumForEdit && (
+        <div className="mv-modal-overlay" onClick={handleCloseAlbumEditModal}>
+          <section
+            className="mv-card mv-card-padded mv-modal-card"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="albumEditTitle"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <div className="mv-modal-header">
+              <h2 className="mv-modal-title" id="albumEditTitle">
+                {albumEditModalMode === "rename"
+                  ? "Rename Album"
+                  : "Delete Album"}
+              </h2>
+
+              <p className="mv-modal-subtitle">
+                {albumEditModalMode === "rename"
+                  ? `Rename ${selectedAlbumForEdit.name}.`
+                  : `Are you sure you want to delete ${selectedAlbumForEdit.name}?`}
+              </p>
+            </div>
+
+            {albumEditError && (
+              <p className="mv-alert mv-alert-error">{albumEditError}</p>
+            )}
+
+            <form className="mv-form" onSubmit={handleSubmitAlbumEdit}>
+              {albumEditModalMode === "rename" && (
+                <div className="mv-field">
+                  <label className="mv-label" htmlFor="renameAlbumInput">
+                    Album Name
+                  </label>
+
+                  <input
+                    className="mv-input"
+                    type="text"
+                    id="renameAlbumInput"
+                    value={renameAlbumInput}
+                    onChange={handleChangeRenameAlbumInput}
+                    autoFocus
+                  />
+                </div>
+              )}
+
+              {albumEditModalMode === "delete" && (
+                <p className="modal-warning-text">
+                  This will permanently delete this album and all of its media.
+                </p>
+              )}
+
+              <div className="mv-modal-actions">
+                <button
+                  className="mv-btn mv-btn-secondary"
+                  type="button"
+                  onClick={handleCloseAlbumEditModal}
+                >
+                  Cancel
+                </button>
+
+                <button
+                  className={
+                    albumEditModalMode === "delete"
+                      ? "mv-btn mv-btn-danger"
+                      : "mv-btn mv-btn-primary"
+                  }
+                  type="submit"
+                  disabled={isLoading}
+                >
+                  {albumEditModalMode === "delete" ? "Delete" : "Save"}
+                </button>
+              </div>
+            </form>
+          </section>
+        </div>
+      )}
+
+      {/*
+      ######################################
       UI: ALBUM ACTIONS MODAL
       ######################################
       */}
@@ -601,25 +712,17 @@ function AlbumsPage() {
                 <button
                   className="mv-btn mv-btn-secondary"
                   type="button"
-                  onClick={async () => {
+                  onClick={() => {
                     if (selectedAlbumForActions.isLocked) {
                       setSelectedAlbumForActions(null);
                       setErrorMessage("Unlock this album before renaming it.");
                       return;
                     }
 
-                    const newName = prompt(
-                      "Enter new album name:",
-                      selectedAlbumForActions.name,
-                    );
+                    const albumToEdit = selectedAlbumForActions;
 
-                    if (newName !== null) {
-                      await handleRenameAlbum(
-                        selectedAlbumForActions.id,
-                        newName,
-                      );
-                      handleCloseAlbumActionsModal();
-                    }
+                    handleCloseAlbumActionsModal();
+                    handleOpenAlbumEditModal(albumToEdit, "rename");
                   }}
                 >
                   Rename
@@ -630,22 +733,24 @@ function AlbumsPage() {
                 <div className="modal-action-text">
                   <p className="modal-action-title">Delete Album</p>
                   <p className="modal-action-description">
-                    Permanently delete this album and its media records.
+                    Permanently delete this album and all of its media.
                   </p>
                 </div>
 
                 <button
                   className="mv-btn mv-btn-danger"
                   type="button"
-                  onClick={async () => {
+                  onClick={() => {
                     if (selectedAlbumForActions.isLocked) {
                       setSelectedAlbumForActions(null);
                       setErrorMessage("Unlock this album before deleting it.");
                       return;
                     }
 
-                    await handleDeleteAlbum(selectedAlbumForActions.id);
+                    const albumToEdit = selectedAlbumForActions;
+
                     handleCloseAlbumActionsModal();
+                    handleOpenAlbumEditModal(albumToEdit, "delete");
                   }}
                 >
                   Delete
