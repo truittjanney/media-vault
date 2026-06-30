@@ -29,6 +29,7 @@ function AlbumDetailPage() {
   const [availableAlbums, setAvailableAlbums] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
   const { id } = useParams();
   const navigate = useNavigate();
 
@@ -202,11 +203,12 @@ function AlbumDetailPage() {
   // ####################################################
   async function handleSetAlbumCover(mediaId) {
     setErrorMessage("");
+    setSuccessMessage("");
 
     try {
       setIsLoading(true);
       await updateAlbum(id, { albumCoverMediaId: mediaId });
-      alert("Album cover updated successfully");
+      setSuccessMessage("Album cover updated successfully.");
       await loadMedia();
     } catch (error) {
       setErrorMessage(error.message);
@@ -399,6 +401,18 @@ function AlbumDetailPage() {
     return () => clearTimeout(timer);
   }, [errorMessage]);
 
+  useEffect(() => {
+    if (!successMessage) {
+      return;
+    }
+
+    const timer = setTimeout(() => {
+      setSuccessMessage("");
+    }, 5000);
+
+    return () => clearTimeout(timer);
+  }, [successMessage]);
+
   // ####################################################
   // DERIVED VALUES
   // ####################################################
@@ -441,6 +455,10 @@ function AlbumDetailPage() {
 
       {errorMessage && (
         <p className="mv-alert mv-alert-error">{errorMessage}</p>
+      )}
+
+      {successMessage && (
+        <p className="mv-alert mv-alert-success">{successMessage}</p>
       )}
 
       {/*
@@ -574,6 +592,14 @@ function AlbumDetailPage() {
                 Media Options
               </h2>
 
+              {successMessage && (
+                <p className="mv-alert mv-alert-success">{successMessage}</p>
+              )}
+
+              {errorMessage && (
+                <p className="mv-alert mv-alert-error">{errorMessage}</p>
+              )}
+
               <p className="mv-modal-subtitle">
                 {selectedMedia.name || "Not available"}
               </p>
@@ -593,7 +619,6 @@ function AlbumDetailPage() {
                   type="button"
                   onClick={async () => {
                     await handleSetAlbumCover(selectedMedia.id);
-                    handleCloseMediaOptionsModal();
                   }}
                 >
                   Set Cover

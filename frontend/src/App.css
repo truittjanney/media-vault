@@ -294,8 +294,8 @@ REUSABLE CLASSES: FEEDBACK STATES
 
 .mv-alert-success {
   background: var(--primary-soft);
-  color: var(--primary-hover);
-  border: 1px solid var(--primary-border);
+  border-color: var(--primary-border);
+  color: var(--primary);
 }
 
 .mv-status {
