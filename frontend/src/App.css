@@ -566,7 +566,7 @@ ALBUM CARD CLASSES
 }
 
 .album-lock-toggle-on .album-lock-toggle-thumb {
-  transform: translateX(22px);
+  transform: translateX(12px);
 }
 
 .album-lock-toggle-text {
