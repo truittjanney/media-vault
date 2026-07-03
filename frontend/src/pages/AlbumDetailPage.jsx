@@ -25,10 +25,11 @@ function AlbumDetailPage() {
   const [isDragging, setIsDragging] = useState(false);
   const [isMediaOptionsModalOpen, setIsMediaOptionsModalOpen] = useState(false);
   const [isMoveMediaModalOpen, setIsMoveMediaModalOpen] = useState(false);
-  const [mediaIdsToMove, setMediaIdsToMove] = useState([]);
-  const [availableAlbums, setAvailableAlbums] = useState([]);
+  const [isDeleteMediaModalOpen, setIsDeleteMediaModalOpen] = useState(false);
   const [isDeleteSelectedModalOpen, setIsDeleteSelectedModalOpen] =
     useState(false);
+  const [mediaIdsToMove, setMediaIdsToMove] = useState([]);
+  const [availableAlbums, setAvailableAlbums] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
@@ -193,6 +194,17 @@ function AlbumDetailPage() {
     setIsMoveMediaModalOpen(false);
   }
 
+  function handleOpenDeleteMediaModal() {
+    setErrorMessage("");
+    setIsMediaOptionsModalOpen(false);
+    setIsDeleteMediaModalOpen(true);
+  }
+
+  function handleCloseDeleteMediaModal() {
+    setErrorMessage("");
+    setIsDeleteMediaModalOpen(false);
+  }
+
   function handleOpenDeleteSelectedModal() {
     setErrorMessage("");
 
@@ -213,6 +225,7 @@ function AlbumDetailPage() {
     setSelectedMedia(null);
     setIsMediaOptionsModalOpen(false);
     setIsMoveMediaModalOpen(false);
+    setIsDeleteMediaModalOpen(false);
     setMediaIdsToMove([]);
   }
 
@@ -360,6 +373,8 @@ function AlbumDetailPage() {
       setIsLoading(true);
       await deleteMedia(mediaId);
       setSelectedMedia(null);
+      setIsMediaOptionsModalOpen(false);
+      setIsDeleteMediaModalOpen(false);
       await loadMedia();
     } catch (error) {
       setErrorMessage(error.message);
@@ -705,10 +720,7 @@ function AlbumDetailPage() {
                 <button
                   className="mv-btn mv-btn-danger modal-action-button"
                   type="button"
-                  onClick={async () => {
-                    await handleDeleteMedia(selectedMedia.id);
-                    handleCloseMediaOptionsModal();
-                  }}
+                  onClick={handleOpenDeleteMediaModal}
                 >
                   Delete
                 </button>
@@ -861,6 +873,59 @@ function AlbumDetailPage() {
                 onClick={handleCloseMoveMediaModal}
               >
                 Cancel
+              </button>
+            </div>
+          </section>
+        </div>
+      )}
+
+      {/*
+      ######################################
+      UI: DELETE MEDIA MODAL
+      ######################################
+      */}
+      {selectedMedia && isDeleteMediaModalOpen && (
+        <div className="mv-modal-overlay" onClick={handleCloseDeleteMediaModal}>
+          <section
+            className="mv-card mv-card-padded mv-modal-card"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="deleteMediaTitle"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <div className="mv-modal-header">
+              <h2 className="mv-modal-title" id="deleteMediaTitle">
+                Delete Media
+              </h2>
+
+              <p className="mv-modal-subtitle">
+                Are you sure you want to delete{" "}
+                {selectedMedia.name || "this media item"}?
+              </p>
+            </div>
+
+            <p className="modal-warning-text">
+              This will permanently remove this media item from the album.
+            </p>
+
+            <div className="mv-modal-actions">
+              <button
+                className="mv-btn mv-btn-secondary"
+                type="button"
+                onClick={handleCloseDeleteMediaModal}
+              >
+                Cancel
+              </button>
+
+              <button
+                className="mv-btn mv-btn-danger"
+                type="button"
+                disabled={isLoading}
+                onClick={async () => {
+                  await handleDeleteMedia(selectedMedia.id);
+                }}
+              >
+                Delete
               </button>
             </div>
           </section>
