@@ -210,6 +210,67 @@ router.post("/forgot-password", async (req, res) => {
 });
 
 // #########################################
+// POST API Route - Reset Password
+// #########################################
+// Mounted at /api/users
+router.post("/reset-password", async (req, res) => {
+  try {
+    const { token, newPassword } = req.body;
+
+    if (typeof token !== "string" || !token.trim()) {
+      return res.status(400).json({ message: "Reset token is required." });
+    }
+
+    if (typeof newPassword !== "string" || !newPassword.trim()) {
+      return res.status(400).json({ message: "New password is required." });
+    }
+
+    const normalizedToken = token.trim();
+
+    const hashedResetToken = crypto
+      .createHash("sha256")
+      .update(normalizedToken)
+      .digest("hex");
+
+    const user = await prisma.user.findFirst({
+      where: {
+        passwordResetTokenHash: hashedResetToken,
+        passwordResetTokenExpiresAt: { gt: new Date() },
+      },
+    });
+
+    if (!user) {
+      return res
+        .status(400)
+        .json({ message: "Invalid or expired reset token." });
+    }
+
+    if (newPassword.length < 8) {
+      return res
+        .status(400)
+        .json({ message: "Password must be at least 8 characters." });
+    }
+
+    const saltRounds = 10;
+    const hashedNewPassword = await bcrypt.hash(newPassword, saltRounds);
+
+    await prisma.user.update({
+      where: { id: user.id },
+      data: {
+        passwordHash: hashedNewPassword,
+        passwordResetTokenHash: null,
+        passwordResetTokenExpiresAt: null,
+      },
+    });
+
+    res.json({ message: "Password has been reset successfully." });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error resetting password" });
+  }
+});
+
+// #########################################
 // GET API Route - Get User Profile
 // #########################################
 // Mounted at /api/users
