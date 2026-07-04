@@ -3,6 +3,7 @@ import pkg from "@prisma/client";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import authMiddleware from "../middleware/auth.middleware.js";
+import crypto from "crypto";
 
 const { PrismaClient } = pkg;
 const prisma = new PrismaClient();
@@ -144,6 +145,67 @@ router.post("/login", async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Error logging in" });
+  }
+});
+
+// #########################################
+// POST API Route - Forgot Password
+// #########################################
+// Mounted at /api/users
+router.post("/forgot-password", async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    // Validate the email before looking up the user
+    if (typeof email !== "string" || !email.trim()) {
+      return res.status(400).json({ message: "Email is required." });
+    }
+
+    const normalizedEmail = email.trim().toLowerCase();
+
+    // Fetch the user to confirm they exist
+    const user = await prisma.user.findUnique({
+      where: { email: normalizedEmail },
+    });
+
+    // Do not reveal whether the email exists
+    if (!user) {
+      return res.json({
+        message:
+          "If an account exists with that email, a password reset link has been sent.",
+      });
+    }
+
+    const resetToken = crypto.randomBytes(32).toString("hex");
+
+    const hashedResetToken = crypto
+      .createHash("sha256")
+      .update(resetToken)
+      .digest("hex");
+
+    const resetTokenExpiresAt = new Date(Date.now() + 30 * 60 * 1000);
+
+    await prisma.user.update({
+      where: { id: user.id },
+      data: {
+        passwordResetTokenHash: hashedResetToken,
+        passwordResetTokenExpiresAt: resetTokenExpiresAt,
+      },
+    });
+
+    const resetLink = `http://localhost:5173/reset-password?token=${resetToken}`;
+
+    console.log("Password reset link:", resetLink);
+
+    return res.json({
+      message:
+        "If an account exists with that email, a password reset link has been sent.",
+    });
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .json({ message: "Error processing forgot password request" });
   }
 });
 
