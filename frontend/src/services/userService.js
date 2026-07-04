@@ -20,6 +20,26 @@ async function userLogin(email, password) {
   });
 }
 
+async function userForgotPassword(email) {
+  return apiRequest("/api/users/forgot-password", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ email }),
+  });
+}
+
+async function userResetPassword(token, newPassword) {
+  return apiRequest("/api/users/reset-password", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ token, newPassword }),
+  });
+}
+
 async function getUserProfile() {
   return apiRequest("/api/users/profile");
 }
@@ -34,4 +54,11 @@ async function updateUserProfile(profileData) {
   });
 }
 
-export { userSignup, userLogin, getUserProfile, updateUserProfile };
+export {
+  userSignup,
+  userLogin,
+  userForgotPassword,
+  userResetPassword,
+  getUserProfile,
+  updateUserProfile,
+};
