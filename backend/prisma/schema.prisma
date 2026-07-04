@@ -13,6 +13,8 @@ model User {
   email String @unique
   passwordHash String
   albumPinHash String
+  passwordResetToken String?
+  passwordResetTokenExpiresAt DateTime?
   albumLayoutPreference String
   mediaLayoutPreference String
   albumSortPreference String @default("name-asc")
