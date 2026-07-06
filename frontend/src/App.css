@@ -366,6 +366,10 @@ AUTH CLASSES (SIGNUP/LOGIN PAGE)
   font-size: 14px;
 }
 
+.auth-footer-secondary {
+  margin-top: 8px;
+}
+
 .auth-link {
   color: var(--primary);
   font-weight: 700;

@@ -84,6 +84,12 @@ function LoginPage() {
             Create Account
           </Link>
         </p>
+
+        <p className="auth-footer auth-footer-secondary">
+          <Link to="/forgot-password" className="auth-link">
+            Forgot password?
+          </Link>
+        </p>
       </section>
     </main>
   );
