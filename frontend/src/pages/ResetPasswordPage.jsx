@@ -79,7 +79,7 @@ function ResetPasswordPage() {
               className="mv-input"
               type="password"
               value={newPassword}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={(e) => setNewPassword(e.target.value)}
             />
           </div>
 
