@@ -2,7 +2,7 @@ import express from "express";
 import pkg from "@prisma/client";
 import bcrypt from "bcrypt";
 import authMiddleware from "../middleware/auth.middleware.js";
-import { getSignedMediaUrl } from "../utils/s3.js";
+import { getSignedMediaUrl, deleteFileFromS3 } from "../utils/s3.js";
 
 const { PrismaClient } = pkg;
 const prisma = new PrismaClient();
@@ -592,7 +592,7 @@ router.delete("/:id", authMiddleware, async (req, res) => {
     const albumId = Number(req.params.id);
 
     // Validate album id before querying the database
-    if (!Number.isInteger(albumId)) {
+    if (!Number.isInteger(albumId) || albumId <= 0) {
       return res.status(400).json({ message: "Invalid album id." });
     }
 
@@ -615,10 +615,45 @@ router.delete("/:id", authMiddleware, async (req, res) => {
       });
     }
 
-    // Delete the album record
-    await prisma.album.delete({
-      where: { id: albumId },
+    // Fetch all media in this album so their S3 objects can be deleted
+    const albumMediaItems = await prisma.media.findMany({
+      where: {
+        albumId,
+        userId,
+      },
+      select: {
+        id: true,
+        filePath: true,
+      },
     });
+
+    // Delete all album media files from AWS S3 before deleting database records
+    await Promise.all(
+      albumMediaItems.map((mediaItem) => deleteFileFromS3(mediaItem.filePath)),
+    );
+
+    // Clear the album cover, delete the album's media records, then delete the album
+    await prisma.$transaction([
+      prisma.album.update({
+        where: {
+          id: albumId,
+        },
+        data: {
+          albumCoverMediaId: null,
+        },
+      }),
+      prisma.media.deleteMany({
+        where: {
+          albumId,
+          userId,
+        },
+      }),
+      prisma.album.delete({
+        where: {
+          id: albumId,
+        },
+      }),
+    ]);
 
     return res.status(200).json({ message: "Album deleted successfully" });
   } catch (error) {
