@@ -2,7 +2,7 @@ import express from "express";
 import pkg from "@prisma/client";
 import authMiddleware from "../middleware/auth.middleware.js";
 import multer from "multer";
-import { uploadFileToS3 } from "../utils/s3.js";
+import { uploadFileToS3, deleteFileFromS3 } from "../utils/s3.js";
 
 const { PrismaClient } = pkg;
 const prisma = new PrismaClient();
@@ -479,6 +479,13 @@ router.delete("/", authMiddleware, async (req, res) => {
       });
     }
 
+    // Delete all selected media files from AWS S3 before deleting the database records
+    await Promise.all(
+      existingMediaItems.map((mediaItem) =>
+        deleteFileFromS3(mediaItem.filePath),
+      ),
+    );
+
     // Delete all selected media items
     const deletedMedia = await prisma.media.deleteMany({
       where: {
@@ -552,6 +559,9 @@ router.delete("/:id", authMiddleware, async (req, res) => {
         },
       });
     }
+
+    // Delete the file from AWS S3 before deleting the database record
+    await deleteFileFromS3(existingMedia.filePath);
 
     // Delete the media record
     await prisma.media.delete({
