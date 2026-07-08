@@ -21,7 +21,7 @@ function AlbumCard({ album, onOpenAlbum, onOpenAlbumActions }) {
         {albumCoverMedia?.type === "image" && (
           <img
             className="album-card-cover-media"
-            src={`http://localhost:5001${albumCoverMedia.filePath}`}
+            src={albumCoverMedia.url}
             alt={`${album.name} album cover`}
           />
         )}
@@ -29,7 +29,7 @@ function AlbumCard({ album, onOpenAlbum, onOpenAlbumActions }) {
         {albumCoverMedia?.type === "video" && (
           <video
             className="album-card-cover-media"
-            src={`http://localhost:5001${albumCoverMedia.filePath}`}
+            src={albumCoverMedia.url}
             muted
             playsInline
             preload="metadata"

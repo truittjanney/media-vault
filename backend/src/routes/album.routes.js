@@ -2,6 +2,7 @@ import express from "express";
 import pkg from "@prisma/client";
 import bcrypt from "bcrypt";
 import authMiddleware from "../middleware/auth.middleware.js";
+import { getSignedMediaUrl } from "../utils/s3.js";
 
 const { PrismaClient } = pkg;
 const prisma = new PrismaClient();
@@ -154,13 +155,36 @@ router.get("/", authMiddleware, async (req, res) => {
       },
     });
 
-    // Flatten Prisma's count data into a totalCount field for the client
-    const albumsWithCounts = albums.map((album) => ({
-      ...album,
-      totalCount: album._count.media,
-    }));
+    // Temporary signed AWS S3 URLs only for the album cover media
+    const albumsWithSignedCoverUrls = await Promise.all(
+      albums.map(async (album) => {
+        if (!album.albumCoverMedia) {
+          return album;
+        }
 
-    return res.status(200).json({ albums: albumsWithCounts });
+        const url = await getSignedMediaUrl(album.albumCoverMedia.filePath);
+
+        return {
+          ...album,
+          albumCoverMedia: {
+            ...album.albumCoverMedia,
+            url,
+          },
+        };
+      }),
+    );
+
+    // Flatten Prisma's count data into a totalCount field while keeping signed cover URLs
+    const albumsWithCountsAndSignedCoverUrls = albumsWithSignedCoverUrls.map(
+      (album) => ({
+        ...album,
+        totalCount: album._count.media,
+      }),
+    );
+
+    return res.status(200).json({
+      albums: albumsWithCountsAndSignedCoverUrls,
+    });
   } catch (error) {
     console.error("Error retrieving albums", error);
     return res.status(500).json({ message: "Internal server error" });
@@ -205,7 +229,21 @@ router.get("/:id/media", authMiddleware, async (req, res) => {
       },
     });
 
-    return res.status(200).json({ album: existingAlbum, media });
+    // Add temporary signed AWS S3 URLs for frontend viewing
+    const mediaWithSignedUrls = await Promise.all(
+      media.map(async (file) => {
+        const url = await getSignedMediaUrl(file.filePath);
+
+        return {
+          ...file,
+          url,
+        };
+      }),
+    );
+
+    return res
+      .status(200)
+      .json({ album: existingAlbum, media: mediaWithSignedUrls });
   } catch (error) {
     console.error("Error listing album contents.", error);
     return res.status(500).json({ message: "Internal server error" });

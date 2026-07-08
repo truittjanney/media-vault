@@ -27,9 +27,6 @@ app.use("/api/albums", albumRoutes);
 // Media Routes
 app.use("/api/media", mediaRoutes);
 
-// File Storage
-app.use("/uploads", express.static("uploads"));
-
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {

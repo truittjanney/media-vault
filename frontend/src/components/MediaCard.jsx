@@ -19,17 +19,13 @@ function MediaCard({
     >
       <div className="media-card-preview">
         {media.type === "image" && (
-          <img
-            className="media-card-media"
-            src={`http://localhost:5001${media.filePath}`}
-            alt={media.name}
-          />
+          <img className="media-card-media" src={media.url} alt={media.name} />
         )}
 
         {media.type === "video" && (
           <video
             className="media-card-media"
-            src={`http://localhost:5001${media.filePath}`}
+            src={media.url}
             muted
             playsInline
             preload="metadata"

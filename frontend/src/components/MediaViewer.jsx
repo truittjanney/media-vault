@@ -51,7 +51,7 @@ function MediaViewer({
               {media.type === "image" && (
                 <img
                   className="media-viewer-media"
-                  src={`http://localhost:5001${media.filePath}`}
+                  src={media.url}
                   alt={media.name}
                 />
               )}
@@ -59,7 +59,7 @@ function MediaViewer({
               {media.type === "video" && (
                 <video
                   className="media-viewer-media"
-                  src={`http://localhost:5001${media.filePath}`}
+                  src={media.url}
                   controls
                 />
               )}

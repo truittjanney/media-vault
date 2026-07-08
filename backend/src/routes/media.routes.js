@@ -2,25 +2,15 @@ import express from "express";
 import pkg from "@prisma/client";
 import authMiddleware from "../middleware/auth.middleware.js";
 import multer from "multer";
-import path from "path";
+import { uploadFileToS3 } from "../utils/s3.js";
 
 const { PrismaClient } = pkg;
 const prisma = new PrismaClient();
 
 const router = express.Router();
 
-// Configure multer to store uploaded files in the local uploads folder
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, "uploads/");
-  },
-  filename: function (req, file, cb) {
-    const fileExtension = path.extname(file.originalname);
-    const uniqueName = `${Date.now()}-${Math.round(Math.random() * 1e9)}${fileExtension}`;
-
-    cb(null, uniqueName);
-  },
-});
+// Configure multer to keep uploaded files in memory before sending them to S3
+const storage = multer.memoryStorage();
 
 const upload = multer({ storage });
 
@@ -77,6 +67,12 @@ router.post(
       for (let i = 0; i < files.length; i++) {
         const file = files[i];
 
+        const s3Key = await uploadFileToS3({
+          file,
+          userId,
+          albumId,
+        });
+
         const media = await prisma.media.create({
           data: {
             userId,
@@ -91,7 +87,7 @@ router.post(
             isDeleted: false,
             deletedTime: null,
             mediaPosition: mediaCount + i + 1,
-            filePath: `/uploads/${file.filename}`,
+            filePath: s3Key,
           },
         });
 
