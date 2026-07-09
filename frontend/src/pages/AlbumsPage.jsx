@@ -758,7 +758,7 @@ function AlbumsPage() {
               </div>
             </div>
 
-            <div className="mv-modal-actions">
+            <div className="album-actions-modal-footer">
               <button
                 className="mv-btn mv-btn-secondary"
                 type="button"
