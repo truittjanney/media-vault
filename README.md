@@ -116,6 +116,7 @@ cd backend
 npm run dev
 ```
 
+````md
 ### Prisma / Database
 
 After changing `schema.prisma`, create and apply a migration:
@@ -124,6 +125,7 @@ After changing `schema.prisma`, create and apply a migration:
 cd backend
 npx prisma migrate dev --name <describe-changes-here>
 ```
+````
 
 Check whether the database is up to date with the Prisma migrations:
 
@@ -143,13 +145,19 @@ Regenerate the Prisma Client if needed:
 npx prisma generate
 ```
 
-If the backend logs errors like:
+If the backend logs errors such as:
 
 - column does not exist
 - table does not exist
 - unknown field
 
 then Prisma, the generated Prisma Client, and the database may be out of sync. Run the migration/status/validate/generate commands above and restart the backend.
+
+Open Prisma Studio to visually inspect local database records:
+
+```bash
+npx prisma studio
+```
 
 ### PostgreSQL
 
