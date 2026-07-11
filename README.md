@@ -193,6 +193,10 @@ The current database schema includes users, albums, and media records.
 
 A PDF version is also available in `docs/mediavault-current-database-erd.pdf`.
 
+## Wireframes & UI Planning
+
+Early hand-drawn wireframes are included in `docs/wireframes/` to show the initial planning stages and UI direction for the project.
+
 ## Status
 
 In development. Core MVP features implemented locally.
