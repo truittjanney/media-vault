@@ -116,7 +116,6 @@ cd backend
 npm run dev
 ```
 
-````md
 ### Prisma / Database
 
 After changing `schema.prisma`, create and apply a migration:
@@ -125,7 +124,6 @@ After changing `schema.prisma`, create and apply a migration:
 cd backend
 npx prisma migrate dev --name <describe-changes-here>
 ```
-````
 
 Check whether the database is up to date with the Prisma migrations:
 
