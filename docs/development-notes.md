@@ -285,7 +285,7 @@ Frontend `.env` example:
 VITE_API_BASE_URL=http://localhost:5001
 ```
 
-Never commit real `.env` files to GitHub.
+Use `.env.example` for required variable names, but never commit real `.env` files or secrets.
 
 ---
 
