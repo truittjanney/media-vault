@@ -185,6 +185,14 @@ Check the current Node version:
 node -v
 ```
 
+## Database Schema
+
+The current database schema includes users, albums, and media records.
+
+![MediaVault Current Database ERD](docs/mediavault-current-database-erd.png)
+
+A PDF version is also available in `docs/mediavault-current-database-erd.pdf`.
+
 ## Status
 
 In development. Core MVP features implemented locally.
