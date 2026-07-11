@@ -106,36 +106,74 @@ Run a migration after changing `schema.prisma`:
 
 ```bash
 cd backend
-npx prisma migrate dev --name <migration-name>
+npx prisma migrate dev --name <describe-changes-here>
 ```
 
-Example:
+Check whether the database is up to date with migrations:
 
 ```bash
 cd backend
-npx prisma migrate dev --name add-media-file-path
+npx prisma migrate status
 ```
 
-Open Prisma Studio:
-
-```bash
-cd backend
-npx prisma studio
-```
-
-Regenerate Prisma Client:
+Regenerate Prisma Client if needed:
 
 ```bash
 cd backend
 npx prisma generate
 ```
 
-Introspect the current database:
+Open Prisma Studio to visually inspect local database records:
+
+```bash
+cd backend
+npx prisma studio
+```
+
+Examine the current database, if needed. Use carefully because this updates `schema.prisma` based on the current database:
 
 ```bash
 cd backend
 npx prisma db pull
 ```
+
+Recommended Prisma command order:
+
+```txt
+validate → migrate → status → generate → studio
+```
+
+Restart the backend after schema or Prisma Client changes if needed.
+
+---
+
+### Prisma Troubleshooting
+
+If the backend logs errors like:
+
+- column does not exist
+- table does not exist
+- unknown field
+
+then Prisma, the generated Prisma Client, and the database may be out of sync.
+
+Recommended Prisma sync/check flow:
+
+```bash
+cd backend
+npx prisma migrate status
+npx prisma validate
+npx prisma generate
+```
+
+If `schema.prisma` changed and no migration exists yet:
+
+```bash
+cd backend
+npx prisma migrate dev --name <describe-changes-here>
+```
+
+Restart the backend after schema or Prisma Client changes if needed.
 
 ---
 
@@ -227,6 +265,18 @@ Backend `.env` example:
 DATABASE_URL="postgresql://mediavault_user:your_password_here@localhost:5432/mediavault"
 JWT_SECRET="your_long_random_secret_here"
 PORT=5001
+
+# App URLs
+FRONTEND_URL=http://localhost:5173
+
+# AWS / S3 Configuration
+AWS_REGION=us-east-2
+S3_BUCKET_NAME=your-s3-bucket-name
+AWS_ACCESS_KEY_ID=your_access_key_id
+AWS_SECRET_ACCESS_KEY=your_secret_access_key
+
+# Email Configuration
+SES_FROM_EMAIL=
 ```
 
 Frontend `.env` example:
@@ -239,36 +289,30 @@ Never commit real `.env` files to GitHub.
 
 ---
 
-## Local File Uploads
+## Amazon S3 Media Storage
 
-Uploaded files are stored locally in:
+MediaVault stores uploaded photos and videos in a private Amazon S3 bucket.
 
-```text
-backend/uploads/
-```
+The backend uses `multer.memoryStorage()` so uploaded files are temporarily held in memory before being sent to S3. Files are not stored in a local `uploads/` directory.
 
-These files should not be committed to GitHub.
+The database stores the S3 object key in `Media.filePath`.
 
-Make sure `.gitignore` includes:
-
-```gitignore
-uploads/
-backend/uploads/
-```
-
-The backend serves uploaded files locally with:
-
-```js
-app.use("/uploads", express.static("uploads"));
-```
-
-Example local file URL:
+Example S3 object key:
 
 ```text
-http://localhost:5001/uploads/<filename>
+users/6/albums/12/random-file-name.png
 ```
 
-In production, uploaded files should eventually be stored in S3 instead of the local `uploads/` folder.
+```txt
+Upload Flow:
+React frontend → Express backend → Multer memory storage → Amazon S3 → Prisma stores S3 object key in Media.filePath
+
+View Flow:
+React frontend → Express backend → Prisma reads Media.filePath → backend generates temporary signed S3 URL → frontend renders image/video using media.url
+
+Delete Flow:
+React frontend → Express backend → delete S3 object → delete Prisma media record
+```
 
 ---
 
