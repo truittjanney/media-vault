@@ -633,7 +633,7 @@ function AlbumsPage() {
 
       {/*
       ######################################
-      UI: ALBUM ACTIONS MODAL
+      UI: ALBUM OPTIONS MODAL
       ######################################
       */}
       {selectedAlbumForActions && (
@@ -758,7 +758,7 @@ function AlbumsPage() {
               </div>
             </div>
 
-            <div className="album-actions-modal-footer">
+            <div className="album-options-modal-footer">
               <button
                 className="mv-btn mv-btn-secondary"
                 type="button"

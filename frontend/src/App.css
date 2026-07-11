@@ -267,7 +267,7 @@ REUSABLE CLASSES: MODAL ACTION ROWS
   font-size: 22px;
 }
 
-.album-actions-modal-footer {
+.album-options-modal-footer {
   display: flex;
   justify-content: flex-end;
   margin-top: 24px;
