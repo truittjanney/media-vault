@@ -715,7 +715,9 @@ function AlbumsPage() {
                   onClick={() => {
                     if (selectedAlbumForActions.isLocked) {
                       setSelectedAlbumForActions(null);
-                      setErrorMessage("Unlock this album before renaming it.");
+                      setErrorMessage(
+                        "Remove the lock from this album before renaming it.",
+                      );
                       return;
                     }
 
@@ -743,7 +745,9 @@ function AlbumsPage() {
                   onClick={() => {
                     if (selectedAlbumForActions.isLocked) {
                       setSelectedAlbumForActions(null);
-                      setErrorMessage("Unlock this album before deleting it.");
+                      setErrorMessage(
+                        "Remove the lock from this album before deleting it.",
+                      );
                       return;
                     }
 
