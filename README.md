@@ -73,6 +73,32 @@ The app allows users to create albums, upload media, lock albums with a PIN, fav
 - Smart search such as "dog", "beach", or "family"
 - Other AI-assisted organization features
 
+## Screenshots
+
+### Albums Page
+
+![MediaVault Albums Page](docs/screenshots/mediavault_albums_page.png)
+
+### Album Detail Page
+
+![MediaVault Album Detail Page](docs/screenshots/mediavault_album_detail_page.png)
+
+### Media Viewer
+
+![MediaVault Media Viewer](docs/screenshots/mediavault_media_viewer_photo.png)
+
+### Media Options
+
+![MediaVault Media Options Modal](docs/screenshots/mediavault_media_options_modal.png)
+
+### Forgot Password Page
+
+![MediaVault Forgot Password Page](docs/screenshots/mediavault_forgot_password_page.png)
+
+### Private S3 Storage
+
+![MediaVault S3 Bucket](docs/screenshots/mediavault_aws_s3_bucket.png)
+
 ## AWS Integration
 
 MediaVault uses Amazon S3 for private cloud file storage.
@@ -83,6 +109,8 @@ The database stores each file's S3 object key (unique identifier for a file) in 
 
 Media deletion is also connected to S3. When a user deletes a media item, deletes multiple media items, or deletes an album, the related S3 objects are deleted as well.
 
+A screenshot of the private S3 object structure is included in `docs/screenshots/`.
+
 High-level flow:
 
 ```txt
@@ -90,10 +118,37 @@ Upload:
 React frontend → Express backend → Multer memory storage → Amazon S3 → Prisma stores S3 object key
 
 View:
-React frontend → Express backend → Prisma filePath → temporary signed S3 URL → image/video renders in browser
+React frontend → Express backend → Prisma reads Media.filePath → temporary signed S3 URL → image/video renders in browser
 
 Delete:
 React frontend → Express backend → delete S3 object → delete Prisma media record
+```
+
+## Environment Variables
+
+Create `.env` files for the frontend and backend using the `.env.example` files as a guide.
+
+Backend:
+
+```env
+DATABASE_URL=
+JWT_SECRET=
+PORT=5001
+
+FRONTEND_URL=http://localhost:5173
+
+AWS_REGION=us-east-2
+S3_BUCKET_NAME=
+AWS_ACCESS_KEY_ID=
+AWS_SECRET_ACCESS_KEY=
+
+SES_FROM_EMAIL=
+```
+
+Frontend:
+
+```env
+VITE_API_BASE_URL=http://localhost:5001
 ```
 
 ## Common Commands
