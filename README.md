@@ -256,6 +256,8 @@ Early hand-drawn wireframes are included in `docs/wireframes/` to show the initi
 
 In development. Core MVP features implemented locally.
 
+Forgot-password reset token flow is complete locally; email delivery is deferred until production/domain setup.
+
 ## Author
 
 Truitt Janney
