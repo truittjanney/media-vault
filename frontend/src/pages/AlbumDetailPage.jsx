@@ -611,7 +611,7 @@ function AlbumDetailPage() {
           onClick={handleCloseMediaOptionsModal}
         >
           <section
-            className="mv-card mv-card-padded mv-modal-card mv-modal-card-wide"
+            className="mv-card mv-card-padded mv-modal-card mv-modal-card-wide media-options-modal"
             role="dialog"
             aria-modal="true"
             aria-labelledby="mediaOptionsTitle"
@@ -793,7 +793,7 @@ function AlbumDetailPage() {
               </div>
             </details>
 
-            <div className="mv-modal-actions">
+            <div className="media-options-modal-footer">
               <button
                 className="mv-btn mv-btn-secondary"
                 type="button"
