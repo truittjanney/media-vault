@@ -16,6 +16,13 @@ const router = express.Router();
 // Mounted at /api/users
 router.post("/signup", async (req, res) => {
   try {
+    // Prevent public account creation unless explicitly enabled
+    if (process.env.ALLOW_PUBLIC_SIGNUP !== "true") {
+      return res.status(403).json({
+        message: "Public signup is currently disabled.",
+      });
+    }
+
     const { name, email, password } = req.body;
 
     // Validate required signup fields before creating a user
