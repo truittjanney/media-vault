@@ -4,6 +4,7 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import authMiddleware from "../middleware/auth.middleware.js";
 import crypto from "crypto";
+import { sendPasswordResetEmail } from "../utils/ses.js";
 
 const { PrismaClient } = pkg;
 const prisma = new PrismaClient();
@@ -204,7 +205,15 @@ router.post("/forgot-password", async (req, res) => {
 
     const resetLink = `${frontendUrl}/reset-password?token=${resetToken}`;
 
-    console.log("Password reset link:", resetLink);
+    try {
+      await sendPasswordResetEmail({
+        recipientEmail: user.email,
+        resetLink,
+      });
+    } catch (emailError) {
+      // Log the real delivery problem internally without revealing whether the submitted email belongs to an account.
+      console.error("Password reset email failed:", emailError);
+    }
 
     return res.json({
       message:
