@@ -1,25 +1,97 @@
 # MediaVault
 
-MediaVault is a full-stack media storage and vault web application for securely organizing photos and videos.
+MediaVault is a full-stack media storage and vault application for securely organizing photos and videos.
 
-The app allows users to create albums, upload media, lock albums with a PIN, favorite files, move media between albums, view file details, and store uploaded files in private Amazon S3 cloud storage.
+Users can create and manage albums, upload media, protect albums with a PIN, favorite files, move media between albums, inspect file metadata, and view privately stored Amazon S3 objects through temporary presigned URLs.
+
+## Live Application
+
+- Frontend: https://mediavault.truittjanney.com
+- API: https://api.mediavault.truittjanney.com
+
+Public account registration is intentionally disabled in production to prevent unauthorized storage usage.
 
 ## Tech Stack
 
-- React.js, JavaScript, CSS3, HTML5, Fetch API (Frontend)
-- Node.js, Express.js, Multer (Backend)
-- PostgreSQL, Prisma ORM (Database)
-- Amazon S3, AWS IAM, signed URLs (Cloud Storage)
-- Docker, Terraform, CI/CD (Planned)
+### Frontend
 
-## Current Features
+- React.js
+- JavaScript
+- Vite
+- CSS3
+- HTML5
+- Fetch API
+- Vercel
+
+### Backend
+
+- Node.js
+- Express.js
+- Multer
+- JSON Web Tokens
+- bcrypt
+- Railway
+
+### Database
+
+- PostgreSQL
+- Prisma ORM
+- Railway PostgreSQL
+
+### AWS
+
+- Amazon S3
+- Amazon Simple Email Service (SES)
+- AWS Identity and Access Management (IAM)
+- Amazon Route 53
+- S3 presigned URLs
+
+### Planned DevOps Infrastructure
+
+- Docker
+- Terraform
+- GitHub Actions
+- CI/CD
+- Amazon CloudFront
+- AWS Certificate Manager
+- Amazon CloudWatch
+- Amazon SNS
+
+## Production Architecture
+
+MediaVault separates local development resources from production resources.
+
+```txt
+Frontend Hosting:
+Vercel
+https://mediavault.truittjanney.com
+
+Backend Hosting:
+Railway
+https://api.mediavault.truittjanney.com
+
+Production Services:
+Railway PostgreSQL
+Amazon S3
+Amazon SES
+Amazon Route 53
+```
+
+```md
+The frontend communicates with the Railway API through HTTPS. The backend manages authentication and application logic, stores relational data in Railway PostgreSQL, stores media objects in private Amazon S3 storage, and sends transactional password-reset emails through Amazon SES.
+```
+
+## Completed Features
 
 ### Authentication
 
 - User signup and login
-- JWT-protected routes
-- Forgot password reset-token flow
-- Password reset page
+- JWT-protected API routes
+- Password-reset token generation and expiration
+- Password-reset emails delivered through Amazon SES
+- Password-reset page with token validation
+- Generic forgot-password responses to prevent account enumeration
+- Public signup controlled through environment configuration
 
 ### Albums
 
@@ -28,8 +100,8 @@ The app allows users to create albums, upload media, lock albums with a PIN, fav
 - Delete albums
 - Sort albums by name, date created, and date modified
 - Set custom album covers
-- Lock & unlock albums with a PIN
 - Add and remove album locks
+- Unlock protected albums through PIN verification
 
 ### Media
 
@@ -124,11 +196,13 @@ Delete:
 React frontend → Express backend → delete S3 object → delete Prisma media record
 ```
 
+MediaVault also uses Amazon SES to deliver transactional password-reset emails in production. The sending identity uses the `mediavault.truittjanney.com` domain with Easy DKIM and a DMARC DNS record. The production backend has a least-privilege IAM policy allowing email delivery only through the MediaVault SES identity and approved sender address.
+
 ## Environment Variables
 
-Create `.env` files for the frontend and backend using the `.env.example` files as a guide.
+Create local `.env` files using the provided `.env.example` files as a guide. Production variables are configured through Railway and Vercel and are not committed to the repository.
 
-Backend:
+### Backend — Local Development
 
 ```env
 DATABASE_URL=
@@ -143,13 +217,33 @@ AWS_ACCESS_KEY_ID=
 AWS_SECRET_ACCESS_KEY=
 
 SES_FROM_EMAIL=
+
+ALLOW_PUBLIC_SIGNUP=false
 ```
 
-Frontend:
+Leave `SES_FROM_EMAIL` empty to print password-reset links in the local backend terminal. Set `ALLOW_PUBLIC_SIGNUP=true` locally when account-creation testing is needed.
+
+### Frontend - Local Development
 
 ```env
 VITE_API_BASE_URL=http://localhost:5001
 ```
+
+### Production Configuration
+
+Production environment variables are managed through Vercel and Railway rather than committed to the repository.
+
+```txt
+Vercel:
+VITE_API_BASE_URL=https://api.mediavault.truittjanney.com
+
+Railway:
+FRONTEND_URL=https://mediavault.truittjanney.com
+SES_FROM_EMAIL=no-reply@mediavault.truittjanney.com
+ALLOW_PUBLIC_SIGNUP=false
+```
+
+Production database credentials, AWS credentials, JWT secrets, and other sensitive values are stored only in their corresponding deployment platforms.
 
 ## Common Commands
 
@@ -252,11 +346,26 @@ A PDF version is also available in `docs/mediavault_current_database_erd.pdf`.
 
 Early hand-drawn wireframes are included in `docs/wireframes/` to show the initial planning stages and UI direction for the project.
 
-## Status
+## Project Status
 
-In development. Core MVP features implemented locally.
+MediaVault's core MVP is complete and deployed to production.
 
-Forgot-password reset token flow is complete locally; email delivery is deferred until production/domain setup.
+Completed production infrastructure includes:
+
+- Vercel frontend deployment
+- Railway backend deployment
+- Railway PostgreSQL database
+- Separate development and production S3 storage
+- Custom frontend and backend domains
+- Route 53 DNS delegation
+- Production CORS configuration
+- Automated Prisma migration deployment
+- Amazon SES password-reset email delivery
+- DKIM and DMARC email authentication
+- Least-privilege IAM policies
+- End-to-end authentication, media upload, S3 deletion, and password-reset testing
+
+Public signup is intentionally disabled in production. Additional product features and a separate Docker, Terraform, AWS, and CI/CD infrastructure phase are planned.
 
 ## Author
 
