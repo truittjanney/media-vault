@@ -77,9 +77,7 @@ Amazon SES
 Amazon Route 53
 ```
 
-```md
 The frontend communicates with the Railway API through HTTPS. The backend manages authentication and application logic, stores relational data in Railway PostgreSQL, stores media objects in private Amazon S3 storage, and sends transactional password-reset emails through Amazon SES.
-```
 
 ## Completed Features
 
