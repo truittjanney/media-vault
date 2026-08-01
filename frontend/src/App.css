@@ -45,8 +45,8 @@ REUSABLE CLASSES: BUTTONS
   align-items: center;
   justify-content: center;
   gap: 8px;
-  border: none;
-  border-radius: var(--radius-sm);
+  border: 1px solid transparent;
+  border-radius: var(--radius-button);
   padding: 8px 14px;
   font-weight: 600;
   cursor: pointer;
@@ -72,32 +72,40 @@ REUSABLE CLASSES: BUTTONS
   cursor: not-allowed;
 }
 
+/* Primary actions */
 .mv-btn-primary {
   background: var(--primary);
   color: #ffffff;
+  border-color: var(--primary);
 }
 
 .mv-btn-primary:hover:not(:disabled) {
   background: var(--primary-hover);
+  border-color: var(--primary-hover);
 }
 
+/* Secondary actions */
 .mv-btn-secondary {
   background: var(--surface);
   color: var(--text);
-  border: 1px solid var(--border);
+  border-color: var(--border);
 }
 
 .mv-btn-secondary:hover:not(:disabled) {
   background: var(--surface-soft);
+  border-color: var(--primary-border);
 }
 
+/* Destructive actions */
 .mv-btn-danger {
   background: var(--danger);
   color: #ffffff;
+  border-color: var(--danger);
 }
 
 .mv-btn-danger:hover:not(:disabled) {
   background: var(--danger-hover);
+  border-color: var(--danger-hover);
 }
 
 .mv-btn-full {
@@ -146,7 +154,7 @@ REUSABLE CLASSES: FORMS
 .mv-select {
   width: 100%;
   border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-md);
   padding: 10px 12px;
   background: var(--surface);
   color: var(--text);
@@ -311,7 +319,7 @@ REUSABLE CLASSES: FEEDBACK STATES
 ##########################################################
 */
 .mv-alert {
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-md);
   padding: 10px 12px;
   font-weight: 600;
 }
@@ -324,7 +332,7 @@ REUSABLE CLASSES: FEEDBACK STATES
 
 .mv-alert-success {
   background: var(--primary-soft);
-  border-color: var(--primary-border);
+  border: 1px solid var(--primary-border);
   color: var(--primary);
 }
 
@@ -432,7 +440,7 @@ ALBUMS PAGE CLASSES
   width: 44px;
   height: 44px;
   border: 1px solid var(--border);
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   background: var(--surface);
   color: var(--text);
   cursor: pointer;
@@ -540,7 +548,7 @@ ALBUM CARD CLASSES
   width: 34px;
   height: 34px;
   border: 1px solid var(--border);
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   background: rgba(255, 255, 255, 0.92);
   color: var(--text);
   font-size: 20px;
@@ -559,7 +567,7 @@ ALBUM CARD CLASSES
   flex: 0 0 auto;
   background: var(--primary-soft);
   border: 1px solid var(--primary-border);
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   padding: 2px 8px;
   font-size: 14px;
 }
@@ -578,7 +586,7 @@ ALBUM CARD CLASSES
 .album-lock-toggle-track {
   width: 52px;
   height: 30px;
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   background: var(--border);
   padding: 3px;
   display: inline-flex;
@@ -589,7 +597,7 @@ ALBUM CARD CLASSES
 .album-lock-toggle-thumb {
   width: 24px;
   height: 24px;
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   background: var(--surface);
   box-shadow: var(--shadow-sm);
   transition: transform 0.2s ease;
@@ -623,7 +631,7 @@ ALBUM DETAIL PAGE CLASSES
   display: inline-flex;
   align-items: center;
   border: 1px solid var(--border);
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   padding: 6px 12px;
   background: var(--surface);
   color: var(--text-muted);
@@ -767,7 +775,7 @@ MEDIA CARD CLASSES
   width: 34px;
   height: 34px;
   border: 1px solid var(--border);
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   background: rgba(255, 255, 255, 0.92);
   cursor: pointer;
   display: inline-flex;
@@ -780,7 +788,7 @@ MEDIA CARD CLASSES
   width: 18px;
   height: 18px;
   border: 2px solid var(--text-muted);
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   cursor: pointer;
   display: grid;
   place-content: center;
@@ -802,7 +810,7 @@ MEDIA CARD CLASSES
   width: 34px;
   height: 34px;
   border: 1px solid var(--border);
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   background: rgba(255, 255, 255, 0.92);
   cursor: pointer;
   display: inline-flex;
@@ -887,7 +895,7 @@ MEDIA VIEWER CLASSES
   width: 44px;
   height: 44px;
   border: 1px solid var(--border);
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   background: var(--surface);
   color: var(--text);
   cursor: pointer;
@@ -915,7 +923,7 @@ MEDIA VIEWER CLASSES
   width: 44px;
   height: 44px;
   border: 1px solid var(--border);
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   background: var(--surface);
   color: var(--text);
   cursor: pointer;
@@ -1039,7 +1047,7 @@ PROFILE PAGE CLASSES
 .profile-coming-soon-badge {
   flex: 0 0 auto;
   border: 1px solid var(--primary-border);
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   padding: 6px 10px;
   background: var(--primary-soft);
   color: var(--primary-hover);
