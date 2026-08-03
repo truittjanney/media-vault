@@ -165,6 +165,10 @@ The frontend communicates with the Railway API through HTTPS. The backend manage
 
 ![MediaVault Forgot Password Page](docs/screenshots/mediavault_forgot_password_page.png)
 
+### Reset Password Page
+
+![MediaVault Reset Password Page](docs/screenshots/mediavault_reset_password_page.png)
+
 ### Private S3 Storage
 
 ![MediaVault S3 Bucket](docs/screenshots/mediavault_aws_s3_bucket.png)
