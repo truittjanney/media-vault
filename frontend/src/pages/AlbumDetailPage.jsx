@@ -12,6 +12,12 @@ import {
 import { getAlbums, updateAlbum } from "../services/albumService.js";
 import { MediaCard } from "../components/MediaCard.jsx";
 import { MediaViewer } from "../components/MediaViewer.jsx";
+import photosIcon from "../assets/icons/photos_icon.svg";
+import videosIcon from "../assets/icons/videos_icon.svg";
+import heartRedIcon from "../assets/icons/heart_red_icon.svg";
+import heartOutlineIcon from "../assets/icons/heart_outline_icon.svg";
+import moveToIcon from "../assets/icons/move_to_icon.svg";
+import deleteIcon from "../assets/icons/delete_icon.svg";
 
 function AlbumDetailPage() {
   // ####################################################
@@ -469,8 +475,14 @@ function AlbumDetailPage() {
           </p>
 
           <div className="album-detail-summary">
-            <span className="album-stat-pill">📸 Images: {imageCount}</span>
-            <span className="album-stat-pill">🎥 Videos: {videoCount}</span>
+            <span className="album-stat-pill">
+              <img src={photosIcon} alt="Photos" className="mv-icon" /> Images:{" "}
+              {imageCount}
+            </span>
+            <span className="album-stat-pill">
+              <img src={videosIcon} alt="Videos" className="mv-icon" /> Videos:{" "}
+              {videoCount}
+            </span>
           </div>
         </div>
 
@@ -516,7 +528,7 @@ function AlbumDetailPage() {
               type="button"
               onClick={() => handleOpenMoveMediaModal(selectedMediaIds)}
             >
-              ➡️ Move To
+              <img src={moveToIcon} alt="Move To" className="mv-icon" /> Move To
             </button>
 
             <button
@@ -524,7 +536,8 @@ function AlbumDetailPage() {
               type="button"
               onClick={handleOpenDeleteSelectedModal}
             >
-              🗑️ Delete Selected
+              <img src={deleteIcon} alt="Delete" className="mv-icon" /> Delete
+              Selected
             </button>
 
             <button
@@ -685,7 +698,15 @@ function AlbumDetailPage() {
                     );
                   }}
                 >
-                  {selectedMedia.isFavorite ? "❤️" : "♡"}
+                  <img
+                    src={
+                      selectedMedia.isFavorite ? heartRedIcon : heartOutlineIcon
+                    }
+                    alt={
+                      selectedMedia.isFavorite ? "Remove favorite" : "Favorite"
+                    }
+                    className="mv-icon"
+                  />
                 </button>
               </div>
 
@@ -1002,6 +1023,8 @@ function AlbumDetailPage() {
               onToggleSelect={handleToggleSelectMedia}
               onToggleFavorite={handleToggleMediaFavorite}
               onOpenMedia={handleOpenMedia}
+              heartRedIcon={heartRedIcon}
+              heartOutlineIcon={heartOutlineIcon}
             />
           ))}
         </section>

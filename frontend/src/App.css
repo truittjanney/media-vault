@@ -112,6 +112,13 @@ REUSABLE CLASSES: BUTTONS
   width: 100%;
 }
 
+.mv-icon {
+  width: 20px;
+  height: 20px;
+  display: block;
+  pointer-events: none;
+}
+
 /*
 ##########################################################
 REUSABLE CLASSES: CARDS
@@ -449,6 +456,11 @@ ALBUMS PAGE CLASSES
   justify-content: center;
   font-size: 18px;
   box-shadow: var(--shadow-sm);
+}
+
+.profile-icon-button .mv-icon {
+  width: 24px;
+  height: 24px;
 }
 
 .profile-icon-button:hover {

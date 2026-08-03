@@ -5,6 +5,8 @@ function MediaCard({
   onToggleSelect,
   onToggleFavorite,
   onOpenMedia,
+  heartRedIcon,
+  heartOutlineIcon,
 }) {
   return (
     <article
@@ -57,7 +59,15 @@ function MediaCard({
               onToggleFavorite(media.id, media.isFavorite);
             }}
           >
-            {media.isFavorite ? "❤️" : "🤍"}
+            {media.isFavorite ? (
+              <img src={heartRedIcon} alt="Favorite" className="mv-icon" />
+            ) : (
+              <img
+                src={heartOutlineIcon}
+                alt="Not Favorite"
+                className="mv-icon"
+              />
+            )}
           </button>
         </div>
       </div>

@@ -11,6 +11,8 @@ import {
   deleteAlbum,
 } from "../services/albumService.js";
 import { AlbumCard } from "../components/AlbumCard.jsx";
+import profilePictureSilhouetteIcon from "../assets/icons/profile_picture_silhouette_icon.svg";
+import lockedIcon from "../assets/icons/locked_icon.svg";
 
 function AlbumsPage() {
   // ####################################################
@@ -390,7 +392,11 @@ function AlbumsPage() {
             title="Profile settings"
             onClick={() => navigate("/profile")}
           >
-            👤
+            <img
+              src={profilePictureSilhouetteIcon}
+              alt="Profile Settings"
+              className="mv-icon"
+            />
           </button>
         </div>
       </header>
@@ -788,6 +794,7 @@ function AlbumsPage() {
               album={album}
               onOpenAlbum={handleOpenAlbum}
               onOpenAlbumActions={handleOpenAlbumActionsModal}
+              lockedIcon={lockedIcon}
             />
           ))}
         </section>
