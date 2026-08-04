@@ -1,4 +1,7 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-  <rect x="5" y="10" width="14" height="10" rx="2.5" stroke="#4d7c0f" stroke-width="2"/>
-  <path d="M8 10V7.8C8 5.7 9.8 4 12 4s4 1.7 4 3.8V10" stroke="#4d7c0f" stroke-width="2" stroke-linecap="round"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
+  <title id="title">MediaVault MV favicon</title>
+  <desc id="desc">White MV initials centered on a rounded MediaVault green square.</desc>
+  <rect width="512" height="512" rx="38" fill="#4d7c0f"/>
+  <path fill="#fff" d="M68 156h57l48 141 48-141h57v200h-42V220l-46 136h-34l-46-136v136H68V156Z"/>
+  <path fill="#fff" d="M290 156h45l55 143 54-143h45l-78 200h-43l-78-200Z"/>
 </svg>
